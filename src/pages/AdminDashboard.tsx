@@ -1,20 +1,28 @@
+import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Upload, Library, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { UploadForm } from '@/components/UploadForm';
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
   const { language, t } = useLanguage();
   const navigate = useNavigate();
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleUploadSuccess = () => {
+    setUploadDialogOpen(false);
   };
 
   return (
@@ -46,10 +54,20 @@ const AdminDashboard = () => {
                   'Add new books and images to the library.'
                 )}
               </p>
-              <Button variant="hero" className="w-full">
-                <Upload className="mr-2 h-4 w-4" />
-                {t('Почни Качување', 'Start Upload')}
-              </Button>
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="hero" className="w-full">
+                    <Upload className="mr-2 h-4 w-4" />
+                    {t('Почни Качување', 'Start Upload')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{t('Качи Нова Ставка', 'Upload New Item')}</DialogTitle>
+                  </DialogHeader>
+                  <UploadForm onSuccess={handleUploadSuccess} />
+                </DialogContent>
+              </Dialog>
             </Card>
 
             <Card className="p-6 space-y-4">
