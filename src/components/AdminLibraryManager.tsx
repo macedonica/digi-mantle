@@ -7,12 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Pencil, Trash2, Loader2 } from 'lucide-react';
 import type { LibraryItem } from '@/data/mockLibraryItems';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export const AdminLibraryManager = () => {
   const { language, t } = useLanguage();
@@ -339,20 +340,38 @@ export const AdminLibraryManager = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit_desc_mk">{t('Опис (МК)', 'Description (MK)')}</Label>
-              <Textarea
-                id="edit_desc_mk"
+              <ReactQuill
+                theme="snow"
                 value={editFormData.description_mk}
-                onChange={(e) => setEditFormData({ ...editFormData, description_mk: e.target.value })}
-                rows={3}
+                onChange={(value) => setEditFormData({ ...editFormData, description_mk: value })}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['link'],
+                    ['clean']
+                  ]
+                }}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit_desc_en">{t('Опис (EN)', 'Description (EN)')}</Label>
-              <Textarea
-                id="edit_desc_en"
+              <ReactQuill
+                theme="snow"
                 value={editFormData.description_en}
-                onChange={(e) => setEditFormData({ ...editFormData, description_en: e.target.value })}
-                rows={3}
+                onChange={(value) => setEditFormData({ ...editFormData, description_en: value })}
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['link'],
+                    ['clean']
+                  ]
+                }}
               />
             </div>
             <div className="flex justify-end gap-2">

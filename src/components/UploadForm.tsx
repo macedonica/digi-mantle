@@ -5,11 +5,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { language, t } = useLanguage();
@@ -345,21 +346,39 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
           <div className="space-y-2">
             <Label htmlFor="description_mk">{t('Опис (МК)', 'Description (MK)')}</Label>
-            <Textarea
-              id="description_mk"
+            <ReactQuill
+              theme="snow"
               value={formData.description_mk}
-              onChange={(e) => setFormData({ ...formData, description_mk: e.target.value })}
-              rows={3}
+              onChange={(value) => setFormData({ ...formData, description_mk: value })}
+              modules={{
+                toolbar: [
+                  [{ 'header': [1, 2, 3, false] }],
+                  ['bold', 'italic', 'underline'],
+                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{ 'align': [] }],
+                  ['link'],
+                  ['clean']
+                ]
+              }}
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description_en">{t('Опис (EN)', 'Description (EN)')}</Label>
-            <Textarea
-              id="description_en"
+            <ReactQuill
+              theme="snow"
               value={formData.description_en}
-              onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
-              rows={3}
+              onChange={(value) => setFormData({ ...formData, description_en: value })}
+              modules={{
+                toolbar: [
+                  [{ 'header': [1, 2, 3, false] }],
+                  ['bold', 'italic', 'underline'],
+                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{ 'align': [] }],
+                  ['link'],
+                  ['clean']
+                ]
+              }}
             />
           </div>
 

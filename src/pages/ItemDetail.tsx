@@ -9,6 +9,7 @@ import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon }
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
+import DOMPurify from 'dompurify';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -242,9 +243,12 @@ const ItemDetail = () => {
                       ? t('Опис', 'Description')
                       : t('Описание', 'Description')}
                   </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {item.description[language]}
-                  </p>
+                  <div 
+                    className="text-lg text-muted-foreground leading-relaxed prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ 
+                      __html: DOMPurify.sanitize(item.description[language]) 
+                    }}
+                  />
                 </div>
               </div>
             </div>
