@@ -102,9 +102,10 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
             <SelectContent>
               <SelectItem value="all">{t('Сите категории', 'All categories')}</SelectItem>
               <SelectItem value="history">{t('Историја', 'History')}</SelectItem>
-              <SelectItem value="culture">{t('Култура', 'Culture')}</SelectItem>
-              <SelectItem value="poetry">{t('Поезија', 'Poetry')}</SelectItem>
-              <SelectItem value="personalities">{t('Личности', 'Personalities')}</SelectItem>
+              <SelectItem value="archaeology">{t('Археологија', 'Archaeology')}</SelectItem>
+              <SelectItem value="literature">{t('Книжевност', 'Literature')}</SelectItem>
+              <SelectItem value="ethnology">{t('Етнологија', 'Ethnology')}</SelectItem>
+              <SelectItem value="folklore">{t('Фолклор', 'Folklore')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

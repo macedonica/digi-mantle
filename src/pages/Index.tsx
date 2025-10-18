@@ -4,7 +4,7 @@ import { Footer } from '@/components/Footer';
 import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Search, BookOpen, Map, Feather, Users, Globe } from 'lucide-react';
+import { Search, BookOpen, Mountain, FileText, Users, Music } from 'lucide-react';
 import heroImage from '@/assets/hero-archive.jpg';
 
 const Index = () => {
@@ -23,19 +23,24 @@ const Index = () => {
       category: 'history'
     },
     {
-      icon: Globe,
-      title: { mk: 'Култура', en: 'Culture' },
-      category: 'culture'
+      icon: Mountain,
+      title: { mk: 'Археологија', en: 'Archaeology' },
+      category: 'archaeology'
     },
     {
-      icon: Feather,
-      title: { mk: 'Поезија', en: 'Poetry' },
-      category: 'poetry'
+      icon: FileText,
+      title: { mk: 'Книжевност', en: 'Literature' },
+      category: 'literature'
     },
     {
       icon: Users,
-      title: { mk: 'Личности', en: 'Personalities' },
-      category: 'personalities'
+      title: { mk: 'Етнологија', en: 'Ethnology' },
+      category: 'ethnology'
+    },
+    {
+      icon: Music,
+      title: { mk: 'Фолклор', en: 'Folklore' },
+      category: 'folklore'
     }
   ];
 
@@ -100,7 +105,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-center mb-12">
               {t('Истражувајте по Теми', 'Explore by Themes')}
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
               {thematicCategories.map((category, index) => {
                 const Icon = category.icon;
                 return (

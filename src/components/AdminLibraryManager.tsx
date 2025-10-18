@@ -410,10 +410,11 @@ export const AdminLibraryManager = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="history">History</SelectItem>
-                    <SelectItem value="culture">Culture</SelectItem>
-                    <SelectItem value="geography">Geography</SelectItem>
-                    <SelectItem value="personalities">Personalities</SelectItem>
+                    <SelectItem value="history">{t('Историја', 'History')}</SelectItem>
+                    <SelectItem value="archaeology">{t('Археологија', 'Archaeology')}</SelectItem>
+                    <SelectItem value="literature">{t('Книжевност', 'Literature')}</SelectItem>
+                    <SelectItem value="ethnology">{t('Етнологија', 'Ethnology')}</SelectItem>
+                    <SelectItem value="folklore">{t('Фолклор', 'Folklore')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
