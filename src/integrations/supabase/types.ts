@@ -133,7 +133,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_library_items: {
+        Row: {
+          author: string | null
+          author_en: string | null
+          category: string | null
+          created_at: string | null
+          description_en: string | null
+          description_mk: string | null
+          id: string | null
+          image_url: string | null
+          keywords: string[] | null
+          language: string[] | null
+          pdf_url: string | null
+          publication_city: string | null
+          publication_city_en: string | null
+          publisher: string | null
+          publisher_en: string | null
+          thumbnail_url: string | null
+          title_en: string | null
+          title_mk: string | null
+          type: string | null
+          updated_at: string | null
+          year: number | null
+        }
+        Insert: {
+          author?: string | null
+          author_en?: string | null
+          category?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_mk?: string | null
+          id?: string | null
+          image_url?: string | null
+          keywords?: string[] | null
+          language?: string[] | null
+          pdf_url?: string | null
+          publication_city?: string | null
+          publication_city_en?: string | null
+          publisher?: string | null
+          publisher_en?: string | null
+          thumbnail_url?: string | null
+          title_en?: string | null
+          title_mk?: string | null
+          type?: string | null
+          updated_at?: string | null
+          year?: number | null
+        }
+        Update: {
+          author?: string | null
+          author_en?: string | null
+          category?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_mk?: string | null
+          id?: string | null
+          image_url?: string | null
+          keywords?: string[] | null
+          language?: string[] | null
+          pdf_url?: string | null
+          publication_city?: string | null
+          publication_city_en?: string | null
+          publisher?: string | null
+          publisher_en?: string | null
+          thumbnail_url?: string | null
+          title_en?: string | null
+          title_mk?: string | null
+          type?: string | null
+          updated_at?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

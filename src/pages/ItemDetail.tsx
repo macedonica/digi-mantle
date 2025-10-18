@@ -20,8 +20,9 @@ const ItemDetail = () => {
 
   useEffect(() => {
     const fetchItem = async () => {
+      // Use the public view that excludes uploaded_by field for security
       const { data, error } = await supabase
-        .from('library_items')
+        .from('public_library_items')
         .select('*')
         .eq('id', id)
         .maybeSingle();

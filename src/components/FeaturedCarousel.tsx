@@ -14,8 +14,9 @@ export const FeaturedCarousel = () => {
 
   useEffect(() => {
     const fetchFeaturedItems = async () => {
+      // Use the public view that excludes uploaded_by field for security
       const { data, error } = await supabase
-        .from('library_items')
+        .from('public_library_items')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(10);
