@@ -6,8 +6,9 @@ import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { SearchBar } from '@/components/SearchBar';
 import { LibraryFilters } from '@/components/LibraryFilters';
 import { LibraryGrid } from '@/components/LibraryGrid';
-import { mockLibraryItems } from '@/data/mockLibraryItems';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import type { LibraryItem } from '@/data/mockLibraryItems';
 
 interface FilterState {
   yearFrom: string;
@@ -22,6 +23,8 @@ const Library = () => {
   const location = useLocation();
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const [items, setItems] = useState<LibraryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     yearFrom: '',
     yearTo: '',
@@ -31,6 +34,43 @@ const Library = () => {
     category: 'all'
   });
 
+  // Fetch library items from Supabase
+  useEffect(() => {
+    const fetchItems = async () => {
+      const { data, error } = await supabase
+        .from('library_items')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching library items:', error);
+        setLoading(false);
+        return;
+      }
+
+      // Transform database format to LibraryItem format
+      const transformedItems: LibraryItem[] = (data || []).map(item => ({
+        id: item.id,
+        type: item.type as 'book' | 'image',
+        title: { mk: item.title_mk, en: item.title_en },
+        author: item.author,
+        year: item.year,
+        language: item.language,
+        keywords: item.keywords || [],
+        description: { mk: item.description_mk || '', en: item.description_en || '' },
+        thumbnail: item.thumbnail_url,
+        pdfUrl: item.pdf_url || undefined,
+        imageUrl: item.image_url || undefined,
+        category: item.category
+      }));
+
+      setItems(transformedItems);
+      setLoading(false);
+    };
+
+    fetchItems();
+  }, []);
+
   // Handle category from navigation state
   useEffect(() => {
     if (location.state?.category) {
@@ -38,7 +78,7 @@ const Library = () => {
     }
   }, [location.state]);
 
-  const filteredItems = mockLibraryItems.filter(item => {
+  const filteredItems = items.filter(item => {
     // Search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -114,7 +154,7 @@ const Library = () => {
               <div className="flex-1">
                 <div className="mb-6">
                   <p className="text-muted-foreground">
-                    {t(
+                    {loading ? t('Се вчитува...', 'Loading...') : t(
                       `Пронајдени ${filteredItems.length} резултати`,
                       `Found ${filteredItems.length} results`
                     )}
