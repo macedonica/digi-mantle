@@ -17,6 +17,7 @@ export type Database = {
       library_items: {
         Row: {
           author: string
+          author_en: string | null
           category: string
           created_at: string | null
           description_en: string | null
@@ -27,7 +28,9 @@ export type Database = {
           language: string[]
           pdf_url: string | null
           publication_city: string | null
+          publication_city_en: string | null
           publisher: string | null
+          publisher_en: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
@@ -38,6 +41,7 @@ export type Database = {
         }
         Insert: {
           author: string
+          author_en?: string | null
           category: string
           created_at?: string | null
           description_en?: string | null
@@ -48,7 +52,9 @@ export type Database = {
           language?: string[]
           pdf_url?: string | null
           publication_city?: string | null
+          publication_city_en?: string | null
           publisher?: string | null
+          publisher_en?: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
@@ -59,6 +65,7 @@ export type Database = {
         }
         Update: {
           author?: string
+          author_en?: string | null
           category?: string
           created_at?: string | null
           description_en?: string | null
@@ -69,7 +76,9 @@ export type Database = {
           language?: string[]
           pdf_url?: string | null
           publication_city?: string | null
+          publication_city_en?: string | null
           publisher?: string | null
+          publisher_en?: string | null
           thumbnail_url?: string
           title_en?: string
           title_mk?: string

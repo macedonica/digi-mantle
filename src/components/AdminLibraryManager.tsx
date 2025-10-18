@@ -29,6 +29,7 @@ export const AdminLibraryManager = () => {
     title_mk: '',
     title_en: '',
     author: '',
+    author_en: '',
     year: new Date().getFullYear(),
     languages: [] as string[],
     category: '',
@@ -37,7 +38,9 @@ export const AdminLibraryManager = () => {
     description_en: '',
     keywords: '',
     publication_city: '',
+    publication_city_en: '',
     publisher: '',
+    publisher_en: '',
   });
 
   const availableLanguages = [
@@ -74,6 +77,7 @@ export const AdminLibraryManager = () => {
         type: item.type as 'book' | 'image',
         title: { mk: item.title_mk, en: item.title_en },
         author: item.author,
+        authorEn: item.author_en,
         year: item.year,
         language: item.language,
         keywords: item.keywords || [],
@@ -83,7 +87,9 @@ export const AdminLibraryManager = () => {
         imageUrl: item.image_url || undefined,
         category: item.category,
         publicationCity: item.publication_city,
-        publisher: item.publisher
+        publicationCityEn: item.publication_city_en,
+        publisher: item.publisher,
+        publisherEn: item.publisher_en
       }));
       setItems(transformedItems);
     }
@@ -96,6 +102,7 @@ export const AdminLibraryManager = () => {
       title_mk: item.title.mk,
       title_en: item.title.en,
       author: item.author,
+      author_en: item.authorEn || '',
       year: item.year,
       languages: item.language,
       category: item.category,
@@ -104,7 +111,9 @@ export const AdminLibraryManager = () => {
       description_en: item.description.en,
       keywords: item.keywords.join(', '),
       publication_city: item.publicationCity || '',
+      publication_city_en: item.publicationCityEn || '',
       publisher: item.publisher || '',
+      publisher_en: item.publisherEn || '',
     });
   };
 
@@ -137,6 +146,7 @@ export const AdminLibraryManager = () => {
           title_mk: editFormData.title_mk,
           title_en: editFormData.title_en,
           author: editFormData.author,
+          author_en: editFormData.author_en,
           year: editFormData.year,
           language: editFormData.languages,
           category: editFormData.category,
@@ -145,7 +155,9 @@ export const AdminLibraryManager = () => {
           description_en: editFormData.description_en || null,
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
           publication_city: editFormData.publication_city || null,
+          publication_city_en: editFormData.publication_city_en || null,
           publisher: editFormData.publisher || null,
+          publisher_en: editFormData.publisher_en || null,
           thumbnail_url: thumbnailUrl,
         })
         .eq('id', editingItem.id);
@@ -303,7 +315,7 @@ export const AdminLibraryManager = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_author">{t('Автор', 'Author')}</Label>
+                <Label htmlFor="edit_author">{t('Автор (МК)', 'Author (MK)')}</Label>
                 <Input
                   id="edit_author"
                   value={editFormData.author}
@@ -311,7 +323,15 @@ export const AdminLibraryManager = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_publisher">{t('Издавач', 'Published By')}</Label>
+                <Label htmlFor="edit_author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+                <Input
+                  id="edit_author_en"
+                  value={editFormData.author_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, author_en: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
                 <Input
                   id="edit_publisher"
                   value={editFormData.publisher}
@@ -319,11 +339,27 @@ export const AdminLibraryManager = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_publication_city">{t('Град на издавање', 'Publication City')}</Label>
+                <Label htmlFor="edit_publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
+                <Input
+                  id="edit_publisher_en"
+                  value={editFormData.publisher_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, publisher_en: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
                 <Input
                   id="edit_publication_city"
                   value={editFormData.publication_city}
                   onChange={(e) => setEditFormData({ ...editFormData, publication_city: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
+                <Input
+                  id="edit_publication_city_en"
+                  value={editFormData.publication_city_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, publication_city_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2">

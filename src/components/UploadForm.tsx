@@ -24,6 +24,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     title_mk: '',
     title_en: '',
     author: '',
+    author_en: '',
     year: new Date().getFullYear(),
     languages: [] as string[],
     category: '',
@@ -32,7 +33,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     description_en: '',
     keywords: '',
     publication_city: '',
+    publication_city_en: '',
     publisher: '',
+    publisher_en: '',
   });
 
   const availableLanguages = [
@@ -126,6 +129,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           title_mk: formData.title_mk,
           title_en: formData.title_en,
           author: formData.author,
+          author_en: formData.author_en,
           year: formData.year,
           language: formData.languages,
           category: formData.category,
@@ -138,7 +142,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           image_url: imageUrl,
           uploaded_by: user.id,
           publication_city: formData.publication_city || null,
+          publication_city_en: formData.publication_city_en || null,
           publisher: formData.publisher || null,
+          publisher_en: formData.publisher_en || null,
         });
 
       if (dbError) throw dbError;
@@ -232,7 +238,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="author">{t('Автор', 'Author')}</Label>
+              <Label htmlFor="author">{t('Автор (МК)', 'Author (MK)')}</Label>
               <Input
                 id="author"
                 value={formData.author}
@@ -242,7 +248,17 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="publisher">{t('Издавач', 'Published By')}</Label>
+              <Label htmlFor="author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+              <Input
+                id="author_en"
+                value={formData.author_en}
+                onChange={(e) => setFormData({ ...formData, author_en: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
               <Input
                 id="publisher"
                 value={formData.publisher}
@@ -251,11 +267,29 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="publication_city">{t('Град на издавање', 'Publication City')}</Label>
+              <Label htmlFor="publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
+              <Input
+                id="publisher_en"
+                value={formData.publisher_en}
+                onChange={(e) => setFormData({ ...formData, publisher_en: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
               <Input
                 id="publication_city"
                 value={formData.publication_city}
                 onChange={(e) => setFormData({ ...formData, publication_city: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
+              <Input
+                id="publication_city_en"
+                value={formData.publication_city_en}
+                onChange={(e) => setFormData({ ...formData, publication_city_en: e.target.value })}
               />
             </div>
 

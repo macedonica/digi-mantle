@@ -38,6 +38,7 @@ const ItemDetail = () => {
           type: data.type as 'book' | 'image',
           title: { mk: data.title_mk, en: data.title_en },
           author: data.author,
+          authorEn: data.author_en,
           year: data.year,
           language: data.language,
           keywords: data.keywords || [],
@@ -47,7 +48,9 @@ const ItemDetail = () => {
           imageUrl: data.image_url || undefined,
           category: data.category,
           publicationCity: data.publication_city,
-          publisher: data.publisher
+          publicationCityEn: data.publication_city_en,
+          publisher: data.publisher,
+          publisherEn: data.publisher_en
         };
         setItem(transformedItem);
       }
@@ -192,7 +195,9 @@ const ItemDetail = () => {
                       <dt className="text-sm font-medium text-muted-foreground">
                         {t('Автор', 'Author')}
                       </dt>
-                      <dd className="mt-1 text-lg">{item.author}</dd>
+                      <dd className="mt-1 text-lg">
+                        {language === 'mk' ? item.author : (item.authorEn || item.author)}
+                      </dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
@@ -200,20 +205,24 @@ const ItemDetail = () => {
                       </dt>
                       <dd className="mt-1 text-lg">{item.year}</dd>
                     </div>
-                    {item.publisher && (
+                    {(item.publisher || item.publisherEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground">
                           {t('Издавач', 'Published By')}
                         </dt>
-                        <dd className="mt-1 text-lg">{item.publisher}</dd>
+                        <dd className="mt-1 text-lg">
+                          {language === 'mk' ? item.publisher : (item.publisherEn || item.publisher)}
+                        </dd>
                       </div>
                     )}
-                    {item.publicationCity && (
+                    {(item.publicationCity || item.publicationCityEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground">
                           {t('Град на издавање', 'Publication City')}
                         </dt>
-                        <dd className="mt-1 text-lg">{item.publicationCity}</dd>
+                        <dd className="mt-1 text-lg">
+                          {language === 'mk' ? item.publicationCity : (item.publicationCityEn || item.publicationCity)}
+                        </dd>
                       </div>
                     )}
                     <div>

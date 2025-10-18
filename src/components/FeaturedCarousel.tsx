@@ -30,6 +30,7 @@ export const FeaturedCarousel = () => {
         type: item.type as 'book' | 'image',
         title: { mk: item.title_mk, en: item.title_en },
         author: item.author,
+        authorEn: item.author_en,
         year: item.year,
         language: item.language || [],
         keywords: item.keywords || [],
@@ -39,7 +40,9 @@ export const FeaturedCarousel = () => {
         imageUrl: item.image_url || undefined,
         category: item.category,
         publicationCity: item.publication_city,
-        publisher: item.publisher
+        publicationCityEn: item.publication_city_en,
+        publisher: item.publisher,
+        publisherEn: item.publisher_en
       }));
 
       setFeaturedItems(transformedItems);
@@ -115,7 +118,9 @@ export const FeaturedCarousel = () => {
               <h3 className="text-sm font-bold line-clamp-2 min-h-[2.5rem]">
                 {item.title[language]}
               </h3>
-              <p className="text-xs text-muted-foreground">{item.author}</p>
+              <p className="text-xs text-muted-foreground">
+                {language === 'mk' ? item.author : (item.authorEn || item.author)}
+              </p>
               <p className="text-xs text-muted-foreground">{item.year}</p>
             </div>
           </div>

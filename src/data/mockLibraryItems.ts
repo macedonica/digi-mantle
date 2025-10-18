@@ -10,6 +10,7 @@ export interface LibraryItem {
   type: 'book' | 'image';
   title: { mk: string; en: string };
   author: string;
+  authorEn?: string;
   year: number;
   language: string[];
   keywords: string[];
@@ -19,7 +20,9 @@ export interface LibraryItem {
   imageUrl?: string;
   category: string;
   publicationCity?: string;
+  publicationCityEn?: string;
   publisher?: string;
+  publisherEn?: string;
 }
 
 export const mockLibraryItems: LibraryItem[] = [
