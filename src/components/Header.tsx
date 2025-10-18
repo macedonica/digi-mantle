@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Globe, LogOut, LayoutDashboard } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
@@ -13,10 +14,8 @@ export const Header = () => {
     <header className="border-b border-border bg-background sticky top-0 z-50 backdrop-blur-sm bg-background/95">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-primary">
-              {t('Дигитален Архив', 'Digital Archive')}
-            </h1>
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logo} alt="Bibliotheca Macedonica" className="h-12 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
