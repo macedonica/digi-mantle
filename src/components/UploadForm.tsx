@@ -11,6 +11,39 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { z } from 'zod';
+
+// Validation schema for form inputs
+const uploadSchema = z.object({
+  title_mk: z.string().trim().min(1, 'Title (MK) is required').max(500, 'Title (MK) must be less than 500 characters'),
+  title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
+  author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
+  author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
+  year: z.number().int().min(1000, 'Year must be at least 1000').max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
+  languages: z.array(z.string()).min(1, 'At least one language is required'),
+  category: z.string().min(1, 'Category is required'),
+  type: z.string().optional(),
+  description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
+  description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
+  keywords: z.string().max(1000, 'Keywords must be less than 1,000 characters').optional(),
+  publication_city: z.string().max(200, 'Publication city (MK) must be less than 200 characters').optional(),
+  publication_city_en: z.string().max(200, 'Publication city (EN) must be less than 200 characters').optional(),
+  publisher: z.string().max(300, 'Publisher (MK) must be less than 300 characters').optional(),
+  publisher_en: z.string().max(300, 'Publisher (EN) must be less than 300 characters').optional(),
+});
+
+// File validation helper
+const validateFile = (file: File | undefined, maxSize: number, allowedTypes: string[], fieldName: string) => {
+  if (!file) return;
+  
+  if (file.size > maxSize) {
+    throw new Error(`${fieldName} must be less than ${Math.round(maxSize / 1024 / 1024)}MB`);
+  }
+  
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error(`${fieldName} must be one of: ${allowedTypes.join(', ')}`);
+  }
+};
 
 export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { language, t } = useLanguage();
@@ -61,6 +94,39 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     setLoading(true);
 
     try {
+      // Validate form data
+      const validationResult = uploadSchema.safeParse(formData);
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        throw new Error(firstError.message);
+      }
+
+      // Validate files based on upload type
+      if (uploadType === 'image') {
+        validateFile(
+          files.image, 
+          10 * 1024 * 1024, // 10MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Image'
+        );
+      } else {
+        validateFile(
+          files.thumbnail,
+          5 * 1024 * 1024, // 5MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Thumbnail'
+        );
+        
+        if (files.pdf) {
+          validateFile(
+            files.pdf,
+            50 * 1024 * 1024, // 50MB
+            ['application/pdf'],
+            'PDF'
+          );
+        }
+      }
+
       let thumbnailUrl = '';
       let pdfUrl = null;
       let imageUrl = null;
