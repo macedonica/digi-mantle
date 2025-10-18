@@ -30,6 +30,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     description_mk: '',
     description_en: '',
     keywords: '',
+    publication_city: '',
+    publisher: '',
   });
 
   const availableLanguages = [
@@ -134,6 +136,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           pdf_url: pdfUrl,
           image_url: imageUrl,
           uploaded_by: user.id,
+          publication_city: formData.publication_city || null,
+          publisher: formData.publisher || null,
         });
 
       if (dbError) throw dbError;
@@ -233,6 +237,24 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 value={formData.author}
                 onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="publisher">{t('Издавач', 'Published By')}</Label>
+              <Input
+                id="publisher"
+                value={formData.publisher}
+                onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="publication_city">{t('Град на издавање', 'Publication City')}</Label>
+              <Input
+                id="publication_city"
+                value={formData.publication_city}
+                onChange={(e) => setFormData({ ...formData, publication_city: e.target.value })}
               />
             </div>
 

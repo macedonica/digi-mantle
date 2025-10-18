@@ -44,7 +44,9 @@ const ItemDetail = () => {
           thumbnail: data.thumbnail_url,
           pdfUrl: data.pdf_url || undefined,
           imageUrl: data.image_url || undefined,
-          category: data.category
+          category: data.category,
+          publicationCity: data.publication_city,
+          publisher: data.publisher
         };
         setItem(transformedItem);
       }
@@ -197,6 +199,22 @@ const ItemDetail = () => {
                       </dt>
                       <dd className="mt-1 text-lg">{item.year}</dd>
                     </div>
+                    {item.publisher && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">
+                          {t('Издавач', 'Published By')}
+                        </dt>
+                        <dd className="mt-1 text-lg">{item.publisher}</dd>
+                      </div>
+                    )}
+                    {item.publicationCity && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground">
+                          {t('Град на издавање', 'Publication City')}
+                        </dt>
+                        <dd className="mt-1 text-lg">{item.publicationCity}</dd>
+                      </div>
+                    )}
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
                         {t('Јазици', 'Languages')}

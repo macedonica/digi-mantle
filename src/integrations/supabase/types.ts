@@ -26,6 +26,8 @@ export type Database = {
           keywords: string[] | null
           language: string[]
           pdf_url: string | null
+          publication_city: string | null
+          publisher: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
@@ -45,6 +47,8 @@ export type Database = {
           keywords?: string[] | null
           language?: string[]
           pdf_url?: string | null
+          publication_city?: string | null
+          publisher?: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
@@ -64,6 +68,8 @@ export type Database = {
           keywords?: string[] | null
           language?: string[]
           pdf_url?: string | null
+          publication_city?: string | null
+          publisher?: string | null
           thumbnail_url?: string
           title_en?: string
           title_mk?: string

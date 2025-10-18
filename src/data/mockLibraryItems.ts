@@ -18,6 +18,8 @@ export interface LibraryItem {
   pdfUrl?: string;
   imageUrl?: string;
   category: string;
+  publicationCity?: string;
+  publisher?: string;
 }
 
 export const mockLibraryItems: LibraryItem[] = [
