@@ -9,8 +9,6 @@ export const FeaturedCarousel = () => {
   const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef(0);
-  const lastTimeRef = useRef<number | null>(null);
-  const speedRef = useRef(15); // pixels per second
   const navigate = useNavigate();
   const { language } = useLanguage();
 
@@ -51,38 +49,27 @@ export const FeaturedCarousel = () => {
   useEffect(() => {
     if (!scrollRef.current || isPaused || featuredItems.length === 0) return;
 
-    const track = scrollRef.current;
-    positionRef.current = 0;
-    lastTimeRef.current = performance.now();
-    const max = track.scrollWidth / 2;
+    const scrollContainer = scrollRef.current;
+    positionRef.current = scrollContainer.scrollLeft;
     let animationFrameId: number;
     
-    const tick = (time: number) => {
-      const last = lastTimeRef.current ?? time;
-      const dt = (time - last) / 1000;
-      lastTimeRef.current = time;
-
-      // Advance position by speed in pixels per second
-      positionRef.current += speedRef.current * dt;
+    const tick = () => {
+      // Increment by a small fixed amount each frame (slower than original)
+      positionRef.current += 0.3;
 
       // Loop when passing half-width (since we duplicate items)
+      const max = scrollContainer.scrollWidth / 2;
       if (positionRef.current >= max) {
         positionRef.current = 0;
       }
 
-      // GPU-accelerated subpixel movement
-      track.style.transform = `translate3d(-${positionRef.current}px, 0, 0)`;
+      scrollContainer.scrollLeft = positionRef.current;
       animationFrameId = requestAnimationFrame(tick);
     };
 
     animationFrameId = requestAnimationFrame(tick);
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      lastTimeRef.current = null;
-      // Reset transform to avoid stale offset when unmounting/pausing
-      track.style.transform = '';
-    };
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused, featuredItems.length]);
 
   const handleItemClick = (id: string) => {
@@ -105,8 +92,8 @@ export const FeaturedCarousel = () => {
     >
       <div 
         ref={scrollRef}
-        className="flex gap-6 transform-gpu"
-        style={{ willChange: 'transform' }}
+        className="flex gap-6 overflow-x-hidden"
+        style={{ scrollBehavior: 'auto' }}
       >
         {duplicatedItems.map((item, index) => (
           <div
