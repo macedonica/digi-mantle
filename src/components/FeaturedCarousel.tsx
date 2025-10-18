@@ -55,7 +55,7 @@ export const FeaturedCarousel = () => {
       if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
         scrollContainer.scrollLeft = 0;
       } else {
-        scrollContainer.scrollLeft += 0.25;
+        scrollContainer.scrollLeft += 0.3;
       }
       animationFrameId = requestAnimationFrame(scroll);
     };
