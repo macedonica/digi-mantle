@@ -39,32 +39,6 @@ const Index = () => {
     }
   ];
 
-  const featuredCollections = [
-    {
-      title: { mk: 'Документи од Илинденското Востание', en: 'Documents of the Ilinden Uprising' },
-      description: {
-        mk: 'Истражувајте ги историските документи од најзначајното востание во македонската историја.',
-        en: 'Explore historical documents from the most significant uprising in Macedonian history.'
-      },
-      category: 'history'
-    },
-    {
-      title: { mk: 'Современа Македонска Поезија', en: 'Contemporary Macedonian Poetry' },
-      description: {
-        mk: 'Откријте ја убавината на македонската поезија низ вековите.',
-        en: 'Discover the beauty of Macedonian poetry through the ages.'
-      },
-      category: 'poetry'
-    },
-    {
-      title: { mk: 'Историски Карти', en: 'Historical Maps' },
-      description: {
-        mk: 'Разгледајте ги ретките картографски колекции кои го документираат нашето минато.',
-        en: 'View rare cartographic collections that document our past.'
-      },
-      category: 'history'
-    }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -119,35 +93,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Featured Collections */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              {t('Истакнати Колекции', 'Featured Collections')}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {featuredCollections.map((collection, index) => (
-                <div 
-                  key={index}
-                  className="card-elevated p-6 space-y-4"
-                >
-                  <h3 className="text-xl font-bold">
-                    {collection.title[language]}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {collection.description[language]}
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => navigateToLibrary(collection.category)}
-                  >
-                    {t('Прегледај Сè', 'View All')}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Thematic Categories */}
         <section className="py-16 bg-muted/30">
