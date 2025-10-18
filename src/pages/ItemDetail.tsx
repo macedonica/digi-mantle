@@ -242,7 +242,7 @@ const ItemDetail = () => {
                       ? t('Опис', 'Description')
                       : t('Описание', 'Description')}
                   </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap">
                     {item.description[language]}
                   </p>
                 </div>
