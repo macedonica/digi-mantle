@@ -9,8 +9,6 @@ export const FeaturedCarousel = () => {
   const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const positionRef = useRef(0);
-  const lastTimeRef = useRef<number | null>(null);
-  const speedRef = useRef(15); // pixels per second
   const navigate = useNavigate();
   const { language } = useLanguage();
 
@@ -53,16 +51,11 @@ export const FeaturedCarousel = () => {
 
     const scrollContainer = scrollRef.current;
     positionRef.current = scrollContainer.scrollLeft;
-    lastTimeRef.current = performance.now();
     let animationFrameId: number;
     
-    const tick = (time: number) => {
-      const last = lastTimeRef.current ?? time;
-      const dt = (time - last) / 1000;
-      lastTimeRef.current = time;
-
-      // Advance position by speed in pixels per second
-      positionRef.current += speedRef.current * dt;
+    const tick = () => {
+      // Increment by a small fixed amount each frame
+      positionRef.current += 0.15;
 
       // Loop when passing half-width (since we duplicate items)
       const max = scrollContainer.scrollWidth / 2;
@@ -76,10 +69,7 @@ export const FeaturedCarousel = () => {
 
     animationFrameId = requestAnimationFrame(tick);
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      lastTimeRef.current = null;
-    };
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused, featuredItems.length]);
 
   const handleItemClick = (id: string) => {
