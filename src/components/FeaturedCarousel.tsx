@@ -37,7 +37,9 @@ export const FeaturedCarousel = () => {
         thumbnail: item.thumbnail_url,
         pdfUrl: item.pdf_url || undefined,
         imageUrl: item.image_url || undefined,
-        category: item.category
+        category: item.category,
+        publicationCity: item.publication_city,
+        publisher: item.publisher
       }));
 
       setFeaturedItems(transformedItems);

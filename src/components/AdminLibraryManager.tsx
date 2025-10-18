@@ -34,6 +34,8 @@ export const AdminLibraryManager = () => {
     description_mk: '',
     description_en: '',
     keywords: '',
+    publication_city: '',
+    publisher: '',
   });
 
   const availableLanguages = [
@@ -77,7 +79,9 @@ export const AdminLibraryManager = () => {
         thumbnail: item.thumbnail_url,
         pdfUrl: item.pdf_url || undefined,
         imageUrl: item.image_url || undefined,
-        category: item.category
+        category: item.category,
+        publicationCity: item.publication_city,
+        publisher: item.publisher
       }));
       setItems(transformedItems);
     }
@@ -97,6 +101,8 @@ export const AdminLibraryManager = () => {
       description_mk: item.description.mk,
       description_en: item.description.en,
       keywords: item.keywords.join(', '),
+      publication_city: item.publicationCity || '',
+      publisher: item.publisher || '',
     });
   };
 
@@ -118,6 +124,8 @@ export const AdminLibraryManager = () => {
           description_mk: editFormData.description_mk || null,
           description_en: editFormData.description_en || null,
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
+          publication_city: editFormData.publication_city || null,
+          publisher: editFormData.publisher || null,
         })
         .eq('id', editingItem.id);
 
@@ -247,6 +255,22 @@ export const AdminLibraryManager = () => {
                   id="edit_author"
                   value={editFormData.author}
                   onChange={(e) => setEditFormData({ ...editFormData, author: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_publisher">{t('Издавач', 'Published By')}</Label>
+                <Input
+                  id="edit_publisher"
+                  value={editFormData.publisher}
+                  onChange={(e) => setEditFormData({ ...editFormData, publisher: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_publication_city">{t('Град на издавање', 'Publication City')}</Label>
+                <Input
+                  id="edit_publication_city"
+                  value={editFormData.publication_city}
+                  onChange={(e) => setEditFormData({ ...editFormData, publication_city: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
