@@ -215,22 +215,6 @@ const ItemDetail = () => {
                     </div>
                   </div>
 
-                  {/* Keywords */}
-                  <div>
-                    <dt className="text-sm font-medium text-muted-foreground mb-2">
-                      {t('Клучни Зборови', 'Keywords')}
-                    </dt>
-                    <dd className="flex flex-wrap gap-2">
-                      {item.keywords.map((keyword, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-muted rounded-full text-sm"
-                        >
-                          {keyword}
-                        </span>
-                      ))}
-                    </dd>
-                  </div>
                 </div>
 
                 {/* Description */}
