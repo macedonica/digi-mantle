@@ -99,7 +99,7 @@ const Library = () => {
 
     // Language filter
     if (filters.language !== 'all' && 
-        !item.language.toLowerCase().includes(filters.language.toLowerCase())) {
+        !item.language.some(lang => lang.toLowerCase().includes(filters.language.toLowerCase()))) {
       return false;
     }
 

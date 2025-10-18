@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Pencil, Trash2, Loader2 } from 'lucide-react';
 import type { LibraryItem } from '@/data/mockLibraryItems';
@@ -27,13 +28,23 @@ export const AdminLibraryManager = () => {
     title_en: '',
     author: '',
     year: new Date().getFullYear(),
-    language: '',
+    languages: [] as string[],
     category: '',
     type: '',
     description_mk: '',
     description_en: '',
     keywords: '',
   });
+
+  const availableLanguages = [
+    'Macedonian',
+    'English', 
+    'Serbian',
+    'Bulgarian',
+    'French',
+    'Croatian',
+    'German'
+  ];
 
   useEffect(() => {
     fetchItems();
@@ -80,7 +91,7 @@ export const AdminLibraryManager = () => {
       title_en: item.title.en,
       author: item.author,
       year: item.year,
-      language: item.language,
+      languages: item.language,
       category: item.category,
       type: item.type,
       description_mk: item.description.mk,
@@ -101,7 +112,7 @@ export const AdminLibraryManager = () => {
           title_en: editFormData.title_en,
           author: editFormData.author,
           year: editFormData.year,
-          language: editFormData.language,
+          language: editFormData.languages,
           category: editFormData.category,
           type: editFormData.type,
           description_mk: editFormData.description_mk || null,
@@ -247,18 +258,37 @@ export const AdminLibraryManager = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, year: parseInt(e.target.value) })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_language">{t('Јазик', 'Language')}</Label>
-                <Select value={editFormData.language} onValueChange={(value) => setEditFormData({ ...editFormData, language: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mk">{t('Македонски', 'Macedonian')}</SelectItem>
-                    <SelectItem value="en">{t('Англиски', 'English')}</SelectItem>
-                    <SelectItem value="other">{t('Друго', 'Other')}</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2 col-span-2">
+                <Label>{t('Јазици', 'Languages')}</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
+                  {availableLanguages.map((lang) => (
+                    <div key={lang} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`edit-lang-${lang}`}
+                        checked={editFormData.languages.includes(lang)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setEditFormData({ 
+                              ...editFormData, 
+                              languages: [...editFormData.languages, lang] 
+                            });
+                          } else {
+                            setEditFormData({ 
+                              ...editFormData, 
+                              languages: editFormData.languages.filter(l => l !== lang) 
+                            });
+                          }
+                        }}
+                      />
+                      <label 
+                        htmlFor={`edit-lang-${lang}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {lang}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit_category">{t('Категорија', 'Category')}</Label>

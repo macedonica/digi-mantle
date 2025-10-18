@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -23,13 +24,23 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     title_en: '',
     author: '',
     year: new Date().getFullYear(),
-    language: '',
+    languages: [] as string[],
     category: '',
     type: '',
     description_mk: '',
     description_en: '',
     keywords: '',
   });
+
+  const availableLanguages = [
+    'Macedonian',
+    'English', 
+    'Serbian',
+    'Bulgarian',
+    'French',
+    'Croatian',
+    'German'
+  ];
 
   const [files, setFiles] = useState<{
     thumbnail?: File;
@@ -113,7 +124,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           title_en: formData.title_en,
           author: formData.author,
           year: formData.year,
-          language: formData.language,
+          language: formData.languages,
           category: formData.category,
           type: itemType,
           description_mk: formData.description_mk || null,
@@ -236,18 +247,37 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="language">{t('Јазик', 'Language')}</Label>
-              <Select value={formData.language} onValueChange={(value) => setFormData({ ...formData, language: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('Избери јазик', 'Select language')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mk">{t('Македонски', 'Macedonian')}</SelectItem>
-                  <SelectItem value="en">{t('Англиски', 'English')}</SelectItem>
-                  <SelectItem value="other">{t('Друго', 'Other')}</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2 md:col-span-2">
+              <Label>{t('Јазици', 'Languages')}</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
+                {availableLanguages.map((lang) => (
+                  <div key={lang} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`lang-${lang}`}
+                      checked={formData.languages.includes(lang)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData({ 
+                            ...formData, 
+                            languages: [...formData.languages, lang] 
+                          });
+                        } else {
+                          setFormData({ 
+                            ...formData, 
+                            languages: formData.languages.filter(l => l !== lang) 
+                          });
+                        }
+                      }}
+                    />
+                    <label 
+                      htmlFor={`lang-${lang}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {lang}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">

@@ -11,7 +11,7 @@ export interface LibraryItem {
   title: { mk: string; en: string };
   author: string;
   year: number;
-  language: string;
+  language: string[];
   keywords: string[];
   description: { mk: string; en: string };
   thumbnail: string;
@@ -30,7 +30,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Историски Архив',
     year: 1903,
-    language: 'Macedonian',
+    language: ['Macedonian'],
     keywords: ['илинден', 'востание', 'историја', 'ilinden', 'uprising', 'history'],
     description: {
       mk: 'Ова е збирка на автентични документи од Илинденското востание од 1903 година, која претставува значајна колекција на историски материјали од национално значење. Документите ги опфаќаат пораките, писмата и службените записи од тоа време.',
@@ -49,7 +49,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Различни Автори',
     year: 1952,
-    language: 'Macedonian',
+    language: ['Macedonian'],
     keywords: ['поезија', 'литература', 'антологија', 'poetry', 'literature', 'anthology'],
     description: {
       mk: 'Сеопфатна збирка на македонска поезија од различни периоди и автори. Книгата содржи дела од најзначајните македонски поети и претставува важен придонес кон националната литература.',
@@ -68,7 +68,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Картографски Институт',
     year: 1920,
-    language: 'Various',
+    language: ['Various'],
     keywords: ['карта', 'географија', 'историја', 'map', 'geography', 'history'],
     description: {
       mk: 'Детална историска карта на Македонија од почетокот на 20 век, прикажувајќи територијални граници и важни географски локации од тоа време.',
@@ -87,7 +87,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Манастирска Библиотека',
     year: 1450,
-    language: 'Old Church Slavonic',
+    language: ['Old Church Slavonic'],
     keywords: ['ракопис', 'религија', 'историја', 'manuscript', 'religion', 'history'],
     description: {
       mk: 'Овој ракопис претставува редок пример на средновековна македонска писменост, чуван во манастирската библиотека со векови. Содржи религиозни текстови и историски записи.',
@@ -106,7 +106,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Етнографски Музеј',
     year: 1880,
-    language: 'Visual',
+    language: ['Visual'],
     keywords: ['култура', 'везба', 'традиција', 'culture', 'embroidery', 'tradition'],
     description: {
       mk: 'Традиционални македонски шари и мотиви од народната везба, претставувајќи богато културно наследство и уметнички изразувања на македонскиот народ.',
@@ -125,7 +125,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     author: 'Фотографски Студио',
     year: 1910,
-    language: 'Visual',
+    language: ['Visual'],
     keywords: ['личност', 'портрет', 'историја', 'personality', 'portrait', 'history'],
     description: {
       mk: 'Историска фотографија на истакнат македонски интелектуалец од почетокот на 20 век, документирајќи го образованото општество од тоа време.',

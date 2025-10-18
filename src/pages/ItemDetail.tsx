@@ -199,9 +199,9 @@ const ItemDetail = () => {
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
-                        {t('Јазик', 'Language')}
+                        {t('Јазици', 'Languages')}
                       </dt>
-                      <dd className="mt-1 text-lg">{item.language}</dd>
+                      <dd className="mt-1 text-lg">{item.language.join(', ')}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
