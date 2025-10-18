@@ -2,9 +2,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { mockLibraryItems } from '@/data/mockLibraryItems';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, Download, ExternalLink, Book as BookIcon, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon } from 'lucide-react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -81,16 +83,29 @@ const ItemDetail = () => {
                 )}
                 
                 {item.type === 'image' && item.imageUrl && (
-                  <a 
-                    href={item.imageUrl} 
-                    download
-                    className="block"
-                  >
-                    <Button variant="outline" className="w-full" size="lg">
-                      <Download className="mr-2 h-5 w-5" />
-                      {t('Превземи Слика', 'Download Image')}
-                    </Button>
-                  </a>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full" size="lg">
+                        <ZoomIn className="mr-2 h-5 w-5" />
+                        {t('Зумирај Слика', 'Zoom Image')}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-5xl w-full h-[90vh] p-0">
+                      <TransformWrapper
+                        initialScale={1}
+                        minScale={0.5}
+                        maxScale={4}
+                      >
+                        <TransformComponent wrapperClass="w-full h-full flex items-center justify-center">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.title[language]}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </TransformComponent>
+                      </TransformWrapper>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </div>
 

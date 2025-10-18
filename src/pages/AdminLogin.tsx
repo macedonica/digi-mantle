@@ -1,28 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters')
+});
 
 const AdminLogin = () => {
-  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signIn, user, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in as admin
+  useEffect(() => {
+    if (user && isAdmin) {
+      navigate('/admin-dashboard');
+    }
+  }, [user, isAdmin, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // This is a placeholder - actual authentication would be implemented with backend
-    toast.info(
-      t(
-        'Функцијата за најава не е целосно имплементирана. Ова е само приказ.',
-        'Login functionality is not fully implemented. This is a demonstration only.'
-      )
-    );
+    setLoading(true);
+
+    // Validate input
+    const validation = loginSchema.safeParse({ email, password });
+    if (!validation.success) {
+      toast({
+        title: t('Грешка при Валидација', 'Validation Error'),
+        description: validation.error.errors[0].message,
+        variant: 'destructive'
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Attempt login
+    const { error } = await signIn(email, password);
+
+    if (error) {
+      toast({
+        title: t('Неуспешна Најава', 'Login Failed'),
+        description: error.message || t('Погрешни податоци', 'Invalid credentials'),
+        variant: 'destructive'
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Success - auth context will handle redirect
+    toast({
+      title: t('Добредојдовте назад!', 'Welcome back!'),
+      description: t('Пренасочување...', 'Redirecting to admin dashboard...')
+    });
   };
 
   return (
@@ -59,6 +102,7 @@ const AdminLogin = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('admin@example.com', 'admin@example.com')}
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -73,6 +117,7 @@ const AdminLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -81,8 +126,9 @@ const AdminLogin = () => {
                 className="w-full" 
                 variant="hero"
                 size="lg"
+                disabled={loading}
               >
-                {t('Најава', 'Sign In')}
+                {loading ? t('Најавување...', 'Logging in...') : t('Најава', 'Sign In')}
               </Button>
             </form>
 
