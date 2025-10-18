@@ -36,7 +36,7 @@ export const LibraryGrid = ({ items }: LibraryGridProps) => {
           onClick={() => handleItemClick(item.id)}
           className="card-elevated p-0 overflow-hidden cursor-pointer group"
         >
-          <div className="aspect-square relative overflow-hidden bg-muted">
+          <div className="aspect-[3/4] relative overflow-hidden bg-muted">
             <img
               src={item.thumbnail}
               alt={item.title[language]}

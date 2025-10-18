@@ -113,7 +113,7 @@ const ItemDetail = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
               {/* Image Column */}
               <div className="space-y-6">
-                <div className="aspect-square rounded-lg overflow-hidden shadow-elegant">
+                <div className="aspect-[3/4] rounded-lg overflow-hidden shadow-elegant">
                   <img
                     src={item.thumbnail}
                     alt={item.title[language]}
