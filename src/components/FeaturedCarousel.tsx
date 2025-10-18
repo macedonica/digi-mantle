@@ -1,17 +1,51 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockLibraryItems } from '@/data/mockLibraryItems';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from './ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import type { LibraryItem } from '@/data/mockLibraryItems';
 
 export const FeaturedCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [featuredItems, setFeaturedItems] = useState<LibraryItem[]>([]);
   const navigate = useNavigate();
   const { language } = useLanguage();
 
-  const featuredItems = mockLibraryItems.slice(0, 4);
+  useEffect(() => {
+    const fetchFeaturedItems = async () => {
+      const { data, error } = await supabase
+        .from('library_items')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(4);
+
+      if (error) {
+        console.error('Error fetching featured items:', error);
+        return;
+      }
+
+      const transformedItems: LibraryItem[] = (data || []).map(item => ({
+        id: item.id,
+        type: item.type as 'book' | 'image',
+        title: { mk: item.title_mk, en: item.title_en },
+        author: item.author,
+        year: item.year,
+        language: item.language,
+        keywords: item.keywords || [],
+        description: { mk: item.description_mk || '', en: item.description_en || '' },
+        thumbnail: item.thumbnail_url,
+        pdfUrl: item.pdf_url || undefined,
+        imageUrl: item.image_url || undefined,
+        category: item.category
+      }));
+
+      setFeaturedItems(transformedItems);
+    };
+
+    fetchFeaturedItems();
+  }, []);
 
   useEffect(() => {
     if (isPaused) return;
@@ -37,6 +71,10 @@ export const FeaturedCarousel = () => {
     const path = language === 'mk' ? `/објект/${id}` : `/item/${id}`;
     navigate(path);
   };
+
+  if (featuredItems.length === 0) {
+    return null;
+  }
 
   return (
     <div 
