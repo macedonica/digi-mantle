@@ -23,6 +23,7 @@ export const AdminLibraryManager = () => {
   const [editingItem, setEditingItem] = useState<LibraryItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [newThumbnail, setNewThumbnail] = useState<File | null>(null);
 
   const [editFormData, setEditFormData] = useState({
     title_mk: '',
@@ -112,6 +113,24 @@ export const AdminLibraryManager = () => {
 
     setSaving(true);
     try {
+      let thumbnailUrl = editingItem.thumbnail;
+
+      // Upload new thumbnail if provided
+      if (newThumbnail) {
+        const thumbnailPath = `${crypto.randomUUID()}-${newThumbnail.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('library-images')
+          .upload(thumbnailPath, newThumbnail);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('library-images')
+          .getPublicUrl(thumbnailPath);
+        
+        thumbnailUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('library_items')
         .update({
@@ -127,6 +146,7 @@ export const AdminLibraryManager = () => {
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
           publication_city: editFormData.publication_city || null,
           publisher: editFormData.publisher || null,
+          thumbnail_url: thumbnailUrl,
         })
         .eq('id', editingItem.id);
 
@@ -138,6 +158,7 @@ export const AdminLibraryManager = () => {
       });
 
       setEditingItem(null);
+      setNewThumbnail(null);
       fetchItems();
     } catch (error: any) {
       toast({
@@ -227,12 +248,43 @@ export const AdminLibraryManager = () => {
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
+      <Dialog open={!!editingItem} onOpenChange={(open) => {
+        if (!open) {
+          setEditingItem(null);
+          setNewThumbnail(null);
+        }
+      }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('Уреди Ставка', 'Edit Item')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Current Thumbnail Preview */}
+            {editingItem && (
+              <div className="space-y-2">
+                <Label>{t('Тековна сликичка', 'Current Thumbnail')}</Label>
+                <img
+                  src={newThumbnail ? URL.createObjectURL(newThumbnail) : editingItem.thumbnail}
+                  alt="Thumbnail preview"
+                  className="w-32 h-32 object-cover rounded border"
+                />
+              </div>
+            )}
+            
+            {/* New Thumbnail Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="edit_thumbnail">{t('Промени сликичка', 'Change Thumbnail')}</Label>
+              <Input
+                id="edit_thumbnail"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewThumbnail(e.target.files?.[0] || null)}
+              />
+              <p className="text-sm text-muted-foreground">
+                {t('Остави празно за да ја задржиш тековната', 'Leave empty to keep current')}
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit_title_mk">{t('Наслов (МК)', 'Title (MK)')}</Label>
