@@ -1,19 +1,71 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { mockLibraryItems } from '@/data/mockLibraryItems';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { supabase } from '@/integrations/supabase/client';
+import type { LibraryItem } from '@/data/mockLibraryItems';
 
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { language, t } = useLanguage();
+  const [item, setItem] = useState<LibraryItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const item = mockLibraryItems.find(i => i.id === id);
+  useEffect(() => {
+    const fetchItem = async () => {
+      const { data, error } = await supabase
+        .from('library_items')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching item:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (data) {
+        const transformedItem: LibraryItem = {
+          id: data.id,
+          type: data.type as 'book' | 'image',
+          title: { mk: data.title_mk, en: data.title_en },
+          author: data.author,
+          year: data.year,
+          language: data.language,
+          keywords: data.keywords || [],
+          description: { mk: data.description_mk || '', en: data.description_en || '' },
+          thumbnail: data.thumbnail_url,
+          pdfUrl: data.pdf_url || undefined,
+          imageUrl: data.image_url || undefined,
+          category: data.category
+        };
+        setItem(transformedItem);
+      }
+      
+      setLoading(false);
+    };
+
+    fetchItem();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">{t('Се вчитува...', 'Loading...')}</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!item) {
     return (
