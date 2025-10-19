@@ -238,7 +238,7 @@ const ItemDetail = () => {
                   <span className="text-sm font-medium text-primary">
                     {item.type === 'book' 
                       ? t('Книга', 'Book') 
-                      : t('Слика', 'Image')}
+                      : t('Сведоштво', 'Testimonial')}
                   </span>
                 </div>
 

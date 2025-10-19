@@ -9,7 +9,6 @@ interface FilterState {
   yearTo: string;
   language: string;
   author: string;
-  itemType: string;
   categories: string[];
 }
 
@@ -76,21 +75,6 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
             value={filters.author}
             onChange={(e) => updateFilter('author', e.target.value)}
           />
-        </div>
-
-        {/* Item Type */}
-        <div className="space-y-2">
-          <Label>{t('Тип', 'Type')}</Label>
-          <Select value={filters.itemType} onValueChange={(value) => updateFilter('itemType', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('Сите типови', 'All types')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('Сите типови', 'All types')}</SelectItem>
-              <SelectItem value="book">{t('Книга', 'Book')}</SelectItem>
-              <SelectItem value="image">{t('Слика', 'Image')}</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Categories */}

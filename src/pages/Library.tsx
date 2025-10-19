@@ -19,7 +19,6 @@ interface FilterState {
   yearTo: string;
   language: string;
   author: string;
-  itemType: string;
   categories: string[];
 }
 
@@ -30,12 +29,12 @@ const Library = () => {
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeType, setActiveType] = useState<'book' | 'image'>('book');
   const [filters, setFilters] = useState<FilterState>({
     yearFrom: '',
     yearTo: '',
     language: 'all',
     author: '',
-    itemType: 'all',
     categories: []
   });
 
@@ -106,6 +105,9 @@ const Library = () => {
   }, [location.state]);
 
   const filteredItems = items.filter(item => {
+    // Type filter (from toggle)
+    if (item.type !== activeType) return false;
+
     // Search query filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -134,11 +136,6 @@ const Library = () => {
     // Author filter
     if (filters.author && 
         !item.author.toLowerCase().includes(filters.author.toLowerCase())) {
-      return false;
-    }
-
-    // Item type filter
-    if (filters.itemType !== 'all' && item.type !== filters.itemType) {
       return false;
     }
 
@@ -176,6 +173,33 @@ const Library = () => {
         <section className="md:hidden sticky top-[var(--header-height)] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4 space-y-3">
             <SearchBar onSearch={setSearchQuery} />
+            
+            {/* Type Toggle */}
+            <div className="flex justify-center">
+              <div className="inline-flex rounded-lg border border-border bg-muted p-1">
+                <button
+                  onClick={() => setActiveType('book')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'book' 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Книги', 'Books')}
+                </button>
+                <button
+                  onClick={() => setActiveType('image')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'image' 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Сведоштва', 'Testimonials')}
+                </button>
+              </div>
+            </div>
+            
             <div className="flex justify-end">
               <Drawer>
                 <DrawerTrigger asChild>
@@ -204,8 +228,34 @@ const Library = () => {
 
         {/* Desktop Search - Sticky */}
         <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 space-y-4">
             <SearchBar onSearch={setSearchQuery} />
+            
+            {/* Type Toggle */}
+            <div className="flex justify-center">
+              <div className="inline-flex rounded-lg border border-border bg-muted p-1">
+                <button
+                  onClick={() => setActiveType('book')}
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'book' 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Книги', 'Books')}
+                </button>
+                <button
+                  onClick={() => setActiveType('image')}
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'image' 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Сведоштва', 'Testimonials')}
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
