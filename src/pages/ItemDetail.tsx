@@ -11,6 +11,19 @@ import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import DOMPurify from 'dompurify';
 
+const languageNames: Record<string, { mk: string; en: string }> = {
+  'Macedonian': { mk: 'Македонски', en: 'Macedonian' },
+  'English': { mk: 'Англиски', en: 'English' },
+  'German': { mk: 'Германски', en: 'German' },
+  'French': { mk: 'Француски', en: 'French' },
+  'Russian': { mk: 'Руски', en: 'Russian' },
+  'Serbian': { mk: 'Српски', en: 'Serbian' },
+  'Bulgarian': { mk: 'Бугарски', en: 'Bulgarian' },
+  'Greek': { mk: 'Грчки', en: 'Greek' },
+  'Turkish': { mk: 'Турски', en: 'Turkish' },
+  'Albanian': { mk: 'Албански', en: 'Albanian' },
+};
+
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,6 +32,10 @@ const ItemDetail = () => {
   const [loading, setLoading] = useState(true);
   const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(null);
   const [signedImageUrl, setSignedImageUrl] = useState<string | null>(null);
+
+  const translateLanguage = (lang: string) => {
+    return languageNames[lang]?.[language] || lang;
+  };
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -253,7 +270,7 @@ const ItemDetail = () => {
                       <dt className="text-sm font-medium text-muted-foreground">
                         {t('Јазици', 'Languages')}
                       </dt>
-                      <dd className="mt-1 text-lg">{item.language.join(', ')}</dd>
+                      <dd className="mt-1 text-lg">{item.language.map(translateLanguage).join(', ')}</dd>
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground">
