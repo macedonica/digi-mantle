@@ -129,7 +129,7 @@ const Library = () => {
 
       <main className="flex-1">
         {/* Search Section - Sticky */}
-        <section className="sticky top-0 z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        <section className="sticky top-[73px] md:top-[89px] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
             <SearchBar onSearch={setSearchQuery} />
           </div>
