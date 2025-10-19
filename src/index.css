@@ -8,6 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    --header-height: 73px;
     --background: 0 0% 100%;
     --foreground: 0 0% 10%;
 

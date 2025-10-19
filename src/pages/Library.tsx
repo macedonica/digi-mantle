@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { SearchBar } from '@/components/SearchBar';
 import { LibraryFilters } from '@/components/LibraryFilters';
 import { LibraryGrid } from '@/components/LibraryGrid';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
+import { Button } from '@/components/ui/button';
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import { SlidersHorizontal } from 'lucide-react';
 
 interface FilterState {
   yearFrom: string;
@@ -128,8 +130,38 @@ const Library = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Search Section - Sticky (Desktop) */}
-        <section className="hidden md:block sticky top-[89px] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        {/* Mobile Search & Filters - Sticky */}
+        <section className="md:hidden sticky top-[var(--header-height)] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+          <div className="container mx-auto px-4 space-y-3">
+            <SearchBar onSearch={setSearchQuery} />
+            <div className="flex justify-end">
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <SlidersHorizontal className="h-4 w-4 mr-2" />
+                    {t('Филтри', 'Filters')}
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="max-h-[80vh] overflow-y-auto">
+                  <DrawerHeader>
+                    <DrawerTitle>{t('Филтри', 'Filters')}</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="p-4">
+                    <LibraryFilters filters={filters} onFilterChange={setFilters} />
+                    <div className="mt-4 flex justify-end">
+                      <DrawerClose asChild>
+                        <Button>{t('Готово', 'Done')}</Button>
+                      </DrawerClose>
+                    </div>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            </div>
+          </div>
+        </section>
+
+        {/* Desktop Search - Sticky */}
+        <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
             <SearchBar onSearch={setSearchQuery} />
           </div>
@@ -138,18 +170,13 @@ const Library = () => {
         {/* Results Section */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-              <div className="flex flex-col lg:flex-row gap-8">
-                {/* Filters Sidebar */}
-                <aside className="lg:w-64 flex-shrink-0">
-                  <LibraryFilters filters={filters} onFilterChange={setFilters} />
-                </aside>
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Filters Sidebar - Hidden on mobile */}
+              <aside className="hidden md:block lg:w-64 flex-shrink-0">
+                <LibraryFilters filters={filters} onFilterChange={setFilters} />
+              </aside>
 
-                {/* Mobile Search Section - Sticky under filters */}
-                <section className="md:hidden sticky top-[73px] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-                  <SearchBar onSearch={setSearchQuery} />
-                </section>
-
-                {/* Results Grid */}
+              {/* Results Grid */}
               <div className="flex-1">
                 <div className="mb-6">
                   <p className="text-muted-foreground">
