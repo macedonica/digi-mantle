@@ -157,9 +157,9 @@ const ItemDetail = () => {
         {/* Item Detail */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className={`grid grid-cols-1 lg:grid-cols-2 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-8' : 'gap-12'}`}>
+            <div className={`grid grid-cols-1 lg:grid-cols-2 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-6' : 'gap-12'}`}>
               {/* Image Column */}
-              <div className={`space-y-6 ${item.type === 'book' ? 'max-w-xs mx-auto lg:mx-0' : ''}`}>
+              <div className={`space-y-4 ${item.type === 'book' ? 'max-w-xs mx-auto lg:mx-0' : ''}`}>
                 <div className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'}`}>
                   <img
                     src={item.thumbnail}
