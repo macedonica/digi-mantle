@@ -292,9 +292,14 @@ const ItemDetail = () => {
                       : t('Описание', 'Description')}
                   </h2>
                   <div 
-                    className="text-muted-foreground leading-relaxed prose max-w-none"
+                    className="text-muted-foreground leading-relaxed prose max-w-none prose-ul:list-disc prose-ul:pl-5 prose-ol:list-decimal prose-ol:pl-5 whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{ 
-                      __html: DOMPurify.sanitize(item.description[language]) 
+                      __html: DOMPurify.sanitize(
+                        item.description[language]
+                          .replace(/\n/g, '<br />')
+                          .replace(/^(\s+)•/gm, (match, spaces) => `<span style="padding-left: ${spaces.length * 0.5}em">•</span>`)
+                          .replace(/^(\s+)-/gm, (match, spaces) => `<span style="padding-left: ${spaces.length * 0.5}em">-</span>`)
+                      ) 
                     }}
                   />
                 </div>
