@@ -128,7 +128,8 @@ export const AdminLibraryManager = () => {
         publicationCity: item.publication_city,
         publicationCityEn: item.publication_city_en,
         publisher: item.publisher,
-        publisherEn: item.publisher_en
+        publisherEn: item.publisher_en,
+        additionalImages: item.additional_images || []
       }));
       setItems(transformedItems);
     }

@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       library_items: {
         Row: {
+          additional_images: string[] | null
           author: string
           author_en: string | null
           category: string[]
@@ -40,6 +41,7 @@ export type Database = {
           year: number
         }
         Insert: {
+          additional_images?: string[] | null
           author: string
           author_en?: string | null
           category?: string[]
@@ -64,6 +66,7 @@ export type Database = {
           year: number
         }
         Update: {
+          additional_images?: string[] | null
           author?: string
           author_en?: string | null
           category?: string[]
@@ -135,6 +138,7 @@ export type Database = {
     Views: {
       public_library_items: {
         Row: {
+          additional_images: string[] | null
           author: string | null
           author_en: string | null
           category: string[] | null
@@ -158,6 +162,7 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          additional_images?: string[] | null
           author?: string | null
           author_en?: string | null
           category?: string[] | null
@@ -181,6 +186,7 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          additional_images?: string[] | null
           author?: string | null
           author_en?: string | null
           category?: string[] | null

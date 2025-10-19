@@ -64,7 +64,8 @@ const Library = () => {
         thumbnail: item.thumbnail_url,
         pdfUrl: item.pdf_url || undefined,
         imageUrl: item.image_url || undefined,
-        category: item.category
+        category: item.category,
+        additionalImages: item.additional_images || []
       }));
 
       setItems(transformedItems);

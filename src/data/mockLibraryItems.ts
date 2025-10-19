@@ -23,6 +23,7 @@ export interface LibraryItem {
   publicationCityEn?: string;
   publisher?: string;
   publisherEn?: string;
+  additionalImages?: string[];
 }
 
 export const mockLibraryItems: LibraryItem[] = [

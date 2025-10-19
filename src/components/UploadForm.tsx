@@ -93,6 +93,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     thumbnail?: File;
     pdf?: File;
     image?: File;
+    additionalImages?: File[];
   }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -194,6 +195,32 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
         }
       }
 
+      // Upload additional images if provided (for books only)
+      let additionalImageUrls: string[] = [];
+      if (uploadType === 'document' && files.additionalImages && files.additionalImages.length > 0) {
+        for (const imageFile of files.additionalImages) {
+          validateFile(
+            imageFile,
+            5 * 1024 * 1024, // 5MB per image
+            ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+            'Additional Image'
+          );
+          
+          const imagePath = `${crypto.randomUUID()}-${imageFile.name}`;
+          const { error: imageError } = await supabase.storage
+            .from('library-images')
+            .upload(imagePath, imageFile);
+
+          if (imageError) throw imageError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('library-images')
+            .getPublicUrl(imagePath);
+          
+          additionalImageUrls.push(publicUrl);
+        }
+      }
+
       // Create database entry with appropriate type
       const itemType = uploadType === 'image' ? 'image' : 'book';
 
@@ -219,6 +246,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           publication_city_en: formData.publication_city_en || null,
           publisher: formData.publisher || null,
           publisher_en: formData.publisher_en || null,
+          additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
         });
 
       if (dbError) throw dbError;
@@ -514,6 +542,20 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   accept=".pdf"
                   onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="additionalImages">{t('Дополнителни Слики (Опционално)', 'Additional Images (Optional)')}</Label>
+                <Input
+                  id="additionalImages"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setFiles({ ...files, additionalImages: e.target.files ? Array.from(e.target.files) : [] })}
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
+                </p>
               </div>
             </div>
           ) : (

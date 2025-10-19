@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
@@ -32,6 +32,8 @@ const ItemDetail = () => {
   const [loading, setLoading] = useState(true);
   const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(null);
   const [signedImageUrl, setSignedImageUrl] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [allImages, setAllImages] = useState<string[]>([]);
 
   const translateLanguage = (lang: string) => {
     return languageNames[lang]?.[language] || lang;
@@ -70,9 +72,17 @@ const ItemDetail = () => {
           publicationCity: data.publication_city,
           publicationCityEn: data.publication_city_en,
           publisher: data.publisher,
-          publisherEn: data.publisher_en
+          publisherEn: data.publisher_en,
+          additionalImages: data.additional_images || []
         };
         setItem(transformedItem);
+
+        // Build gallery of all images (thumbnail + additional images)
+        const images: string[] = [data.thumbnail_url];
+        if (data.additional_images && data.additional_images.length > 0) {
+          images.push(...data.additional_images);
+        }
+        setAllImages(images);
 
         // Generate signed URLs for private storage access
         if (data.pdf_url) {
@@ -139,6 +149,14 @@ const ItemDetail = () => {
     }
   };
 
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -160,12 +178,37 @@ const ItemDetail = () => {
             <div className={`grid grid-cols-1 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-8 lg:grid-cols-[minmax(auto,320px)_1fr]' : 'gap-12 lg:grid-cols-2'}`}>
               {/* Image Column */}
               <div className={`${item.type === 'book' ? 'max-w-[200px] mx-auto lg:max-w-none' : ''}`}>
-                <div className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'}`}>
+                <div className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group`}>
                   <img
-                    src={item.thumbnail}
+                    src={allImages[currentImageIndex] || item.thumbnail}
                     alt={item.title[language]}
                     className="w-full h-full object-cover"
                   />
+                  
+                  {/* Navigation arrows for multiple images */}
+                  {allImages.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrevImage}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={t('Претходна слика', 'Previous image')}
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={handleNextImage}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={t('Следна слика', 'Next image')}
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                      
+                      {/* Image counter */}
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                        {currentImageIndex + 1} / {allImages.length}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Action Buttons */}
