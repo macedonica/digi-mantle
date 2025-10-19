@@ -278,56 +278,53 @@ const ItemDetail = () => {
                 </h1>
 
                 {/* Metadata */}
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="flex gap-8">
+                <div className="space-y-4">
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">
+                        {t('Автор', 'Author')}
+                      </dt>
+                      <dd className="text-base">
+                        {language === 'mk' ? item.author : (item.authorEn || item.author)}
+                      </dd>
+                    </div>
+                    
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">
+                        {t('Година', 'Year')}
+                      </dt>
+                      <dd className="text-base">{item.year}</dd>
+                    </div>
+                    
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">
+                        {t('Јазици', 'Languages')}
+                      </dt>
+                      <dd className="text-base">{item.language.map(translateLanguage).join(', ')}</dd>
+                    </div>
+
+                    {(item.publisher || item.publisherEn) && (
                       <div>
-                        <dt className="text-sm font-medium text-muted-foreground">
-                          {t('Автор', 'Author')}
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">
+                          {t('Издавач', 'Published By')}
                         </dt>
-                        <dd className="mt-1">
-                          {language === 'mk' ? item.author : (item.authorEn || item.author)}
+                        <dd className="text-base">
+                          {language === 'mk' ? item.publisher : (item.publisherEn || item.publisher)}
                         </dd>
                       </div>
+                    )}
+                    
+                    {(item.publicationCity || item.publicationCityEn) && (
                       <div>
-                        <dt className="text-sm font-medium text-muted-foreground">
-                          {t('Година', 'Year')}
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">
+                          {t('Град на издавање', 'Publication City')}
                         </dt>
-                        <dd className="mt-1">{item.year}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-sm font-medium text-muted-foreground">
-                          {t('Јазици', 'Languages')}
-                        </dt>
-                        <dd className="mt-1">{item.language.map(translateLanguage).join(', ')}</dd>
-                      </div>
-                    </div>
-                    {((item.publisher || item.publisherEn) || (item.publicationCity || item.publicationCityEn)) && (
-                      <div className="flex gap-8">
-                        {(item.publisher || item.publisherEn) && (
-                          <div>
-                            <dt className="text-sm font-medium text-muted-foreground">
-                              {t('Издавач', 'Published By')}
-                            </dt>
-                            <dd className="mt-1">
-                              {language === 'mk' ? item.publisher : (item.publisherEn || item.publisher)}
-                            </dd>
-                          </div>
-                        )}
-                        {(item.publicationCity || item.publicationCityEn) && (
-                          <div>
-                            <dt className="text-sm font-medium text-muted-foreground">
-                              {t('Град на издавање', 'Publication City')}
-                            </dt>
-                            <dd className="mt-1">
-                              {language === 'mk' ? item.publicationCity : (item.publicationCityEn || item.publicationCity)}
-                            </dd>
-                          </div>
-                        )}
+                        <dd className="text-base">
+                          {language === 'mk' ? item.publicationCity : (item.publicationCityEn || item.publicationCity)}
+                        </dd>
                       </div>
                     )}
-                  </div>
-
+                  </dl>
                 </div>
 
                 {/* Description */}
