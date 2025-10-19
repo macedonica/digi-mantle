@@ -170,15 +170,17 @@ const ItemDetail = () => {
 
                 {/* Action Buttons */}
                 {item.type === 'book' && signedPdfUrl && (
-                  <Button 
-                    variant="hero" 
-                    className="w-4/5 mx-auto mt-4 block" 
-                    size="lg"
-                    onClick={handleOpenPDF}
-                  >
-                    <ExternalLink className="mr-2 h-5 w-5" />
-                    {t('Отвори PDF', 'Open PDF')}
-                  </Button>
+                  <div className="flex justify-center mt-4">
+                    <Button 
+                      variant="hero" 
+                      className="w-4/5" 
+                      size="lg"
+                      onClick={handleOpenPDF}
+                    >
+                      <ExternalLink className="mr-2 h-5 w-5" />
+                      {t('Отвори PDF', 'Open PDF')}
+                    </Button>
+                  </div>
                 )}
                 
                 {item.type === 'image' && signedImageUrl && (
