@@ -128,8 +128,8 @@ const Library = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Search Section - Sticky */}
-        <section className="sticky top-[73px] md:top-[89px] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        {/* Search Section - Sticky (Desktop) */}
+        <section className="hidden md:block sticky top-[89px] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
             <SearchBar onSearch={setSearchQuery} />
           </div>
@@ -138,13 +138,18 @@ const Library = () => {
         {/* Results Section */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Filters Sidebar */}
-              <aside className="lg:w-64 flex-shrink-0">
-                <LibraryFilters filters={filters} onFilterChange={setFilters} />
-              </aside>
+              <div className="flex flex-col lg:flex-row gap-8">
+                {/* Filters Sidebar */}
+                <aside className="lg:w-64 flex-shrink-0">
+                  <LibraryFilters filters={filters} onFilterChange={setFilters} />
+                </aside>
 
-              {/* Results Grid */}
+                {/* Mobile Search Section - Sticky under filters */}
+                <section className="md:hidden sticky top-[73px] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+                  <SearchBar onSearch={setSearchQuery} />
+                </section>
+
+                {/* Results Grid */}
               <div className="flex-1">
                 <div className="mb-6">
                   <p className="text-muted-foreground">
