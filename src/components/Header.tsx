@@ -26,13 +26,13 @@ export const Header = () => {
               {t('Почетна', 'Home')}
             </Link>
             <Link 
-              to={language === 'mk' ? '/за-нас' : '/about'}
+              to="/about"
               className="text-foreground hover:text-primary transition-colors"
             >
               {t('За нас', 'About')}
             </Link>
             <Link 
-              to={language === 'mk' ? '/библиотека' : '/library'}
+              to="/library"
               className="text-foreground hover:text-primary transition-colors"
             >
               {t('Библиотека', 'Library')}
@@ -85,13 +85,13 @@ export const Header = () => {
             {t('Почетна', 'Home')}
           </Link>
           <Link 
-            to={language === 'mk' ? '/за-нас' : '/about'}
+            to="/about"
             className="text-sm text-foreground hover:text-primary transition-colors"
           >
             {t('За нас', 'About')}
           </Link>
           <Link 
-            to={language === 'mk' ? '/библиотека' : '/library'}
+            to="/library"
             className="text-sm text-foreground hover:text-primary transition-colors"
           >
             {t('Библиотека', 'Library')}
