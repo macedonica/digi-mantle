@@ -142,13 +142,13 @@ const Library = () => {
                     {t('Филтри', 'Filters')}
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="max-h-[80vh] overflow-y-auto">
+                <DrawerContent>
                   <DrawerHeader>
                     <DrawerTitle>{t('Филтри', 'Filters')}</DrawerTitle>
                   </DrawerHeader>
-                  <div className="p-4">
+                  <div className="p-4 pb-6">
                     <LibraryFilters filters={filters} onFilterChange={setFilters} />
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-6 flex justify-end">
                       <DrawerClose asChild>
                         <Button>{t('Готово', 'Done')}</Button>
                       </DrawerClose>
