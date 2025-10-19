@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { SearchBar } from '@/components/SearchBar';
 import { LibraryFilters } from '@/components/LibraryFilters';
 import { LibraryGrid } from '@/components/LibraryGrid';
@@ -128,19 +127,12 @@ const Library = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Featured Carousel */}
-        <section className="py-12 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <FeaturedCarousel />
-          </div>
-        </section>
-
-        {/* Search Section */}
-        <section className="py-12 border-b border-border">
-          <div className="container mx-auto px-4">
+        {/* Sticky Search Bar */}
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+          <div className="container mx-auto px-4 py-4">
             <SearchBar onSearch={setSearchQuery} />
           </div>
-        </section>
+        </div>
 
         {/* Results Section */}
         <section className="py-12">
