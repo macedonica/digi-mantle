@@ -27,19 +27,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
-            <Route path="/за-нас" element={<About />} />
             <Route path="/library" element={<Library />} />
-            <Route path="/библиотека" element={<Library />} />
             <Route path="/item/:id" element={<ItemDetail />} />
-            <Route path="/објект/:id" element={<ItemDetail />} />
             <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/админ-најава" element={<AdminLogin />} />
             <Route path="/admin-dashboard" element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/админ-контролна-табла" element={
               <ProtectedRoute>
                 <AdminDashboard />
               </ProtectedRoute>

@@ -79,8 +79,7 @@ export const FeaturedCarousel = () => {
   }, [isPaused, featuredItems.length]);
 
   const handleItemClick = (id: string) => {
-    const path = language === 'mk' ? `/објект/${id}` : `/item/${id}`;
-    navigate(path);
+    navigate(`/item/${id}`);
   };
 
   if (featuredItems.length === 0) {

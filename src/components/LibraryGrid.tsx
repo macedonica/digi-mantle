@@ -12,8 +12,7 @@ export const LibraryGrid = ({ items }: LibraryGridProps) => {
   const { language } = useLanguage();
 
   const handleItemClick = (id: string) => {
-    const path = language === 'mk' ? `/објект/${id}` : `/item/${id}`;
-    navigate(path);
+    navigate(`/item/${id}`);
   };
 
   if (items.length === 0) {

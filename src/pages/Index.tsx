@@ -12,8 +12,7 @@ const Index = () => {
   const { language, t } = useLanguage();
 
   const navigateToLibrary = (category?: string) => {
-    const path = language === 'mk' ? '/библиотека' : '/library';
-    navigate(path, { state: { category } });
+    navigate('/library', { state: { category } });
   };
 
   const thematicCategories = [
