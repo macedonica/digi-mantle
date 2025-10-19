@@ -18,7 +18,7 @@ export interface LibraryItem {
   thumbnail: string;
   pdfUrl?: string;
   imageUrl?: string;
-  category: string;
+  category: string[];
   publicationCity?: string;
   publicationCityEn?: string;
   publisher?: string;
@@ -43,7 +43,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: ilinden1,
     pdfUrl: '#',
-    category: 'history'
+    category: ['history']
   },
   {
     id: '2',
@@ -62,7 +62,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: book2,
     pdfUrl: '#',
-    category: 'poetry'
+    category: ['literature']
   },
   {
     id: '3',
@@ -81,7 +81,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: map1,
     imageUrl: map1,
-    category: 'history'
+    category: ['history']
   },
   {
     id: '4',
@@ -100,7 +100,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: book1,
     pdfUrl: '#',
-    category: 'history'
+    category: ['history']
   },
   {
     id: '5',
@@ -119,7 +119,7 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: culture1,
     imageUrl: culture1,
-    category: 'culture'
+    category: ['ethnology']
   },
   {
     id: '6',
@@ -138,6 +138,6 @@ export const mockLibraryItems: LibraryItem[] = [
     },
     thumbnail: personality1,
     imageUrl: personality1,
-    category: 'personalities'
+    category: ['history']
   }
 ];

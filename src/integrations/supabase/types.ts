@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           author: string
           author_en: string | null
-          category: string
+          category: string[]
           created_at: string | null
           description_en: string | null
           description_mk: string | null
@@ -42,7 +42,7 @@ export type Database = {
         Insert: {
           author: string
           author_en?: string | null
-          category: string
+          category?: string[]
           created_at?: string | null
           description_en?: string | null
           description_mk?: string | null
@@ -66,7 +66,7 @@ export type Database = {
         Update: {
           author?: string
           author_en?: string | null
-          category?: string
+          category?: string[]
           created_at?: string | null
           description_en?: string | null
           description_mk?: string | null
@@ -137,7 +137,7 @@ export type Database = {
         Row: {
           author: string | null
           author_en: string | null
-          category: string | null
+          category: string[] | null
           created_at: string | null
           description_en: string | null
           description_mk: string | null
@@ -160,7 +160,7 @@ export type Database = {
         Insert: {
           author?: string | null
           author_en?: string | null
-          category?: string | null
+          category?: string[] | null
           created_at?: string | null
           description_en?: string | null
           description_mk?: string | null
@@ -183,7 +183,7 @@ export type Database = {
         Update: {
           author?: string | null
           author_en?: string | null
-          category?: string | null
+          category?: string[] | null
           created_at?: string | null
           description_en?: string | null
           description_mk?: string | null

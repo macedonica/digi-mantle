@@ -24,7 +24,7 @@ const editSchema = z.object({
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
   year: z.number().int().min(1000, 'Year must be at least 1000').max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
-  category: z.string().min(1, 'Category is required'),
+  categories: z.array(z.string()).min(1, 'At least one category is required'),
   type: z.string().min(1, 'Type is required'),
   description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
   description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
@@ -63,7 +63,7 @@ export const AdminLibraryManager = () => {
     author_en: '',
     year: new Date().getFullYear(),
     languages: [] as string[],
-    category: '',
+    categories: [] as string[],
     type: '',
     description_mk: '',
     description_en: '',
@@ -82,6 +82,14 @@ export const AdminLibraryManager = () => {
     'French',
     'Croatian',
     'German'
+  ];
+
+  const availableCategories = [
+    { value: 'history', mk: 'Историја', en: 'History' },
+    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
+    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
+    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
+    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
   ];
 
   useEffect(() => {
@@ -136,7 +144,7 @@ export const AdminLibraryManager = () => {
       author_en: item.authorEn || '',
       year: item.year,
       languages: item.language,
-      category: item.category,
+      categories: item.category,
       type: item.type,
       description_mk: item.description.mk,
       description_en: item.description.en,
@@ -197,7 +205,7 @@ export const AdminLibraryManager = () => {
           author_en: editFormData.author_en,
           year: editFormData.year,
           language: editFormData.languages,
-          category: editFormData.category,
+          category: editFormData.categories,
           type: editFormData.type,
           description_mk: editFormData.description_mk || null,
           description_en: editFormData.description_en || null,
@@ -452,19 +460,36 @@ export const AdminLibraryManager = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_category">{t('Категорија', 'Category')}</Label>
-                <Select value={editFormData.category} onValueChange={(value) => setEditFormData({ ...editFormData, category: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="history">{t('Историја', 'History')}</SelectItem>
-                    <SelectItem value="archaeology">{t('Археологија', 'Archaeology')}</SelectItem>
-                    <SelectItem value="literature">{t('Книжевност', 'Literature')}</SelectItem>
-                    <SelectItem value="ethnology">{t('Етнологија', 'Ethnology')}</SelectItem>
-                    <SelectItem value="folklore">{t('Фолклор', 'Folklore')}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>{t('Категории', 'Categories')}</Label>
+                <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
+                  {availableCategories.map((cat) => (
+                    <div key={cat.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`edit-cat-${cat.value}`}
+                        checked={editFormData.categories.includes(cat.value)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setEditFormData({ 
+                              ...editFormData, 
+                              categories: [...editFormData.categories, cat.value] 
+                            });
+                          } else {
+                            setEditFormData({ 
+                              ...editFormData, 
+                              categories: editFormData.categories.filter(c => c !== cat.value) 
+                            });
+                          }
+                        }}
+                      />
+                      <label 
+                        htmlFor={`edit-cat-${cat.value}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {language === 'mk' ? cat.mk : cat.en}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="space-y-2">

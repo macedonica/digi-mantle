@@ -18,7 +18,7 @@ interface FilterState {
   language: string;
   author: string;
   itemType: string;
-  category: string;
+  categories: string[];
 }
 
 const Library = () => {
@@ -33,7 +33,7 @@ const Library = () => {
     language: 'all',
     author: '',
     itemType: 'all',
-    category: 'all'
+    categories: []
   });
 
   // Fetch library items from Supabase
@@ -77,7 +77,7 @@ const Library = () => {
   // Handle category from navigation state
   useEffect(() => {
     if (location.state?.category) {
-      setFilters(prev => ({...prev, category: location.state.category}));
+      setFilters(prev => ({...prev, categories: [location.state.category]}));
     }
   }, [location.state]);
 
@@ -118,7 +118,8 @@ const Library = () => {
     }
 
     // Category filter
-    if (filters.category !== 'all' && item.category !== filters.category) {
+    if (filters.categories.length > 0 && 
+        !filters.categories.some(cat => item.category.includes(cat))) {
       return false;
     }
 

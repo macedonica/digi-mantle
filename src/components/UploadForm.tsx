@@ -21,7 +21,7 @@ const uploadSchema = z.object({
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
   year: z.number().int().min(1000, 'Year must be at least 1000').max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
-  category: z.string().min(1, 'Category is required'),
+  categories: z.array(z.string()).min(1, 'At least one category is required'),
   type: z.string().optional(),
   description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
   description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
@@ -60,7 +60,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     author_en: '',
     year: new Date().getFullYear(),
     languages: [] as string[],
-    category: '',
+    categories: [] as string[],
     type: '',
     description_mk: '',
     description_en: '',
@@ -79,6 +79,14 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     'French',
     'Croatian',
     'German'
+  ];
+
+  const availableCategories = [
+    { value: 'history', mk: 'Историја', en: 'History' },
+    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
+    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
+    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
+    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
   ];
 
   const [files, setFiles] = useState<{
@@ -198,7 +206,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           author_en: formData.author_en,
           year: formData.year,
           language: formData.languages,
-          category: formData.category,
+          category: formData.categories,
           type: itemType,
           description_mk: formData.description_mk || null,
           description_en: formData.description_en || null,
@@ -403,22 +411,38 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">{t('Категорија', 'Category')}</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t('Избери категорија', 'Select category')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="history">{t('Историја', 'History')}</SelectItem>
-                  <SelectItem value="archaeology">{t('Археологија', 'Archaeology')}</SelectItem>
-                  <SelectItem value="literature">{t('Книжевност', 'Literature')}</SelectItem>
-                  <SelectItem value="ethnology">{t('Етнологија', 'Ethnology')}</SelectItem>
-                  <SelectItem value="folklore">{t('Фолклор', 'Folklore')}</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2 md:col-span-2">
+              <Label>{t('Категории', 'Categories')}</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
+                {availableCategories.map((cat) => (
+                  <div key={cat.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`cat-${cat.value}`}
+                      checked={formData.categories.includes(cat.value)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFormData({ 
+                            ...formData, 
+                            categories: [...formData.categories, cat.value] 
+                          });
+                        } else {
+                          setFormData({ 
+                            ...formData, 
+                            categories: formData.categories.filter(c => c !== cat.value) 
+                          });
+                        }
+                      }}
+                    />
+                    <label 
+                      htmlFor={`cat-${cat.value}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {language === 'mk' ? cat.mk : cat.en}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-
 
             <div className="space-y-2">
               <Label htmlFor="keywords">{t('Клучни зборови (одвоени со запирка)', 'Keywords (comma separated)')}</Label>

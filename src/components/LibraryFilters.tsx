@@ -1,7 +1,8 @@
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FilterState {
   yearFrom: string;
@@ -9,7 +10,7 @@ interface FilterState {
   language: string;
   author: string;
   itemType: string;
-  category: string;
+  categories: string[];
 }
 
 interface LibraryFiltersProps {
@@ -18,7 +19,7 @@ interface LibraryFiltersProps {
 }
 
 export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const updateFilter = (key: keyof FilterState, value: string) => {
     onFilterChange({ ...filters, [key]: value });
@@ -92,22 +93,38 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
           </Select>
         </div>
 
-        {/* Category */}
+        {/* Categories */}
         <div className="space-y-2">
-          <Label>{t('Категорија', 'Category')}</Label>
-          <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder={t('Сите категории', 'All categories')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('Сите категории', 'All categories')}</SelectItem>
-              <SelectItem value="history">{t('Историја', 'History')}</SelectItem>
-              <SelectItem value="archaeology">{t('Археологија', 'Archaeology')}</SelectItem>
-              <SelectItem value="literature">{t('Книжевност', 'Literature')}</SelectItem>
-              <SelectItem value="ethnology">{t('Етнологија', 'Ethnology')}</SelectItem>
-              <SelectItem value="folklore">{t('Фолклор', 'Folklore')}</SelectItem>
-            </SelectContent>
-          </Select>
+          <Label>{t('Категории', 'Categories')}</Label>
+          <div className="grid grid-cols-1 gap-2">
+            {[
+              { value: 'history', mk: 'Историја', en: 'History' },
+              { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
+              { value: 'literature', mk: 'Книжевност', en: 'Literature' },
+              { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
+              { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
+            ].map((cat) => (
+              <div key={cat.value} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`filter-cat-${cat.value}`}
+                  checked={filters.categories.includes(cat.value)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onFilterChange({ ...filters, categories: [...filters.categories, cat.value] });
+                    } else {
+                      onFilterChange({ ...filters, categories: filters.categories.filter(c => c !== cat.value) });
+                    }
+                  }}
+                />
+                <label 
+                  htmlFor={`filter-cat-${cat.value}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  {language === 'mk' ? cat.mk : cat.en}
+                </label>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
