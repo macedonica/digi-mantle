@@ -181,7 +181,7 @@ const Library = () => {
                   onClick={() => setActiveType('book')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
-                      ? 'bg-background text-foreground shadow-sm' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -191,7 +191,7 @@ const Library = () => {
                   onClick={() => setActiveType('image')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
-                      ? 'bg-background text-foreground shadow-sm' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -238,7 +238,7 @@ const Library = () => {
                   onClick={() => setActiveType('book')}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
-                      ? 'bg-background text-foreground shadow-sm' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -248,7 +248,7 @@ const Library = () => {
                   onClick={() => setActiveType('image')}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
-                      ? 'bg-background text-foreground shadow-sm' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
