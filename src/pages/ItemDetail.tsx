@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ArrowLeft, ZoomIn, ExternalLink, Book as BookIcon, Image as ImageIcon } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -192,6 +192,9 @@ const ItemDetail = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl w-full h-[90vh] p-0">
+                      <DialogDescription className="sr-only">
+                        {t('Приказ на зголемена слика', 'Zoomed image view')}
+                      </DialogDescription>
                       <TransformWrapper
                         initialScale={1}
                         minScale={0.5}
@@ -292,14 +295,13 @@ const ItemDetail = () => {
                       : t('Описание', 'Description')}
                   </h2>
                   <div 
-                    className="text-muted-foreground leading-relaxed prose max-w-none prose-ul:list-disc prose-ul:pl-5 prose-ol:list-decimal prose-ol:pl-5 whitespace-pre-wrap"
+                    className="rich-content text-muted-foreground leading-relaxed max-w-none"
                     dangerouslySetInnerHTML={{ 
                       __html: DOMPurify.sanitize(
-                        item.description[language]
-                          .replace(/\n/g, '<br />')
-                          .replace(/^(\s+)•/gm, (match, spaces) => `<span style="padding-left: ${spaces.length * 0.5}em">•</span>`)
-                          .replace(/^(\s+)-/gm, (match, spaces) => `<span style="padding-left: ${spaces.length * 0.5}em">-</span>`)
-                      ) 
+                        /<[^>]+>/.test(item.description[language] || '')
+                          ? (item.description[language] || '')
+                          : (item.description[language] || '').replace(/\n/g, '<br />')
+                      )
                     }}
                   />
                 </div>

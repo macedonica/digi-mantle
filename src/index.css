@@ -139,4 +139,10 @@ All colors MUST be HSL.
   .text-gradient-primary {
     @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
   }
+
+  /* Rich content styling for descriptions (Quill HTML) */
+  .rich-content ul { @apply list-disc pl-6 my-2; }
+  .rich-content ol { @apply list-decimal pl-6 my-2; }
+  .rich-content li { @apply my-1; }
+  .rich-content p  { @apply my-2; }
 }
