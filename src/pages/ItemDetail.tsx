@@ -234,7 +234,7 @@ const ItemDetail = () => {
                         {t('Зумирај Слика', 'Zoom Image')}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-5xl w-full h-[90vh] p-0">
+                    <DialogContent className="max-w-5xl w-full h-[90vh] p-0 overflow-hidden">
                       <DialogDescription className="sr-only">
                         {t('Приказ на зголемена слика', 'Zoomed image view')}
                       </DialogDescription>
@@ -242,14 +242,53 @@ const ItemDetail = () => {
                         initialScale={1}
                         minScale={0.5}
                         maxScale={4}
+                        centerOnInit={true}
+                        limitToBounds={true}
+                        disablePadding={false}
+                        wheel={{ step: 0.1 }}
+                        pinch={{ step: 5 }}
+                        doubleClick={{ mode: "zoomIn", step: 0.7 }}
                       >
-                        <TransformComponent wrapperClass="w-full h-full flex items-center justify-center">
-                          <img
-                            src={signedImageUrl}
-                            alt={item.title[language]}
-                            className="max-w-full max-h-full object-contain"
-                          />
-                        </TransformComponent>
+                        {({ zoomIn, zoomOut, resetTransform }) => (
+                          <div className="w-full h-full flex flex-col">
+                            <div className="flex gap-2 p-4 bg-background/95 backdrop-blur-sm border-b border-border justify-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => zoomIn()}
+                              >
+                                <ZoomIn className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => zoomOut()}
+                              >
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                </svg>
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => resetTransform()}
+                              >
+                                {t('Ресетирај', 'Reset')}
+                              </Button>
+                            </div>
+                            <TransformComponent 
+                              wrapperClass="w-full flex-1 !overflow-hidden" 
+                              contentClass="w-full h-full flex items-center justify-center"
+                            >
+                              <img
+                                src={signedImageUrl}
+                                alt={item.title[language]}
+                                className="max-w-full max-h-full object-contain"
+                                draggable={false}
+                              />
+                            </TransformComponent>
+                          </div>
+                        )}
                       </TransformWrapper>
                     </DialogContent>
                   </Dialog>
