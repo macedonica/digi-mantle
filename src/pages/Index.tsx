@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Search, BookOpen, Mountain, FileText, Users, Music } from 'lucide-react';
@@ -83,6 +84,16 @@ const Index = () => {
                 {t('Пребарај ја Библиотеката', 'Search the Library')}
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* Featured Carousel */}
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8">
+              {t('Истакнати Ставки', 'Featured Items')}
+            </h2>
+            <FeaturedCarousel />
           </div>
         </section>
 
