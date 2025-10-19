@@ -10,7 +10,9 @@ import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ITEMS_PER_PAGE = 12;
 
 interface FilterState {
   yearFrom: string;
@@ -27,6 +29,7 @@ const Library = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({
     yearFrom: '',
     yearTo: '',
@@ -147,6 +150,22 @@ const Library = () => {
     return true;
   });
 
+  // Reset to page 1 when filters or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -198,7 +217,7 @@ const Library = () => {
                 <LibraryFilters filters={filters} onFilterChange={setFilters} />
               </aside>
 
-              {/* Results Grid */}
+                {/* Results Grid */}
               <div className="flex-1">
                 <div className="mb-6">
                   <p className="text-muted-foreground">
@@ -208,7 +227,64 @@ const Library = () => {
                     )}
                   </p>
                 </div>
-                <LibraryGrid items={filteredItems} />
+                <LibraryGrid items={paginatedItems} />
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      {t('Претходна', 'Previous')}
+                    </Button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        // Show first page, last page, current page, and pages around current
+                        const showPage = 
+                          page === 1 || 
+                          page === totalPages || 
+                          (page >= currentPage - 1 && page <= currentPage + 1);
+                        
+                        const showEllipsis = 
+                          (page === currentPage - 2 && currentPage > 3) ||
+                          (page === currentPage + 2 && currentPage < totalPages - 2);
+
+                        if (showEllipsis) {
+                          return <span key={page} className="px-2">...</span>;
+                        }
+
+                        if (!showPage) return null;
+
+                        return (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(page)}
+                            className="min-w-[40px]"
+                          >
+                            {page}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      {t('Следна', 'Next')}
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
