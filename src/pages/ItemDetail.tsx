@@ -172,7 +172,7 @@ const ItemDetail = () => {
                 {item.type === 'book' && signedPdfUrl && (
                   <Button 
                     variant="hero" 
-                    className="w-4/5 mx-auto mt-4" 
+                    className="w-4/5 mx-auto mt-4 block" 
                     size="lg"
                     onClick={handleOpenPDF}
                   >
