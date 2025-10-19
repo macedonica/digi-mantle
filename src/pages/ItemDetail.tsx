@@ -159,7 +159,7 @@ const ItemDetail = () => {
           <div className="container mx-auto px-4">
             <div className={`grid grid-cols-1 lg:grid-cols-2 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-6' : 'gap-12'}`}>
               {/* Image Column */}
-              <div className={`space-y-4 ${item.type === 'book' ? 'max-w-xs mx-auto lg:mx-0' : ''}`}>
+              <div className={`${item.type === 'book' ? 'max-w-xs mx-auto lg:mx-0' : ''}`}>
                 <div className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'}`}>
                   <img
                     src={item.thumbnail}
@@ -172,7 +172,7 @@ const ItemDetail = () => {
                 {item.type === 'book' && signedPdfUrl && (
                   <Button 
                     variant="hero" 
-                    className="w-full" 
+                    className="w-4/5 mx-auto mt-4" 
                     size="lg"
                     onClick={handleOpenPDF}
                   >
@@ -184,7 +184,7 @@ const ItemDetail = () => {
                 {item.type === 'image' && signedImageUrl && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full" size="lg">
+                      <Button variant="outline" className="w-full mt-4" size="lg">
                         <ZoomIn className="mr-2 h-5 w-5" />
                         {t('Зумирај Слика', 'Zoom Image')}
                       </Button>
