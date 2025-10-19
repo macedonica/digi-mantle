@@ -22,7 +22,7 @@ const editSchema = z.object({
   title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
   author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
-  year: z.number().int().min(1000, 'Year must be at least 1000').max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
+  year: z.string().trim().min(1, 'Year is required').max(100, 'Year must be less than 100 characters'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
   categories: z.array(z.string()).min(1, 'At least one category is required'),
   type: z.string().min(1, 'Type is required'),
@@ -62,7 +62,7 @@ export const AdminLibraryManager = () => {
     title_en: '',
     author: '',
     author_en: '',
-    year: new Date().getFullYear(),
+    year: new Date().getFullYear().toString(),
     languages: [] as string[],
     categories: [] as string[],
     type: '',
@@ -144,7 +144,7 @@ export const AdminLibraryManager = () => {
       title_en: item.title.en,
       author: item.author,
       author_en: item.authorEn || '',
-      year: item.year,
+      year: typeof item.year === 'number' ? item.year.toString() : item.year,
       languages: item.language,
       categories: item.category,
       type: item.type,
@@ -453,9 +453,9 @@ export const AdminLibraryManager = () => {
                 <Label htmlFor="edit_year">{t('Година', 'Year')}</Label>
                 <Input
                   id="edit_year"
-                  type="number"
+                  type="text"
                   value={editFormData.year}
-                  onChange={(e) => setEditFormData({ ...editFormData, year: parseInt(e.target.value) })}
+                  onChange={(e) => setEditFormData({ ...editFormData, year: e.target.value })}
                 />
               </div>
               <div className="space-y-2 col-span-2">

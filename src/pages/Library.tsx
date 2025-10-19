@@ -121,8 +121,9 @@ const Library = () => {
     }
 
     // Year range filter
-    if (filters.yearFrom && item.year < parseInt(filters.yearFrom)) return false;
-    if (filters.yearTo && item.year > parseInt(filters.yearTo)) return false;
+    const itemYear = typeof item.year === 'string' ? parseInt(item.year) : item.year;
+    if (filters.yearFrom && !isNaN(itemYear) && itemYear < parseInt(filters.yearFrom)) return false;
+    if (filters.yearTo && !isNaN(itemYear) && itemYear > parseInt(filters.yearTo)) return false;
 
     // Language filter
     if (filters.language !== 'all' && 

@@ -38,7 +38,7 @@ export type Database = {
           type: string
           updated_at: string | null
           uploaded_by: string | null
-          year: number
+          year: string
         }
         Insert: {
           additional_images?: string[] | null
@@ -63,7 +63,7 @@ export type Database = {
           type: string
           updated_at?: string | null
           uploaded_by?: string | null
-          year: number
+          year: string
         }
         Update: {
           additional_images?: string[] | null
@@ -88,7 +88,7 @@ export type Database = {
           type?: string
           updated_at?: string | null
           uploaded_by?: string | null
-          year?: number
+          year?: string
         }
         Relationships: []
       }
@@ -159,7 +159,7 @@ export type Database = {
           title_mk: string | null
           type: string | null
           updated_at: string | null
-          year: number | null
+          year: string | null
         }
         Insert: {
           additional_images?: string[] | null
@@ -183,7 +183,7 @@ export type Database = {
           title_mk?: string | null
           type?: string | null
           updated_at?: string | null
-          year?: number | null
+          year?: string | null
         }
         Update: {
           additional_images?: string[] | null
@@ -207,7 +207,7 @@ export type Database = {
           title_mk?: string | null
           type?: string | null
           updated_at?: string | null
-          year?: number | null
+          year?: string | null
         }
         Relationships: []
       }

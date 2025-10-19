@@ -11,7 +11,7 @@ export interface LibraryItem {
   title: { mk: string; en: string };
   author: string;
   authorEn?: string;
-  year: number;
+  year: number | string;
   language: string[];
   keywords: string[];
   description: { mk: string; en: string };
