@@ -50,6 +50,26 @@ export const FeaturedCarousel = () => {
     };
 
     fetchFeaturedItems();
+
+    // Set up realtime subscription for updates
+    const channel = supabase
+      .channel('library-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'library_items'
+        },
+        () => {
+          fetchFeaturedItems();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {

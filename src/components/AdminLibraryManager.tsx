@@ -193,7 +193,8 @@ export const AdminLibraryManager = () => {
           .from('library-images')
           .getPublicUrl(thumbnailPath);
         
-        thumbnailUrl = publicUrl;
+        // Add timestamp to prevent caching of old image
+        thumbnailUrl = `${publicUrl}?t=${Date.now()}`;
       }
 
       const { error } = await supabase

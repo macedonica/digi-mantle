@@ -72,6 +72,26 @@ const Library = () => {
     };
 
     fetchItems();
+
+    // Set up realtime subscription for updates
+    const channel = supabase
+      .channel('library-list-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'library_items'
+        },
+        () => {
+          fetchItems();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Handle category from navigation state
