@@ -17,6 +17,8 @@ const ItemDetail = () => {
   const { language, t } = useLanguage();
   const [item, setItem] = useState<LibraryItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(null);
+  const [signedImageUrl, setSignedImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -54,6 +56,27 @@ const ItemDetail = () => {
           publisherEn: data.publisher_en
         };
         setItem(transformedItem);
+
+        // Generate signed URLs for private storage access
+        if (data.pdf_url) {
+          const pdfPath = data.pdf_url.split('/').slice(-1)[0];
+          const { data: signedData } = await supabase.storage
+            .from('library-pdfs')
+            .createSignedUrl(pdfPath, 3600); // 1 hour expiry
+          if (signedData) {
+            setSignedPdfUrl(signedData.signedUrl);
+          }
+        }
+
+        if (data.image_url) {
+          const imagePath = data.image_url.split('/').slice(-1)[0];
+          const { data: signedData } = await supabase.storage
+            .from('library-images')
+            .createSignedUrl(imagePath, 3600); // 1 hour expiry
+          if (signedData) {
+            setSignedImageUrl(signedData.signedUrl);
+          }
+        }
       }
       
       setLoading(false);
@@ -94,8 +117,8 @@ const ItemDetail = () => {
   }
 
   const handleOpenPDF = () => {
-    if (item.pdfUrl) {
-      window.open(item.pdfUrl, '_blank');
+    if (signedPdfUrl) {
+      window.open(signedPdfUrl, '_blank');
     }
   };
 
@@ -129,7 +152,7 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Action Buttons */}
-                {item.type === 'book' && item.pdfUrl && (
+                {item.type === 'book' && signedPdfUrl && (
                   <Button 
                     variant="hero" 
                     className="w-full" 
@@ -141,7 +164,7 @@ const ItemDetail = () => {
                   </Button>
                 )}
                 
-                {item.type === 'image' && item.imageUrl && (
+                {item.type === 'image' && signedImageUrl && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full" size="lg">
@@ -157,7 +180,7 @@ const ItemDetail = () => {
                       >
                         <TransformComponent wrapperClass="w-full h-full flex items-center justify-center">
                           <img
-                            src={item.imageUrl}
+                            src={signedImageUrl}
                             alt={item.title[language]}
                             className="max-w-full max-h-full object-contain"
                           />
