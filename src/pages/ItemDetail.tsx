@@ -272,16 +272,6 @@ const ItemDetail = () => {
                       </dt>
                       <dd className="mt-1 text-lg">{item.language.map(translateLanguage).join(', ')}</dd>
                     </div>
-                    <div>
-                      <dt className="text-sm font-medium text-muted-foreground">
-                        {t('Тип', 'Type')}
-                      </dt>
-                      <dd className="mt-1 text-lg">
-                        {item.type === 'book' 
-                          ? t('Книга', 'Book') 
-                          : t('Слика', 'Image')}
-                      </dd>
-                    </div>
                   </div>
 
                 </div>

@@ -187,7 +187,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
       }
 
       // Create database entry with appropriate type
-      const itemType = uploadType === 'image' ? 'image' : formData.type || 'document';
+      const itemType = uploadType === 'image' ? 'image' : 'book';
 
       const { error: dbError } = await supabase
         .from('library_items')
@@ -419,20 +419,6 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </Select>
             </div>
 
-            {uploadType === 'document' && (
-              <div className="space-y-2">
-                <Label htmlFor="type">{t('Тип', 'Type')}</Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('Избери тип', 'Select type')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="book">{t('Книга', 'Book')}</SelectItem>
-                    <SelectItem value="document">{t('Документ', 'Document')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
 
             <div className="space-y-2">
               <Label htmlFor="keywords">{t('Клучни зборови (одвоени со запирка)', 'Keywords (comma separated)')}</Label>
