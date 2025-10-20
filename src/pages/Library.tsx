@@ -169,11 +169,23 @@ const Library = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Mobile Search & Filters - Sticky */}
+        {/* Mobile Search - Sticky */}
         <section className="md:hidden sticky top-[var(--header-height)] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="container mx-auto px-4 space-y-3">
+          <div className="container mx-auto px-4">
             <SearchBar onSearch={setSearchQuery} />
-            
+          </div>
+        </section>
+
+        {/* Desktop Search - Sticky */}
+        <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+          <div className="container mx-auto px-4">
+            <SearchBar onSearch={setSearchQuery} />
+          </div>
+        </section>
+
+        {/* Mobile Type Toggle & Filters - Scrollable */}
+        <section className="md:hidden py-4 border-b border-border">
+          <div className="container mx-auto px-4 space-y-3">
             {/* Type Toggle */}
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
@@ -226,12 +238,9 @@ const Library = () => {
           </div>
         </section>
 
-        {/* Desktop Search - Sticky */}
-        <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="container mx-auto px-4 space-y-4">
-            <SearchBar onSearch={setSearchQuery} />
-            
-            {/* Type Toggle */}
+        {/* Desktop Type Toggle - Scrollable */}
+        <section className="hidden md:block py-6 border-b border-border">
+          <div className="container mx-auto px-4">
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
