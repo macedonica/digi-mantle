@@ -146,6 +146,6 @@ All colors MUST be HSL.
   .rich-content li { @apply my-1; }
   .rich-content p  { @apply my-2; }
   .rich-content a  { 
-    @apply text-primary underline decoration-2 underline-offset-2 hover:text-primary-light transition-colors cursor-pointer;
+    @apply text-primary border-b-2 border-primary hover:text-primary-light hover:border-primary-light transition-colors cursor-pointer;
   }
 }
