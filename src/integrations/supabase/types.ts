@@ -32,13 +32,19 @@ export type Database = {
           publication_city_en: string | null
           publisher: string | null
           publisher_en: string | null
+          source_en: string | null
+          source_mk: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
           type: string
+          type_en: string | null
+          type_mk: string | null
           updated_at: string | null
           uploaded_by: string | null
-          year: string
+          year: string | null
+          year_en: string | null
+          year_mk: string | null
         }
         Insert: {
           additional_images?: string[] | null
@@ -57,13 +63,19 @@ export type Database = {
           publication_city_en?: string | null
           publisher?: string | null
           publisher_en?: string | null
+          source_en?: string | null
+          source_mk?: string | null
           thumbnail_url: string
           title_en: string
           title_mk: string
           type: string
+          type_en?: string | null
+          type_mk?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
-          year: string
+          year?: string | null
+          year_en?: string | null
+          year_mk?: string | null
         }
         Update: {
           additional_images?: string[] | null
@@ -82,13 +94,19 @@ export type Database = {
           publication_city_en?: string | null
           publisher?: string | null
           publisher_en?: string | null
+          source_en?: string | null
+          source_mk?: string | null
           thumbnail_url?: string
           title_en?: string
           title_mk?: string
           type?: string
+          type_en?: string | null
+          type_mk?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
-          year?: string
+          year?: string | null
+          year_en?: string | null
+          year_mk?: string | null
         }
         Relationships: []
       }

@@ -59,7 +59,13 @@ const ItemDetail = () => {
           title: { mk: data.title_mk, en: data.title_en },
           author: data.author,
           authorEn: data.author_en,
-          year: data.year,
+          year: data.year, // Kept for backward compatibility
+          yearMk: (data as any).year_mk,
+          yearEn: (data as any).year_en,
+          typeMk: (data as any).type_mk,
+          typeEn: (data as any).type_en,
+          sourceMk: (data as any).source_mk,
+          sourceEn: (data as any).source_en,
           language: data.language,
           keywords: data.keywords || [],
           description: { mk: data.description_mk || '', en: data.description_en || '' },
@@ -263,7 +269,11 @@ const ItemDetail = () => {
                       <dt className="text-sm font-medium text-muted-foreground mb-1">
                         {t('Година', 'Year')}
                       </dt>
-                      <dd className="text-base">{item.year}</dd>
+                      <dd className="text-base">
+                        {language === 'mk' 
+                          ? (item.yearMk || item.year) 
+                          : (item.yearEn || item.year)}
+                      </dd>
                     </div>
                     
                     <div>
@@ -291,6 +301,28 @@ const ItemDetail = () => {
                         </dt>
                         <dd className="text-base">
                           {language === 'mk' ? item.publicationCity : (item.publicationCityEn || item.publicationCity)}
+                        </dd>
+                      </div>
+                    )}
+
+                    {item.type === 'image' && (item.typeMk || item.typeEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">
+                          {t('Тип', 'Type')}
+                        </dt>
+                        <dd className="text-base">
+                          {language === 'mk' ? item.typeMk : (item.typeEn || item.typeMk)}
+                        </dd>
+                      </div>
+                    )}
+
+                    {(item.sourceMk || item.sourceEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">
+                          {t('Извор', 'Source')}
+                        </dt>
+                        <dd className="text-base">
+                          {language === 'mk' ? item.sourceMk : (item.sourceEn || item.sourceMk)}
                         </dd>
                       </div>
                     )}

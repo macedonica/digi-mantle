@@ -19,10 +19,14 @@ const uploadSchema = z.object({
   title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
   author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
-  year: z.string().trim().min(1, 'Year is required').max(100, 'Year must be less than 100 characters'),
+  year_mk: z.string().trim().min(1, 'Year (MK) is required').max(200, 'Year (MK) must be less than 200 characters'),
+  year_en: z.string().trim().min(1, 'Year (EN) is required').max(200, 'Year (EN) must be less than 200 characters'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
   categories: z.array(z.string()).min(1, 'At least one category is required'),
-  type: z.string().optional(),
+  type_mk: z.string().optional(),
+  type_en: z.string().optional(),
+  source_mk: z.string().max(300, 'Source (MK) must be less than 300 characters').optional(),
+  source_en: z.string().max(300, 'Source (EN) must be less than 300 characters').optional(),
   description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
   description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
   keywords: z.string().max(1000, 'Keywords must be less than 1,000 characters').optional(),
@@ -58,10 +62,14 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     title_en: '',
     author: '',
     author_en: '',
-    year: new Date().getFullYear().toString(),
+    year_mk: new Date().getFullYear().toString(),
+    year_en: new Date().getFullYear().toString(),
     languages: [] as string[],
     categories: [] as string[],
-    type: '',
+    type_mk: '',
+    type_en: '',
+    source_mk: '',
+    source_en: '',
     description_mk: '',
     description_en: '',
     keywords: '',
@@ -231,10 +239,15 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           title_en: formData.title_en,
           author: formData.author,
           author_en: formData.author_en,
-          year: formData.year,
+          year_mk: formData.year_mk,
+          year_en: formData.year_en,
           language: formData.languages,
           category: formData.categories,
           type: itemType,
+          type_mk: formData.type_mk || null,
+          type_en: formData.type_en || null,
+          source_mk: formData.source_mk || null,
+          source_en: formData.source_en || null,
           description_mk: formData.description_mk || null,
           description_en: formData.description_en || null,
           keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : null,
@@ -396,13 +409,64 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="year">{t('Година', 'Year')}</Label>
+              <Label htmlFor="year_mk">{t('Година (МК)', 'Year (MK)')}</Label>
               <Input
-                id="year"
+                id="year_mk"
                 type="text"
-                value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                value={formData.year_mk}
+                onChange={(e) => setFormData({ ...formData, year_mk: e.target.value })}
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="year_en">{t('Година (EN)', 'Year (EN)')}</Label>
+              <Input
+                id="year_en"
+                type="text"
+                value={formData.year_en}
+                onChange={(e) => setFormData({ ...formData, year_en: e.target.value })}
+                required
+              />
+            </div>
+
+            {uploadType === 'image' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="type_mk">{t('Тип (МК)', 'Type (MK)')}</Label>
+                  <Input
+                    id="type_mk"
+                    value={formData.type_mk}
+                    onChange={(e) => setFormData({ ...formData, type_mk: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="type_en">{t('Тип (EN)', 'Type (EN)')}</Label>
+                  <Input
+                    id="type_en"
+                    value={formData.type_en}
+                    onChange={(e) => setFormData({ ...formData, type_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
+              <Input
+                id="source_mk"
+                value={formData.source_mk}
+                onChange={(e) => setFormData({ ...formData, source_mk: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
+              <Input
+                id="source_en"
+                value={formData.source_en}
+                onChange={(e) => setFormData({ ...formData, source_en: e.target.value })}
               />
             </div>
 

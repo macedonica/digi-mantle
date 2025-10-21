@@ -11,7 +11,13 @@ export interface LibraryItem {
   title: { mk: string; en: string };
   author: string;
   authorEn?: string;
-  year: number | string;
+  year?: number | string; // Kept for backward compatibility
+  yearMk?: string;
+  yearEn?: string;
+  typeMk?: string;
+  typeEn?: string;
+  sourceMk?: string;
+  sourceEn?: string;
   language: string[];
   keywords: string[];
   description: { mk: string; en: string };
