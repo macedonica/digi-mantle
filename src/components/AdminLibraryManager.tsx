@@ -22,10 +22,15 @@ const editSchema = z.object({
   title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
   author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
-  year: z.string().trim().min(1, 'Year is required').max(100, 'Year must be less than 100 characters'),
+  year_mk: z.string().trim().min(1, 'Year (MK) is required').max(200, 'Year (MK) must be less than 200 characters'),
+  year_en: z.string().trim().min(1, 'Year (EN) is required').max(200, 'Year (EN) must be less than 200 characters'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
   categories: z.array(z.string()).min(1, 'At least one category is required'),
   type: z.string().min(1, 'Type is required'),
+  type_mk: z.string().max(200, 'Type (MK) must be less than 200 characters').optional(),
+  type_en: z.string().max(200, 'Type (EN) must be less than 200 characters').optional(),
+  source_mk: z.string().max(300, 'Source (MK) must be less than 300 characters').optional(),
+  source_en: z.string().max(300, 'Source (EN) must be less than 300 characters').optional(),
   description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
   description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
   keywords: z.string().max(1000, 'Keywords must be less than 1,000 characters').optional(),
@@ -62,10 +67,15 @@ export const AdminLibraryManager = () => {
     title_en: '',
     author: '',
     author_en: '',
-    year: new Date().getFullYear().toString(),
+    year_mk: new Date().getFullYear().toString(),
+    year_en: new Date().getFullYear().toString(),
     languages: [] as string[],
     categories: [] as string[],
     type: '',
+    type_mk: '',
+    type_en: '',
+    source_mk: '',
+    source_en: '',
     description_mk: '',
     description_en: '',
     keywords: '',
@@ -119,6 +129,12 @@ export const AdminLibraryManager = () => {
         author: item.author,
         authorEn: item.author_en,
         year: item.year,
+        yearMk: (item as any).year_mk,
+        yearEn: (item as any).year_en,
+        typeMk: (item as any).type_mk,
+        typeEn: (item as any).type_en,
+        sourceMk: (item as any).source_mk,
+        sourceEn: (item as any).source_en,
         language: item.language,
         keywords: item.keywords || [],
         description: { mk: item.description_mk || '', en: item.description_en || '' },
@@ -139,15 +155,21 @@ export const AdminLibraryManager = () => {
 
   const handleEdit = (item: LibraryItem) => {
     setEditingItem(item);
+    const yearValue = typeof item.year === 'number' ? item.year.toString() : (item.year || '');
     setEditFormData({
       title_mk: item.title.mk,
       title_en: item.title.en,
       author: item.author,
       author_en: item.authorEn || '',
-      year: typeof item.year === 'number' ? item.year.toString() : item.year,
+      year_mk: item.yearMk || yearValue,
+      year_en: item.yearEn || yearValue,
       languages: item.language,
       categories: item.category,
       type: item.type,
+      type_mk: item.typeMk || '',
+      type_en: item.typeEn || '',
+      source_mk: item.sourceMk || '',
+      source_en: item.sourceEn || '',
       description_mk: item.description.mk,
       description_en: item.description.en,
       keywords: item.keywords.join(', '),
@@ -232,10 +254,15 @@ export const AdminLibraryManager = () => {
           title_en: editFormData.title_en,
           author: editFormData.author,
           author_en: editFormData.author_en,
-          year: editFormData.year,
+          year_mk: editFormData.year_mk,
+          year_en: editFormData.year_en,
           language: editFormData.languages,
           category: editFormData.categories,
           type: editFormData.type,
+          type_mk: editFormData.type_mk || null,
+          type_en: editFormData.type_en || null,
+          source_mk: editFormData.source_mk || null,
+          source_en: editFormData.source_en || null,
           description_mk: editFormData.description_mk || null,
           description_en: editFormData.description_en || null,
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
@@ -450,12 +477,59 @@ export const AdminLibraryManager = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_year">{t('Година', 'Year')}</Label>
+                <Label htmlFor="edit_year_mk">{t('Година (МК)', 'Year (MK)')}</Label>
                 <Input
-                  id="edit_year"
+                  id="edit_year_mk"
                   type="text"
-                  value={editFormData.year}
-                  onChange={(e) => setEditFormData({ ...editFormData, year: e.target.value })}
+                  value={editFormData.year_mk}
+                  onChange={(e) => setEditFormData({ ...editFormData, year_mk: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_year_en">{t('Година (EN)', 'Year (EN)')}</Label>
+                <Input
+                  id="edit_year_en"
+                  type="text"
+                  value={editFormData.year_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, year_en: e.target.value })}
+                />
+              </div>
+
+              {editFormData.type === 'image' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_type_mk">{t('Тип (МК)', 'Type (MK)')}</Label>
+                    <Input
+                      id="edit_type_mk"
+                      value={editFormData.type_mk}
+                      onChange={(e) => setEditFormData({ ...editFormData, type_mk: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_type_en">{t('Тип (EN)', 'Type (EN)')}</Label>
+                    <Input
+                      id="edit_type_en"
+                      value={editFormData.type_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, type_en: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="edit_source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
+                <Input
+                  id="edit_source_mk"
+                  value={editFormData.source_mk}
+                  onChange={(e) => setEditFormData({ ...editFormData, source_mk: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
+                <Input
+                  id="edit_source_en"
+                  value={editFormData.source_en}
+                  onChange={(e) => setEditFormData({ ...editFormData, source_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2 col-span-2">
