@@ -186,7 +186,7 @@ const ItemDetail = () => {
                   <img
                     src={allImages[currentImageIndex] || item.thumbnail}
                     alt={item.title[language]}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                   
                   {/* Navigation arrows for multiple images */}
