@@ -470,6 +470,7 @@ const ItemDetail = () => {
                       src={allImages[zoomImageIndex] || item.thumbnail}
                       alt={item.title[language]}
                       className="max-w-full max-h-full object-contain"
+                      crossOrigin="anonymous"
                     />
                   </TransformComponent>
                 </>
