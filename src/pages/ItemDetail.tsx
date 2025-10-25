@@ -22,6 +22,12 @@ const languageNames: Record<string, { mk: string; en: string }> = {
   'Greek': { mk: 'Грчки', en: 'Greek' },
   'Turkish': { mk: 'Турски', en: 'Turkish' },
   'Albanian': { mk: 'Албански', en: 'Albanian' },
+  'Црковнословенски': { mk: 'Црковнословенски', en: 'Church Slavonic' },
+  'Church Slavonic': { mk: 'Црковнословенски', en: 'Church Slavonic' },
+  'Старословенски': { mk: 'Старословенски', en: 'Old Church Slavonic' },
+  'Old Church Slavonic': { mk: 'Старословенски', en: 'Old Church Slavonic' },
+  'Глаголица': { mk: 'Глаголица', en: 'Glagolitic Script' },
+  'Glagolitic Script': { mk: 'Глаголица', en: 'Glagolitic Script' },
 };
 
 const ItemDetail = () => {
