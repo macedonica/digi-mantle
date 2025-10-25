@@ -80,13 +80,18 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   });
 
   const availableLanguages = [
-    'Macedonian',
-    'English', 
-    'Serbian',
-    'Bulgarian',
-    'French',
-    'Croatian',
-    'German'
+    { mk: 'Македонски', en: 'Macedonian' },
+    { mk: 'Англиски', en: 'English' },
+    { mk: 'Српски', en: 'Serbian' },
+    { mk: 'Бугарски', en: 'Bulgarian' },
+    { mk: 'Француски', en: 'French' },
+    { mk: 'Хрватски', en: 'Croatian' },
+    { mk: 'Германски', en: 'German' },
+    { mk: 'Латински', en: 'Latin' },
+    { mk: 'Коине', en: 'Koine' },
+    { mk: 'Руски', en: 'Russian' },
+    { mk: 'Грчки', en: 'Greek' },
+    { mk: 'Италијански', en: 'Italian' }
   ];
 
   const availableCategories = [
@@ -474,29 +479,29 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               <Label>{t('Јазици', 'Languages')}</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
                 {availableLanguages.map((lang) => (
-                  <div key={lang} className="flex items-center space-x-2">
+                  <div key={lang.en} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`lang-${lang}`}
-                      checked={formData.languages.includes(lang)}
+                      id={`lang-${lang.en}`}
+                      checked={formData.languages.includes(lang.en)}
                       onCheckedChange={(checked) => {
                         if (checked) {
                           setFormData({ 
                             ...formData, 
-                            languages: [...formData.languages, lang] 
+                            languages: [...formData.languages, lang.en] 
                           });
                         } else {
                           setFormData({ 
                             ...formData, 
-                            languages: formData.languages.filter(l => l !== lang) 
+                            languages: formData.languages.filter(l => l !== lang.en) 
                           });
                         }
                       }}
                     />
                     <label 
-                      htmlFor={`lang-${lang}`}
+                      htmlFor={`lang-${lang.en}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                     >
-                      {lang}
+                      {language === 'mk' ? lang.mk : lang.en}
                     </label>
                   </div>
                 ))}
