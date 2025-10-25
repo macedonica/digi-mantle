@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import DOMPurify from 'dompurify';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const languageNames: Record<string, { mk: string; en: string }> = {
   'Macedonian': { mk: 'Македонски', en: 'Macedonian' },
@@ -32,6 +34,8 @@ const ItemDetail = () => {
   const [signedImageUrl, setSignedImageUrl] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [allImages, setAllImages] = useState<string[]>([]);
+  const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
+  const [zoomImageIndex, setZoomImageIndex] = useState(0);
 
   const translateLanguage = (lang: string) => {
     return languageNames[lang]?.[language] || lang;
@@ -161,6 +165,19 @@ const ItemDetail = () => {
     setCurrentImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
   };
 
+  const handleImageClick = () => {
+    setZoomImageIndex(currentImageIndex);
+    setIsZoomDialogOpen(true);
+  };
+
+  const handleZoomPrevImage = () => {
+    setZoomImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
+
+  const handleZoomNextImage = () => {
+    setZoomImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -182,12 +199,20 @@ const ItemDetail = () => {
             <div className={`grid grid-cols-1 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-8 lg:grid-cols-[minmax(auto,320px)_1fr]' : 'gap-12 lg:grid-cols-2'}`}>
               {/* Image Column */}
               <div className={`${item.type === 'book' ? 'max-w-[200px] mx-auto lg:max-w-none' : ''}`}>
-                <div className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group`}>
+                <div 
+                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group cursor-pointer`}
+                  onClick={handleImageClick}
+                >
                   <img
                     src={allImages[currentImageIndex] || item.thumbnail}
                     alt={item.title[language]}
                     className="w-full h-full object-contain"
                   />
+                  
+                  {/* Zoom indicator */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
                   
                   {/* Navigation arrows for multiple images */}
                   {allImages.length > 1 && (
@@ -354,6 +379,89 @@ const ItemDetail = () => {
       </main>
 
       <Footer />
+
+      {/* Zoom Dialog */}
+      <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0">
+          <DialogTitle className="sr-only">
+            {t('Зумирана слика', 'Zoomed Image')}
+          </DialogTitle>
+          <div className="relative w-full h-[90vh]">
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.5}
+              maxScale={5}
+              centerOnInit
+            >
+              {({ zoomIn, zoomOut, resetTransform }) => (
+                <>
+                  {/* Controls */}
+                  <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => zoomIn()}
+                    >
+                      +
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => zoomOut()}
+                    >
+                      -
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => resetTransform()}
+                    >
+                      {t('Ресетирај', 'Reset')}
+                    </Button>
+                  </div>
+
+                  {/* Image navigation */}
+                  {allImages.length > 1 && (
+                    <>
+                      <button
+                        onClick={handleZoomPrevImage}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full"
+                        aria-label={t('Претходна слика', 'Previous image')}
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </button>
+                      <button
+                        onClick={handleZoomNextImage}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full"
+                        aria-label={t('Следна слика', 'Next image')}
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </button>
+                      
+                      {/* Image counter */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 text-white px-4 py-2 rounded-full">
+                        {zoomImageIndex + 1} / {allImages.length}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Zoomable Image */}
+                  <TransformComponent
+                    wrapperClass="!w-full !h-full"
+                    contentClass="!w-full !h-full flex items-center justify-center"
+                  >
+                    <img
+                      src={allImages[zoomImageIndex] || item.thumbnail}
+                      alt={item.title[language]}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </TransformComponent>
+                </>
+              )}
+            </TransformWrapper>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
