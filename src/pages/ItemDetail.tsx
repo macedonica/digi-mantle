@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, X, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import DOMPurify from 'dompurify';
@@ -176,6 +176,23 @@ const ItemDetail = () => {
 
   const handleZoomNextImage = () => {
     setZoomImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const getImageFileName = (src: string) => {
+    try {
+      const u = new URL(src);
+      const ext = (u.pathname.split('.').pop() || 'jpg').split('?')[0];
+      const base = (item?.title?.en || item?.title?.mk || 'image')
+        .toString()
+        .normalize('NFKD')
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+      return `${base}-${zoomImageIndex + 1}.${ext}`;
+    } catch {
+      return `image-${zoomImageIndex + 1}.jpg`;
+    }
   };
 
   return (
@@ -406,11 +423,11 @@ const ItemDetail = () => {
                   </Button>
 
                   {/* Zoom Controls */}
-                  <div className="absolute top-4 right-4 z-20 flex flex-col sm:flex-row gap-2">
+                  <div className="absolute top-4 right-4 z-20 flex flex-col sm:flex-row gap-2 pointer-events-none">
                     <Button 
                       variant="secondary" 
                       size="icon"
-                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => zoomIn()}
                       aria-label={t('Зумирај', 'Zoom in')}
                     >
@@ -419,7 +436,7 @@ const ItemDetail = () => {
                     <Button 
                       variant="secondary" 
                       size="icon"
-                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => zoomOut()}
                       aria-label={t('Одзумирај', 'Zoom out')}
                     >
@@ -428,12 +445,28 @@ const ItemDetail = () => {
                     <Button 
                       variant="secondary" 
                       size="icon"
-                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => resetTransform()}
                       aria-label={t('Ресетирај', 'Reset')}
                     >
                       <RotateCcw className="h-5 w-5" />
                     </Button>
+                    <a
+                      href={allImages[zoomImageIndex] || item.thumbnail}
+                      download={getImageFileName(allImages[zoomImageIndex] || item.thumbnail)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pointer-events-auto"
+                    >
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
+                        aria-label={t('Преземи слика', 'Download image')}
+                      >
+                        <Download className="h-5 w-5" />
+                      </Button>
+                    </a>
                   </div>
 
                   {/* Image navigation */}
@@ -469,7 +502,7 @@ const ItemDetail = () => {
                     <img
                       src={allImages[zoomImageIndex] || item.thumbnail}
                       alt={item.title[language]}
-                      className="max-w-full max-h-full object-contain"
+                      className="max-w-full max-h-full object-contain pointer-events-auto"
                       crossOrigin="anonymous"
                     />
                   </TransformComponent>
