@@ -34,7 +34,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-3 lg:py-4">
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2 shrink-0">
-            <img src={logo} alt="Bibliotheca Macedonica" className="h-10 lg:h-12 w-auto" />
+            <img src={logo} alt="Bibliotheca Macedonica" className="h-12 lg:h-16 w-auto" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-4 lg:gap-6">

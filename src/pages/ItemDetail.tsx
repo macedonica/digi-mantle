@@ -217,8 +217,8 @@ const ItemDetail = () => {
               {/* Image Column */}
               <div className={`${item.type === 'book' ? 'max-w-[200px] mx-auto lg:max-w-none' : ''}`}>
                 <div 
-                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group cursor-pointer`}
-                  onClick={handleImageClick}
+                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group ${item.type !== 'book' ? 'cursor-pointer' : ''}`}
+                  onClick={item.type !== 'book' ? handleImageClick : undefined}
                 >
                   <img
                     src={allImages[currentImageIndex] || item.thumbnail}
@@ -227,9 +227,11 @@ const ItemDetail = () => {
                   />
                   
                   {/* Zoom indicator */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                    <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
+                  {item.type !== 'book' && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                      <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  )}
                   
                   {/* Navigation arrows for multiple images */}
                   {allImages.length > 1 && (

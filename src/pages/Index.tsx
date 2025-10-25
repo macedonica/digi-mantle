@@ -55,7 +55,7 @@ const Index = () => {
             <img 
               src={heroImage} 
               alt="Digital Archive" 
-              className="w-full h-full object-cover opacity-20"
+              className="w-full h-full object-cover opacity-40"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-background/50 to-background"></div>
           </div>
