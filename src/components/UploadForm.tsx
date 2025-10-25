@@ -91,7 +91,10 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     { mk: 'Коине', en: 'Koine' },
     { mk: 'Руски', en: 'Russian' },
     { mk: 'Грчки', en: 'Greek' },
-    { mk: 'Италијански', en: 'Italian' }
+    { mk: 'Италијански', en: 'Italian' },
+    { mk: 'Црковнословенски', en: 'Church Slavonic' },
+    { mk: 'Старословенски', en: 'Old Church Slavonic' },
+    { mk: 'Глаголица', en: 'Glagolitic Script' }
   ];
 
   const availableCategories = [
