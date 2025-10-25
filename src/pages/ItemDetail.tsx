@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import DOMPurify from 'dompurify';
@@ -382,7 +382,7 @@ const ItemDetail = () => {
 
       {/* Zoom Dialog */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 gap-0">
           <DialogTitle className="sr-only">
             {t('Зумирана слика', 'Zoomed Image')}
           </DialogTitle>
@@ -395,28 +395,44 @@ const ItemDetail = () => {
             >
               {({ zoomIn, zoomOut, resetTransform }) => (
                 <>
-                  {/* Controls */}
-                  <div className="absolute top-4 right-4 z-10 flex gap-2">
+                  {/* Close button */}
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="absolute top-4 left-4 z-20 bg-black/80 hover:bg-black text-white border-0"
+                    onClick={() => setIsZoomDialogOpen(false)}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+
+                  {/* Zoom Controls */}
+                  <div className="absolute top-4 right-4 z-20 flex flex-col sm:flex-row gap-2">
                     <Button 
                       variant="secondary" 
-                      size="sm"
+                      size="icon"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
                       onClick={() => zoomIn()}
+                      aria-label={t('Зумирај', 'Zoom in')}
                     >
-                      +
+                      <ZoomIn className="h-5 w-5" />
                     </Button>
                     <Button 
                       variant="secondary" 
-                      size="sm"
+                      size="icon"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
                       onClick={() => zoomOut()}
+                      aria-label={t('Одзумирај', 'Zoom out')}
                     >
-                      -
+                      <ZoomOut className="h-5 w-5" />
                     </Button>
                     <Button 
                       variant="secondary" 
-                      size="sm"
+                      size="icon"
+                      className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
                       onClick={() => resetTransform()}
+                      aria-label={t('Ресетирај', 'Reset')}
                     >
-                      {t('Ресетирај', 'Reset')}
+                      <RotateCcw className="h-5 w-5" />
                     </Button>
                   </div>
 
@@ -425,21 +441,21 @@ const ItemDetail = () => {
                     <>
                       <button
                         onClick={handleZoomPrevImage}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full"
+                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 sm:p-3 rounded-full transition-colors"
                         aria-label={t('Претходна слика', 'Previous image')}
                       >
-                        <ChevronLeft className="h-6 w-6" />
+                        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
                       <button
                         onClick={handleZoomNextImage}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full"
+                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 sm:p-3 rounded-full transition-colors"
                         aria-label={t('Следна слика', 'Next image')}
                       >
-                        <ChevronRight className="h-6 w-6" />
+                        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
                       
                       {/* Image counter */}
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 text-white px-4 py-2 rounded-full">
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm">
                         {zoomImageIndex + 1} / {allImages.length}
                       </div>
                     </>
