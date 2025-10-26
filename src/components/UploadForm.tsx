@@ -142,13 +142,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           'Thumbnail'
         );
         
-        if (files.pdf) {
-          validateFile(
-            files.pdf,
-            50 * 1024 * 1024, // 50MB
-            ['application/pdf'],
-            'PDF'
-          );
+        // No size limit for PDFs, only type validation
+        if (files.pdf && !['application/pdf'].includes(files.pdf.type)) {
+          throw new Error('PDF must be a valid PDF file');
         }
       }
 
