@@ -1,33 +1,45 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, ExternalLink, Book as BookIcon, Image as ImageIcon, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, X, Download } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import type { LibraryItem } from '@/data/mockLibraryItems';
-import DOMPurify from 'dompurify';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  ArrowLeft,
+  ExternalLink,
+  Book as BookIcon,
+  Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  X,
+  Download,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import type { LibraryItem } from "@/data/mockLibraryItems";
+import DOMPurify from "dompurify";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const languageNames: Record<string, { mk: string; en: string }> = {
-  'Macedonian': { mk: 'Македонски', en: 'Macedonian' },
-  'English': { mk: 'Англиски', en: 'English' },
-  'German': { mk: 'Германски', en: 'German' },
-  'French': { mk: 'Француски', en: 'French' },
-  'Russian': { mk: 'Руски', en: 'Russian' },
-  'Serbian': { mk: 'Српски', en: 'Serbian' },
-  'Bulgarian': { mk: 'Бугарски', en: 'Bulgarian' },
-  'Greek': { mk: 'Грчки', en: 'Greek' },
-  'Turkish': { mk: 'Турски', en: 'Turkish' },
-  'Albanian': { mk: 'Албански', en: 'Albanian' },
-  'Црковнословенски': { mk: 'Црковнословенски', en: 'Church Slavonic' },
-  'Church Slavonic': { mk: 'Црковнословенски', en: 'Church Slavonic' },
-  'Старословенски': { mk: 'Старословенски', en: 'Old Church Slavonic' },
-  'Old Church Slavonic': { mk: 'Старословенски', en: 'Old Church Slavonic' },
-  'Глаголица': { mk: 'Глаголица', en: 'Glagolitic Script' },
-  'Glagolitic Script': { mk: 'Глаголица', en: 'Glagolitic Script' },
+  Macedonian: { mk: "Македонски", en: "Macedonian" },
+  English: { mk: "Англиски", en: "English" },
+  German: { mk: "Германски", en: "German" },
+  French: { mk: "Француски", en: "French" },
+  Russian: { mk: "Руски", en: "Russian" },
+  Serbian: { mk: "Српски", en: "Serbian" },
+  Bulgarian: { mk: "Бугарски", en: "Bulgarian" },
+  Greek: { mk: "Грчки", en: "Greek" },
+  Turkish: { mk: "Турски", en: "Turkish" },
+  Albanian: { mk: "Албански", en: "Albanian" },
+  Црковнословенски: { mk: "Црковнословенски", en: "Church Slavonic" },
+  "Church Slavonic": { mk: "Црковнословенски", en: "Church Slavonic" },
+  Старословенски: { mk: "Старословенски", en: "Old Church Slavonic" },
+  "Old Church Slavonic": { mk: "Старословенски", en: "Old Church Slavonic" },
+  Глаголица: { mk: "Глаголица", en: "Glagolitic Script" },
+  "Glagolitic Script": { mk: "Глаголица", en: "Glagolitic Script" },
 };
 
 const ItemDetail = () => {
@@ -50,14 +62,10 @@ const ItemDetail = () => {
   useEffect(() => {
     const fetchItem = async () => {
       // Use the public view that excludes uploaded_by field for security
-      const { data, error } = await supabase
-        .from('public_library_items')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
+      const { data, error } = await supabase.from("public_library_items").select("*").eq("id", id).maybeSingle();
 
       if (error) {
-        console.error('Error fetching item:', error);
+        console.error("Error fetching item:", error);
         setLoading(false);
         return;
       }
@@ -65,7 +73,7 @@ const ItemDetail = () => {
       if (data) {
         const transformedItem: LibraryItem = {
           id: data.id,
-          type: data.type as 'book' | 'image',
+          type: data.type as "book" | "image",
           title: { mk: data.title_mk, en: data.title_en },
           author: data.author,
           authorEn: data.author_en,
@@ -78,7 +86,7 @@ const ItemDetail = () => {
           sourceEn: (data as any).source_en,
           language: data.language,
           keywords: data.keywords || [],
-          description: { mk: data.description_mk || '', en: data.description_en || '' },
+          description: { mk: data.description_mk || "", en: data.description_en || "" },
           thumbnail: data.thumbnail_url,
           pdfUrl: data.pdf_url || undefined,
           imageUrl: data.image_url || undefined,
@@ -87,7 +95,7 @@ const ItemDetail = () => {
           publicationCityEn: data.publication_city_en,
           publisher: data.publisher,
           publisherEn: data.publisher_en,
-          additionalImages: data.additional_images || []
+          additionalImages: data.additional_images || [],
         };
         setItem(transformedItem);
 
@@ -100,26 +108,22 @@ const ItemDetail = () => {
 
         // Generate signed URLs for private storage access
         if (data.pdf_url) {
-          const pdfPath = data.pdf_url.split('/').slice(-1)[0];
-          const { data: signedData } = await supabase.storage
-            .from('library-pdfs')
-            .createSignedUrl(pdfPath, 3600); // 1 hour expiry
+          const pdfPath = data.pdf_url.split("/").slice(-1)[0];
+          const { data: signedData } = await supabase.storage.from("library-pdfs").createSignedUrl(pdfPath, 3600); // 1 hour expiry
           if (signedData) {
             setSignedPdfUrl(signedData.signedUrl);
           }
         }
 
         if (data.image_url) {
-          const imagePath = data.image_url.split('/').slice(-1)[0];
-          const { data: signedData } = await supabase.storage
-            .from('library-images')
-            .createSignedUrl(imagePath, 3600); // 1 hour expiry
+          const imagePath = data.image_url.split("/").slice(-1)[0];
+          const { data: signedData } = await supabase.storage.from("library-images").createSignedUrl(imagePath, 3600); // 1 hour expiry
           if (signedData) {
             setSignedImageUrl(signedData.signedUrl);
           }
         }
       }
-      
+
       setLoading(false);
     };
 
@@ -131,7 +135,7 @@ const ItemDetail = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">{t('Се вчитува...', 'Loading...')}</p>
+          <p className="text-muted-foreground">{t("Се вчитува...", "Loading...")}</p>
         </main>
         <Footer />
       </div>
@@ -144,12 +148,8 @@ const ItemDetail = () => {
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
-            <h1 className="text-2xl font-bold">
-              {t('Ставката не е пронајдена', 'Item not found')}
-            </h1>
-            <Button onClick={() => navigate(-1)}>
-              {t('Назад', 'Go Back')}
-            </Button>
+            <h1 className="text-2xl font-bold">{t("Ставката не е пронајдена", "Item not found")}</h1>
+            <Button onClick={() => navigate(-1)}>{t("Назад", "Go Back")}</Button>
           </div>
         </main>
         <Footer />
@@ -159,7 +159,7 @@ const ItemDetail = () => {
 
   const handleOpenPDF = () => {
     if (signedPdfUrl) {
-      window.open(signedPdfUrl, '_blank');
+      window.open(signedPdfUrl, "_blank");
     }
   };
 
@@ -187,13 +187,13 @@ const ItemDetail = () => {
   const getImageFileName = (src: string) => {
     try {
       const u = new URL(src);
-      const ext = (u.pathname.split('.').pop() || 'jpg').split('?')[0];
-      const base = (item?.title?.en || item?.title?.mk || 'image')
+      const ext = (u.pathname.split(".").pop() || "jpg").split("?")[0];
+      const base = (item?.title?.en || item?.title?.mk || "image")
         .toString()
-        .normalize('NFKD')
-        .replace(/[^\w\s-]/g, '')
+        .normalize("NFKD")
+        .replace(/[^\w\s-]/g, "")
         .trim()
-        .replace(/\s+/g, '-')
+        .replace(/\s+/g, "-")
         .toLowerCase();
       return `${base}-${zoomImageIndex + 1}.${ext}`;
     } catch {
@@ -211,7 +211,7 @@ const ItemDetail = () => {
           <div className="container mx-auto px-4">
             <Button variant="ghost" onClick={() => navigate(-1)}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('Назад', 'Back')}
+              {t("Назад", "Back")}
             </Button>
           </div>
         </section>
@@ -219,44 +219,46 @@ const ItemDetail = () => {
         {/* Item Detail */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <div className={`grid grid-cols-1 max-w-6xl mx-auto ${item.type === 'book' ? 'gap-8 lg:grid-cols-[minmax(auto,320px)_1fr]' : 'gap-12 lg:grid-cols-2'}`}>
+            <div
+              className={`grid grid-cols-1 max-w-6xl mx-auto ${item.type === "book" ? "gap-8 lg:grid-cols-[minmax(auto,320px)_1fr]" : "gap-12 lg:grid-cols-2"}`}
+            >
               {/* Image Column */}
-              <div className={`${item.type === 'book' ? 'max-w-[200px] mx-auto lg:max-w-none' : ''}`}>
-                <div 
-                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === 'book' ? 'aspect-[2/3] max-h-[400px]' : 'aspect-[3/4]'} relative group ${item.type !== 'book' ? 'cursor-pointer' : ''}`}
-                  onClick={item.type !== 'book' ? handleImageClick : undefined}
+              <div className={`${item.type === "book" ? "max-w-[200px] mx-auto lg:max-w-none" : ""}`}>
+                <div
+                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type !== "book" ? "cursor-pointer" : ""}`}
+                  onClick={item.type !== "book" ? handleImageClick : undefined}
                 >
                   <img
                     src={allImages[currentImageIndex] || item.thumbnail}
                     alt={item.title[language]}
                     className="w-full h-full object-contain"
                   />
-                  
+
                   {/* Zoom indicator */}
-                  {item.type !== 'book' && (
+                  {item.type !== "book" && (
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                       <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   )}
-                  
+
                   {/* Navigation arrows for multiple images */}
                   {allImages.length > 1 && (
                     <>
                       <button
                         onClick={handlePrevImage}
                         className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={t('Претходна слика', 'Previous image')}
+                        aria-label={t("Претходна слика", "Previous image")}
                       >
                         <ChevronLeft className="h-5 w-5" />
                       </button>
                       <button
                         onClick={handleNextImage}
                         className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={t('Следна слика', 'Next image')}
+                        aria-label={t("Следна слика", "Next image")}
                       >
                         <ChevronRight className="h-5 w-5" />
                       </button>
-                      
+
                       {/* Image counter */}
                       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
                         {currentImageIndex + 1} / {allImages.length}
@@ -266,113 +268,87 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Action Buttons */}
-                {item.type === 'book' && signedPdfUrl && (
+                {item.type === "book" && signedPdfUrl && (
                   <div className="flex justify-center mt-4">
-                    <Button 
-                      variant="hero" 
-                      className="w-4/5" 
-                      size="lg"
-                      onClick={handleOpenPDF}
-                    >
+                    <Button variant="hero" className="w-4/5" size="lg" onClick={handleOpenPDF}>
                       <ExternalLink className="mr-2 h-5 w-5" />
-                      {t('Отвори PDF', 'Open PDF')}
+                      {t("Отвори PDF", "Open PDF")}
                     </Button>
                   </div>
                 )}
-                
               </div>
 
               {/* Details Column */}
               <div className="space-y-8">
                 {/* Type Badge */}
                 <div className="flex items-center gap-2">
-                  {item.type === 'book' ? (
+                  {item.type === "book" ? (
                     <BookIcon className="h-5 w-5 text-primary" />
                   ) : (
                     <ImageIcon className="h-5 w-5 text-primary" />
                   )}
                   <span className="text-sm font-medium text-primary">
-                    {item.type === 'book' 
-                      ? t('Книга', 'Book') 
-                      : t('Сведоштво', 'Testimonial')}
+                    {item.type === "book" ? t("Книга", "Book") : t("Сведоштво", "Testimonial")}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight">
-                  {item.title[language]}
-                </h1>
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight">{item.title[language]}</h1>
 
                 {/* Metadata */}
                 <div className="space-y-4">
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground mb-1">
-                        {t('Автор', 'Author')}
-                      </dt>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
+                      <dd className="text-base">{language === "mk" ? item.author : item.authorEn || item.author}</dd>
+                    </div>
+
+                    <div>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Година", "Year")}</dt>
                       <dd className="text-base">
-                        {language === 'mk' ? item.author : (item.authorEn || item.author)}
+                        {language === "mk" ? item.yearMk || item.year : item.yearEn || item.year}
                       </dd>
                     </div>
-                    
+
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground mb-1">
-                        {t('Година', 'Year')}
-                      </dt>
-                      <dd className="text-base">
-                        {language === 'mk' 
-                          ? (item.yearMk || item.year) 
-                          : (item.yearEn || item.year)}
-                      </dd>
-                    </div>
-                    
-                    <div>
-                      <dt className="text-sm font-medium text-muted-foreground mb-1">
-                        {t('Јазици', 'Languages')}
-                      </dt>
-                      <dd className="text-base">{item.language.map(translateLanguage).join(', ')}</dd>
+                      <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Јазици", "Languages")}</dt>
+                      <dd className="text-base">{item.language.map(translateLanguage).join(", ")}</dd>
                     </div>
 
                     {(item.publisher || item.publisherEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground mb-1">
-                          {t('Издавач', 'Published By')}
+                          {t("Издавач", "Published By")}
                         </dt>
                         <dd className="text-base">
-                          {language === 'mk' ? item.publisher : (item.publisherEn || item.publisher)}
-                        </dd>
-                      </div>
-                    )}
-                    
-                    {(item.publicationCity || item.publicationCityEn) && (
-                      <div>
-                        <dt className="text-sm font-medium text-muted-foreground mb-1">
-                          {t('Град на издавање', 'Publication City')}
-                        </dt>
-                        <dd className="text-base">
-                          {language === 'mk' ? item.publicationCity : (item.publicationCityEn || item.publicationCity)}
+                          {language === "mk" ? item.publisher : item.publisherEn || item.publisher}
                         </dd>
                       </div>
                     )}
 
-                    {item.type === 'image' && (item.typeMk || item.typeEn) && (
+                    {(item.publicationCity || item.publicationCityEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground mb-1">
-                          {t('Тип', 'Type')}
+                          {t("Град на издавање", "Publication City")}
                         </dt>
                         <dd className="text-base">
-                          {language === 'mk' ? item.typeMk : (item.typeEn || item.typeMk)}
+                          {language === "mk" ? item.publicationCity : item.publicationCityEn || item.publicationCity}
                         </dd>
+                      </div>
+                    )}
+
+                    {item.type === "image" && (item.typeMk || item.typeEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Тип", "Type")}</dt>
+                        <dd className="text-base">{language === "mk" ? item.typeMk : item.typeEn || item.typeMk}</dd>
                       </div>
                     )}
 
                     {(item.sourceMk || item.sourceEn) && (
                       <div>
-                        <dt className="text-sm font-medium text-muted-foreground mb-1">
-                          {t('Извор', 'Source')}
-                        </dt>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Извор", "Source")}</dt>
                         <dd className="text-base">
-                          {language === 'mk' ? item.sourceMk : (item.sourceEn || item.sourceMk)}
+                          {language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk}
                         </dd>
                       </div>
                     )}
@@ -382,18 +358,16 @@ const ItemDetail = () => {
                 {/* Description */}
                 <div>
                   <h2 className="text-xl font-bold mb-3">
-                    {item.type === 'book' 
-                      ? t('Опис', 'Description')
-                      : t('Описание', 'Description')}
+                    {item.type === "book" ? t("Опис", "Description") : t("Опис", "Description")}
                   </h2>
-                  <div 
+                  <div
                     className="rich-content text-muted-foreground leading-relaxed max-w-none"
-                    dangerouslySetInnerHTML={{ 
+                    dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(
-                        /<[^>]+>/.test(item.description[language] || '')
-                          ? (item.description[language] || '')
-                          : (item.description[language] || '').replace(/\n/g, '<br />')
-                      )
+                        /<[^>]+>/.test(item.description[language] || "")
+                          ? item.description[language] || ""
+                          : (item.description[language] || "").replace(/\n/g, "<br />"),
+                      ),
                     }}
                   />
                 </div>
@@ -408,16 +382,9 @@ const ItemDetail = () => {
       {/* Zoom Dialog */}
       <Dialog open={isZoomDialogOpen} onOpenChange={setIsZoomDialogOpen}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 gap-0">
-          <DialogTitle className="sr-only">
-            {t('Зумирана слика', 'Zoomed Image')}
-          </DialogTitle>
+          <DialogTitle className="sr-only">{t("Зумирана слика", "Zoomed Image")}</DialogTitle>
           <div className="relative w-full h-[90vh]">
-            <TransformWrapper
-              initialScale={1}
-              minScale={0.5}
-              maxScale={5}
-              centerOnInit
-            >
+            <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit>
               {({ zoomIn, zoomOut, resetTransform }) => (
                 <>
                   {/* Close button */}
@@ -432,30 +399,30 @@ const ItemDetail = () => {
 
                   {/* Zoom Controls */}
                   <div className="absolute top-4 right-4 z-20 flex flex-col sm:flex-row gap-2 pointer-events-none">
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="icon"
                       className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => zoomIn()}
-                      aria-label={t('Зумирај', 'Zoom in')}
+                      aria-label={t("Зумирај", "Zoom in")}
                     >
                       <ZoomIn className="h-5 w-5" />
                     </Button>
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="icon"
                       className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => zoomOut()}
-                      aria-label={t('Одзумирај', 'Zoom out')}
+                      aria-label={t("Одзумирај", "Zoom out")}
                     >
                       <ZoomOut className="h-5 w-5" />
                     </Button>
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="icon"
                       className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10 pointer-events-auto"
                       onClick={() => resetTransform()}
-                      aria-label={t('Ресетирај', 'Reset')}
+                      aria-label={t("Ресетирај", "Reset")}
                     >
                       <RotateCcw className="h-5 w-5" />
                     </Button>
@@ -470,7 +437,7 @@ const ItemDetail = () => {
                         variant="secondary"
                         size="icon"
                         className="bg-black/80 hover:bg-black text-white border-0 w-10 h-10"
-                        aria-label={t('Преземи слика', 'Download image')}
+                        aria-label={t("Преземи слика", "Download image")}
                       >
                         <Download className="h-5 w-5" />
                       </Button>
@@ -483,18 +450,18 @@ const ItemDetail = () => {
                       <button
                         onClick={handleZoomPrevImage}
                         className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 sm:p-3 rounded-full transition-colors"
-                        aria-label={t('Претходна слика', 'Previous image')}
+                        aria-label={t("Претходна слика", "Previous image")}
                       >
                         <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
                       <button
                         onClick={handleZoomNextImage}
                         className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 sm:p-3 rounded-full transition-colors"
-                        aria-label={t('Следна слика', 'Next image')}
+                        aria-label={t("Следна слика", "Next image")}
                       >
                         <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                       </button>
-                      
+
                       {/* Image counter */}
                       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-black/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm">
                         {zoomImageIndex + 1} / {allImages.length}
