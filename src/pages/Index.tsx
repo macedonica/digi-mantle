@@ -51,7 +51,7 @@ const Index = () => {
         {/* Hero Section */}
         <section className="relative py-20 md:py-32 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img src={heroImage} alt="Digital Archive" className="w-full h-full object-cover opacity-40" />
+            <img src={heroImage} alt="Digital Archive" className="w-full h-full object-cover opacity-50" />
             <div className="absolute inset-0 bg-gradient-to-b from-background/50 to-background"></div>
           </div>
 

@@ -29,7 +29,7 @@ const uploadSchema = z.object({
   source_en: z.string().max(300, 'Source (EN) must be less than 300 characters').optional(),
   description_mk: z.string().max(50000, 'Description (MK) must be less than 50,000 characters').optional(),
   description_en: z.string().max(50000, 'Description (EN) must be less than 50,000 characters').optional(),
-  keywords: z.string().max(1000, 'Keywords must be less than 1,000 characters').optional(),
+  keywords: z.string().optional(),
   publication_city: z.string().max(200, 'Publication city (MK) must be less than 200 characters').optional(),
   publication_city_en: z.string().max(200, 'Publication city (EN) must be less than 200 characters').optional(),
   publisher: z.string().max(300, 'Publisher (MK) must be less than 300 characters').optional(),
