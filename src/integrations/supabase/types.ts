@@ -172,12 +172,18 @@ export type Database = {
           publication_city_en: string | null
           publisher: string | null
           publisher_en: string | null
+          source_en: string | null
+          source_mk: string | null
           thumbnail_url: string | null
           title_en: string | null
           title_mk: string | null
           type: string | null
+          type_en: string | null
+          type_mk: string | null
           updated_at: string | null
           year: string | null
+          year_en: string | null
+          year_mk: string | null
         }
         Insert: {
           additional_images?: string[] | null
@@ -196,12 +202,18 @@ export type Database = {
           publication_city_en?: string | null
           publisher?: string | null
           publisher_en?: string | null
+          source_en?: string | null
+          source_mk?: string | null
           thumbnail_url?: string | null
           title_en?: string | null
           title_mk?: string | null
           type?: string | null
+          type_en?: string | null
+          type_mk?: string | null
           updated_at?: string | null
           year?: string | null
+          year_en?: string | null
+          year_mk?: string | null
         }
         Update: {
           additional_images?: string[] | null
@@ -220,12 +232,18 @@ export type Database = {
           publication_city_en?: string | null
           publisher?: string | null
           publisher_en?: string | null
+          source_en?: string | null
+          source_mk?: string | null
           thumbnail_url?: string | null
           title_en?: string | null
           title_mk?: string | null
           type?: string | null
+          type_en?: string | null
+          type_mk?: string | null
           updated_at?: string | null
           year?: string | null
+          year_en?: string | null
+          year_mk?: string | null
         }
         Relationships: []
       }
