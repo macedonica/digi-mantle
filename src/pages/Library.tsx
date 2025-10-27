@@ -148,10 +148,10 @@ const Library = () => {
     return true;
   });
 
-  // Reset to page 1 when filters or search changes
+  // Reset to page 1 when filters, search, or type changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, filters]);
+  }, [searchQuery, filters, activeType]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
