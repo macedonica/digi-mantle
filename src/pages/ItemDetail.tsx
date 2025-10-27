@@ -99,10 +99,15 @@ const ItemDetail = () => {
         };
         setItem(transformedItem);
 
-        // Build gallery of all images (thumbnail + additional images)
-        const images: string[] = [data.thumbnail_url];
-        if (data.additional_images && data.additional_images.length > 0) {
-          images.push(...data.additional_images);
+        // Build gallery of all images for image type items (main image + additional images)
+        let images: string[] = [];
+        if (data.type === 'image') {
+          if (data.image_url) {
+            images.push(data.image_url);
+          }
+          if (data.additional_images && data.additional_images.length > 0) {
+            images.push(...data.additional_images);
+          }
         }
         setAllImages(images);
 
@@ -225,24 +230,24 @@ const ItemDetail = () => {
               {/* Image Column */}
               <div className={`${item.type === "book" ? "max-w-[200px] mx-auto lg:max-w-none" : ""}`}>
                 <div
-                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type !== "book" ? "cursor-pointer" : ""}`}
-                  onClick={item.type !== "book" ? handleImageClick : undefined}
+                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type === "image" && allImages.length > 0 ? "cursor-pointer" : ""}`}
+                  onClick={item.type === "image" && allImages.length > 0 ? handleImageClick : undefined}
                 >
                   <img
-                    src={allImages[currentImageIndex] || item.thumbnail}
+                    src={item.type === "image" && allImages.length > 0 ? allImages[currentImageIndex] : item.thumbnail}
                     alt={item.title[language]}
                     className="w-full h-full object-contain"
                   />
 
                   {/* Zoom indicator */}
-                  {item.type !== "book" && (
+                  {item.type === "image" && allImages.length > 0 && (
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                       <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   )}
 
                   {/* Navigation arrows for multiple images */}
-                  {allImages.length > 1 && (
+                  {item.type === "image" && allImages.length > 1 && (
                     <>
                       <button
                         onClick={handlePrevImage}

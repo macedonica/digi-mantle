@@ -207,9 +207,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
         }
       }
 
-      // Upload additional images if provided (for books only)
+      // Upload additional images if provided (for images only)
       let additionalImageUrls: string[] = [];
-      if (uploadType === 'document' && files.additionalImages && files.additionalImages.length > 0) {
+      if (uploadType === 'image' && files.additionalImages && files.additionalImages.length > 0) {
         for (const imageFile of files.additionalImages) {
           validateFile(
             imageFile,
@@ -611,6 +611,22 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
                 />
               </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="image">{t('Слика', 'Image')} *</Label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFiles({ ...files, image: e.target.files?.[0] })}
+                  required
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t('Оваа слика ќе се користи и како сликичка и за приказ', 'This image will be used as both thumbnail and for viewing')}
+                </p>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="additionalImages">{t('Дополнителни Слики (Опционално)', 'Additional Images (Optional)')}</Label>
@@ -625,20 +641,6 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   {t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
                 </p>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Label htmlFor="image">{t('Слика', 'Image')} *</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFiles({ ...files, image: e.target.files?.[0] })}
-                required
-              />
-              <p className="text-sm text-muted-foreground">
-                {t('Оваа слика ќе се користи и како сликичка и за приказ', 'This image will be used as both thumbnail and for viewing')}
-              </p>
             </div>
           )}
 
