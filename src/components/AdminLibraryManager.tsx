@@ -61,6 +61,7 @@ export const AdminLibraryManager = () => {
   const [saving, setSaving] = useState(false);
   const [newThumbnail, setNewThumbnail] = useState<File | null>(null);
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
+  const [newPdf, setNewPdf] = useState<File | null>(null);
 
   const [editFormData, setEditFormData] = useState({
     title_mk: '',
@@ -255,6 +256,30 @@ export const AdminLibraryManager = () => {
         }
       }
 
+      // Upload new PDF if provided
+      let pdfUrl = editingItem.pdfUrl;
+      if (newPdf) {
+        validateFile(
+          newPdf,
+          50 * 1024 * 1024, // 50MB
+          ['application/pdf'],
+          'PDF'
+        );
+
+        const pdfPath = `${crypto.randomUUID()}-${newPdf.name}`;
+        const { error: pdfError } = await supabase.storage
+          .from('library-pdfs')
+          .upload(pdfPath, newPdf);
+
+        if (pdfError) throw pdfError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('library-pdfs')
+          .getPublicUrl(pdfPath);
+        
+        pdfUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('library_items')
         .update({
@@ -280,6 +305,7 @@ export const AdminLibraryManager = () => {
           publisher_en: editFormData.publisher_en || null,
           thumbnail_url: thumbnailUrl,
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
+          pdf_url: pdfUrl || null,
         })
         .eq('id', editingItem.id);
 
@@ -293,6 +319,7 @@ export const AdminLibraryManager = () => {
       setEditingItem(null);
       setNewThumbnail(null);
       setNewAdditionalImages([]);
+      setNewPdf(null);
       fetchItems();
     } catch (error: any) {
       toast({
@@ -386,6 +413,8 @@ export const AdminLibraryManager = () => {
         if (!open) {
           setEditingItem(null);
           setNewThumbnail(null);
+          setNewAdditionalImages([]);
+          setNewPdf(null);
         }
       }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -668,22 +697,39 @@ export const AdminLibraryManager = () => {
               </div>
 
               {editingItem?.type === 'book' && (
-                <div className="space-y-2">
-                  <Label htmlFor="edit_additional_images">{t('Дополнителни Слики (Опционално)', 'Additional Images (Optional)')}</Label>
-                  <Input
-                    id="edit_additional_images"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => setNewAdditionalImages(e.target.files ? Array.from(e.target.files) : [])}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    {editingItem?.additionalImages && editingItem.additionalImages.length > 0
-                      ? t(`Тековно има ${editingItem.additionalImages.length} дополнителни слики. Новите ќе бидат додадени.`, 
-                          `Currently has ${editingItem.additionalImages.length} additional images. New ones will be added.`)
-                      : t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
-                  </p>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_pdf">{t('Нов PDF (Опционално)', 'New PDF (Optional)')}</Label>
+                    <Input
+                      id="edit_pdf"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => setNewPdf(e.target.files?.[0] || null)}
+                    />
+                    {editingItem?.pdfUrl && (
+                      <p className="text-sm text-muted-foreground">
+                        {t('Тековниот PDF е поставен', 'Current PDF is set')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_additional_images">{t('Дополнителни Слики (Опционално)', 'Additional Images (Optional)')}</Label>
+                    <Input
+                      id="edit_additional_images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => setNewAdditionalImages(e.target.files ? Array.from(e.target.files) : [])}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {editingItem?.additionalImages && editingItem.additionalImages.length > 0
+                        ? t(`Тековно има ${editingItem.additionalImages.length} дополнителни слики. Новите ќе бидат додадени.`, 
+                            `Currently has ${editingItem.additionalImages.length} additional images. New ones will be added.`)
+                        : t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
+                    </p>
+                  </div>
+                </>
               )}
             </div>
 
