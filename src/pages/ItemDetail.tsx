@@ -249,13 +249,6 @@ const ItemDetail = () => {
                     className="w-full h-full object-contain"
                   />
 
-                  {/* Zoom indicator */}
-                  {item.type === "image" && allImages.length > 0 && (
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                      <ZoomIn className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  )}
-
                   {/* Navigation arrows for multiple images */}
                   {item.type === "image" && allImages.length > 1 && (
                     <>
