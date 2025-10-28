@@ -165,8 +165,9 @@ const Library = () => {
   }, [searchParams]);
 
 
-  // Clamp page if out of range when results change
+  // Clamp page if out of range when results change (skip while loading)
   useEffect(() => {
+    if (loading) return;
     const total = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
     if (total === 0) {
       if (currentPage !== 1) {
@@ -179,7 +180,7 @@ const Library = () => {
       setCurrentPage(total);
       setSearchParams({ page: total.toString() });
     }
-  }, [filteredItems.length, currentPage]);
+  }, [loading, filteredItems.length, currentPage]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
