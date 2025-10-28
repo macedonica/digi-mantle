@@ -83,16 +83,14 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const availableLanguages = [
     { mk: 'Македонски', en: 'Macedonian' },
     { mk: 'Англиски', en: 'English' },
+    { mk: 'Германски', en: 'German' },
+    { mk: 'Француски', en: 'French' },
+    { mk: 'Руски', en: 'Russian' },
     { mk: 'Српски', en: 'Serbian' },
     { mk: 'Бугарски', en: 'Bulgarian' },
-    { mk: 'Француски', en: 'French' },
-    { mk: 'Хрватски', en: 'Croatian' },
-    { mk: 'Германски', en: 'German' },
-    { mk: 'Латински', en: 'Latin' },
-    { mk: 'Коине', en: 'Koine' },
-    { mk: 'Руски', en: 'Russian' },
     { mk: 'Грчки', en: 'Greek' },
-    { mk: 'Италијански', en: 'Italian' },
+    { mk: 'Турски', en: 'Turkish' },
+    { mk: 'Албански', en: 'Albanian' },
     { mk: 'Црковнословенски', en: 'Church Slavonic' },
     { mk: 'Старословенски', en: 'Old Church Slavonic' },
     { mk: 'Глаголица', en: 'Glagolitic Script' },
@@ -100,7 +98,11 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     { mk: 'Романски', en: 'Romanian' },
     { mk: 'Полски', en: 'Polish' },
     { mk: 'Отомански', en: 'Ottoman' },
-    { mk: 'Османотурски', en: 'Ottoman Turkish' }
+    { mk: 'Османотурски', en: 'Ottoman Turkish' },
+    { mk: 'Хрватски', en: 'Croatian' },
+    { mk: 'Латински', en: 'Latin' },
+    { mk: 'Коине', en: 'Koine' },
+    { mk: 'Италијански', en: 'Italian' }
   ];
 
   const bookCategories = [
