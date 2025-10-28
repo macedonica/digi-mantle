@@ -165,6 +165,22 @@ const Library = () => {
   }, [searchParams]);
 
 
+  // Clamp page if out of range when results change
+  useEffect(() => {
+    const total = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+    if (total === 0) {
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+        setSearchParams({ page: '1' });
+      }
+      return;
+    }
+    if (currentPage > total) {
+      setCurrentPage(total);
+      setSearchParams({ page: total.toString() });
+    }
+  }, [filteredItems.length, currentPage]);
+
   // Pagination calculations
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -203,7 +219,7 @@ const Library = () => {
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
-                  onClick={() => setActiveType('book')}
+                  onClick={() => { setActiveType('book'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -213,7 +229,7 @@ const Library = () => {
                   {t('Книги', 'Books')}
                 </button>
                 <button
-                  onClick={() => setActiveType('image')}
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -257,7 +273,7 @@ const Library = () => {
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
-                  onClick={() => setActiveType('book')}
+                  onClick={() => { setActiveType('book'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -267,7 +283,7 @@ const Library = () => {
                   {t('Книги', 'Books')}
                 </button>
                 <button
-                  onClick={() => setActiveType('image')}
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
