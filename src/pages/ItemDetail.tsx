@@ -282,12 +282,27 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Action Buttons */}
-                {item.type === "book" && signedPdfUrl && (
+                {item.type === "book" && (
                   <div className="flex justify-center mt-4">
-                    <Button variant="hero" className="w-4/5" size="lg" onClick={handleOpenPDF}>
-                      <ExternalLink className="mr-2 h-5 w-5" />
-                      {t("Отвори PDF", "Open PDF")}
-                    </Button>
+                    {signedPdfUrl ? (
+                      <Button variant="hero" className="w-4/5" size="lg" onClick={handleOpenPDF}>
+                        <ExternalLink className="mr-2 h-5 w-5" />
+                        {t("Отвори PDF", "Open PDF")}
+                      </Button>
+                    ) : (item.sourceMk || item.sourceEn) && /^https?:\/\//i.test(language === "mk" ? item.sourceMk || "" : item.sourceEn || item.sourceMk || "") ? (
+                      <Button 
+                        variant="hero" 
+                        className="w-4/5" 
+                        size="lg" 
+                        onClick={() => {
+                          const sourceUrl = language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk;
+                          if (sourceUrl) window.open(sourceUrl, '_blank', 'noopener,noreferrer');
+                        }}
+                      >
+                        <ExternalLink className="mr-2 h-5 w-5" />
+                        {t("Отвори Извор", "Open Source")}
+                      </Button>
+                    ) : null}
                   </div>
                 )}
               </div>

@@ -56,6 +56,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [loading, setLoading] = useState(false);
 
   const [uploadType, setUploadType] = useState<'document' | 'image' | null>(null);
+  const [bookContentType, setBookContentType] = useState<'pdf' | 'link'>('pdf');
   
   const [formData, setFormData] = useState({
     title_mk: '',
@@ -590,7 +591,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
 
           {uploadType === 'document' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="thumbnail">{t('Сликичка', 'Thumbnail')} *</Label>
                 <Input
@@ -602,14 +603,67 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="pdf">{t('PDF Документ', 'PDF Document')}</Label>
-                <Input
-                  id="pdf"
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
-                />
+              <div className="space-y-4 border rounded-lg p-4">
+                <Label>{t('Содржина на книгата', 'Book Content')}</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="bookContentType"
+                      value="pdf"
+                      checked={bookContentType === 'pdf'}
+                      onChange={() => setBookContentType('pdf')}
+                      className="h-4 w-4"
+                    />
+                    <span>{t('Качи PDF', 'Upload PDF')}</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="bookContentType"
+                      value="link"
+                      checked={bookContentType === 'link'}
+                      onChange={() => setBookContentType('link')}
+                      className="h-4 w-4"
+                    />
+                    <span>{t('Внеси линк', 'Provide Link')}</span>
+                  </label>
+                </div>
+
+                {bookContentType === 'pdf' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="pdf">{t('PDF Документ', 'PDF Document')}</Label>
+                    <Input
+                      id="pdf"
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
+                    />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="source_mk_link">{t('Извор/Линк (МК)', 'Source/Link (MK)')}</Label>
+                      <Input
+                        id="source_mk_link"
+                        type="url"
+                        placeholder="https://..."
+                        value={formData.source_mk}
+                        onChange={(e) => setFormData({ ...formData, source_mk: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="source_en_link">{t('Извор/Линк (EN)', 'Source/Link (EN)')}</Label>
+                      <Input
+                        id="source_en_link"
+                        type="url"
+                        placeholder="https://..."
+                        value={formData.source_en}
+                        onChange={(e) => setFormData({ ...formData, source_en: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
