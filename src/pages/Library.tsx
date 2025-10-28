@@ -122,6 +122,7 @@ const Library = () => {
         item.title.mk.toLowerCase().includes(query) ||
         item.title.en.toLowerCase().includes(query) ||
         item.author.toLowerCase().includes(query) ||
+        (item.authorEn && item.authorEn.toLowerCase().includes(query)) ||
         item.keywords.some(kw => kw.toLowerCase().includes(query)) ||
         item.description.mk.toLowerCase().includes(query) ||
         item.description.en.toLowerCase().includes(query);
@@ -141,9 +142,12 @@ const Library = () => {
     }
 
     // Author filter
-    if (filters.author && 
-        !item.author.toLowerCase().includes(filters.author.toLowerCase())) {
-      return false;
+    if (filters.author) {
+      const authorQuery = filters.author.toLowerCase();
+      const matchesAuthor = 
+        item.author.toLowerCase().includes(authorQuery) ||
+        (item.authorEn && item.authorEn.toLowerCase().includes(authorQuery));
+      if (!matchesAuthor) return false;
     }
 
     // Category filter
