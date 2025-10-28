@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -41,7 +41,6 @@ const Library = () => {
     author: '',
     categories: []
   });
-  const isFirstReset = useRef(true);
 
   // Fetch library items from Supabase
   useEffect(() => {
@@ -165,15 +164,6 @@ const Library = () => {
     }
   }, [searchParams]);
 
-  // Reset to page 1 when filters, search, or type changes (skip initial mount)
-  useEffect(() => {
-    if (isFirstReset.current) {
-      isFirstReset.current = false;
-      return;
-    }
-    setCurrentPage(1);
-    setSearchParams({ page: '1' });
-  }, [searchQuery, filters, activeType]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
@@ -195,14 +185,14 @@ const Library = () => {
         {/* Mobile Search - Sticky */}
         <section className="md:hidden sticky top-[var(--header-height)] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
-            <SearchBar onSearch={setSearchQuery} />
+            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
           </div>
         </section>
 
         {/* Desktop Search - Sticky */}
         <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
-            <SearchBar onSearch={setSearchQuery} />
+            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
           </div>
         </section>
 
@@ -248,7 +238,7 @@ const Library = () => {
                     <DrawerTitle>{t('Филтри', 'Filters')}</DrawerTitle>
                   </DrawerHeader>
                   <div className="p-4 pb-6">
-                    <LibraryFilters filters={filters} onFilterChange={setFilters} />
+                    <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
                     <div className="mt-6 flex justify-end">
                       <DrawerClose asChild>
                         <Button>{t('Готово', 'Done')}</Button>
@@ -297,7 +287,7 @@ const Library = () => {
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar - Hidden on mobile */}
               <aside className="hidden md:block lg:w-64 flex-shrink-0">
-                <LibraryFilters filters={filters} onFilterChange={setFilters} />
+                <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
               </aside>
 
                 {/* Results Grid */}
