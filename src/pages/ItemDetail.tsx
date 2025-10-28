@@ -50,11 +50,7 @@ const ItemDetail = () => {
   
   const handleBackToLibrary = () => {
     const returnPage = searchParams.get('returnPage');
-    if (returnPage) {
-      navigate(`/library?page=${returnPage}`);
-    } else {
-      navigate(-1);
-    }
+    navigate(`/library?page=${returnPage || '1'}`);
   };
   const [item, setItem] = useState<LibraryItem | null>(null);
   const [loading, setLoading] = useState(true);
