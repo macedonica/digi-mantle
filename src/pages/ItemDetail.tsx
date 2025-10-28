@@ -307,7 +307,7 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight">{item.title[language]}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight pb-3 border-b-2 border-primary">{item.title[language]}</h1>
 
                 {/* Metadata */}
                 <div className="space-y-4">
