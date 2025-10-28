@@ -104,12 +104,22 @@ export const AdminLibraryManager = () => {
     { mk: 'Глаголица', en: 'Glagolitic Script' }
   ];
 
-  const availableCategories = [
-    { value: 'history', mk: 'Историја', en: 'History' },
+  const bookCategories = [
+    { value: 'history', mk: 'Історија', en: 'History' },
     { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
     { value: 'literature', mk: 'Книжевност', en: 'Literature' },
     { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
     { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
+  ];
+
+  const testimonialCategories = [
+    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
+    { value: 'document', mk: 'Документ', en: 'Document' },
+    { value: 'map', mk: 'Карта', en: 'Map' },
+    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
+    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
+    { value: 'book', mk: 'Книга', en: 'Book' },
+    { value: 'photo', mk: 'Слика', en: 'Photo' },
   ];
 
   useEffect(() => {
@@ -602,7 +612,7 @@ export const AdminLibraryManager = () => {
               <div className="space-y-2">
                 <Label>{t('Категории', 'Categories')}</Label>
                 <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
-                  {availableCategories.map((cat) => (
+                  {(editFormData.type === 'image' ? testimonialCategories : bookCategories).map((cat) => (
                     <div key={cat.value} className="flex items-center space-x-2">
                       <Checkbox
                         id={`edit-cat-${cat.value}`}

@@ -98,13 +98,25 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     { mk: 'Глаголица', en: 'Glagolitic Script' }
   ];
 
-  const availableCategories = [
+  const bookCategories = [
     { value: 'history', mk: 'Историја', en: 'History' },
     { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
     { value: 'literature', mk: 'Книжевност', en: 'Literature' },
     { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
     { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
   ];
+
+  const testimonialCategories = [
+    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
+    { value: 'document', mk: 'Документ', en: 'Document' },
+    { value: 'map', mk: 'Карта', en: 'Map' },
+    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
+    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
+    { value: 'book', mk: 'Книга', en: 'Book' },
+    { value: 'photo', mk: 'Слика', en: 'Photo' },
+  ];
+
+  const availableCategories = uploadType === 'image' ? testimonialCategories : bookCategories;
 
   const [files, setFiles] = useState<{
     thumbnail?: File;

@@ -15,9 +15,10 @@ interface FilterState {
 interface LibraryFiltersProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
+  activeType: 'book' | 'image';
 }
 
-export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps) => {
+export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryFiltersProps) => {
   const { t, language } = useLanguage();
 
   const updateFilter = (key: keyof FilterState, value: string) => {
@@ -39,6 +40,26 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
     { value: 'Old Church Slavonic', mk: 'Старословенски', en: 'Old Church Slavonic' },
     { value: 'Glagolitic Script', mk: 'Глаголица', en: 'Glagolitic Script' },
   ];
+
+  const bookCategories = [
+    { value: 'history', mk: 'Историја', en: 'History' },
+    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
+    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
+    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
+    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
+  ];
+
+  const testimonialCategories = [
+    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
+    { value: 'document', mk: 'Документ', en: 'Document' },
+    { value: 'map', mk: 'Карта', en: 'Map' },
+    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
+    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
+    { value: 'book', mk: 'Книга', en: 'Book' },
+    { value: 'photo', mk: 'Слика', en: 'Photo' },
+  ];
+
+  const availableCategories = activeType === 'book' ? bookCategories : testimonialCategories;
 
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-6">
@@ -99,13 +120,7 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
         <div className="space-y-2">
           <Label>{t('Категории', 'Categories')}</Label>
           <div className="grid grid-cols-1 gap-2">
-            {[
-              { value: 'history', mk: 'Историја', en: 'History' },
-              { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
-              { value: 'literature', mk: 'Книжевност', en: 'Literature' },
-              { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
-              { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
-            ].map((cat) => (
+            {availableCategories.map((cat) => (
               <div key={cat.value} className="flex items-center space-x-2">
                 <Checkbox
                   id={`filter-cat-${cat.value}`}

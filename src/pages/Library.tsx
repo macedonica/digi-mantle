@@ -259,7 +259,7 @@ const Library = () => {
                     <DrawerTitle>{t('Филтри', 'Filters')}</DrawerTitle>
                   </DrawerHeader>
                   <div className="p-4 pb-6">
-                    <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
+                    <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} activeType={activeType} />
                     <div className="mt-6 flex justify-end">
                       <DrawerClose asChild>
                         <Button>{t('Готово', 'Done')}</Button>
@@ -308,7 +308,7 @@ const Library = () => {
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar - Hidden on mobile */}
               <aside className="hidden md:block lg:w-64 flex-shrink-0">
-                <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
+                <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} activeType={activeType} />
               </aside>
 
                 {/* Results Grid */}
