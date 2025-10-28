@@ -15,6 +15,7 @@ import type { LibraryItem } from '@/data/mockLibraryItems';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
+import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOptions';
 
 // Validation schema for edit form
 const editSchema = z.object({
@@ -63,6 +64,10 @@ export const AdminLibraryManager = () => {
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
   const [newPdf, setNewPdf] = useState<File | null>(null);
 
+  const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
+  const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
+  const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+
   const [editFormData, setEditFormData] = useState({
     title_mk: '',
     title_en: '',
@@ -86,41 +91,6 @@ export const AdminLibraryManager = () => {
     publisher_en: '',
   });
 
-  const availableLanguages = [
-    { mk: 'Македонски', en: 'Macedonian' },
-    { mk: 'Англиски', en: 'English' },
-    { mk: 'Српски', en: 'Serbian' },
-    { mk: 'Бугарски', en: 'Bulgarian' },
-    { mk: 'Француски', en: 'French' },
-    { mk: 'Хрватски', en: 'Croatian' },
-    { mk: 'Германски', en: 'German' },
-    { mk: 'Латински', en: 'Latin' },
-    { mk: 'Коине', en: 'Koine' },
-    { mk: 'Руски', en: 'Russian' },
-    { mk: 'Грчки', en: 'Greek' },
-    { mk: 'Италијански', en: 'Italian' },
-    { mk: 'Црковнословенски', en: 'Church Slavonic' },
-    { mk: 'Старословенски', en: 'Old Church Slavonic' },
-    { mk: 'Глаголица', en: 'Glagolitic Script' }
-  ];
-
-  const bookCategories = [
-    { value: 'history', mk: 'Історија', en: 'History' },
-    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
-    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
-    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
-    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
-  ];
-
-  const testimonialCategories = [
-    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
-    { value: 'document', mk: 'Документ', en: 'Document' },
-    { value: 'map', mk: 'Карта', en: 'Map' },
-    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
-    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
-    { value: 'book', mk: 'Книга', en: 'Book' },
-    { value: 'photo', mk: 'Слика', en: 'Photo' },
-  ];
 
   useEffect(() => {
     fetchItems();
@@ -580,30 +550,30 @@ export const AdminLibraryManager = () => {
               <div className="space-y-2 col-span-2">
                 <Label>{t('Јазици', 'Languages')}</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
-                  {availableLanguages.map((lang) => (
-                    <div key={lang.en} className="flex items-center space-x-2">
+                  {languages.map((lang) => (
+                    <div key={lang.value} className="flex items-center space-x-2">
                       <Checkbox
-                        id={`edit-lang-${lang.en}`}
-                        checked={editFormData.languages.includes(lang.en)}
+                        id={`edit-lang-${lang.value}`}
+                        checked={editFormData.languages.includes(lang.value)}
                         onCheckedChange={(checked) => {
                           if (checked) {
                             setEditFormData({ 
                               ...editFormData, 
-                              languages: [...editFormData.languages, lang.en] 
+                              languages: [...editFormData.languages, lang.value] 
                             });
                           } else {
                             setEditFormData({ 
                               ...editFormData, 
-                              languages: editFormData.languages.filter(l => l !== lang.en) 
+                              languages: editFormData.languages.filter(l => l !== lang.value) 
                             });
                           }
                         }}
                       />
                       <label 
-                        htmlFor={`edit-lang-${lang.en}`}
+                        htmlFor={`edit-lang-${lang.value}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                       >
-                        {language === 'mk' ? lang.mk : lang.en}
+                        {language === 'mk' ? lang.name_mk : lang.name_en}
                       </label>
                     </div>
                   ))}
@@ -612,7 +582,7 @@ export const AdminLibraryManager = () => {
               <div className="space-y-2">
                 <Label>{t('Категории', 'Categories')}</Label>
                 <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
-                  {(editFormData.type === 'image' ? testimonialCategories : bookCategories).map((cat) => (
+                  {(editFormData.type === 'image' ? imageCategories : bookCategories).map((cat) => (
                     <div key={cat.value} className="flex items-center space-x-2">
                       <Checkbox
                         id={`edit-cat-${cat.value}`}
@@ -635,7 +605,7 @@ export const AdminLibraryManager = () => {
                         htmlFor={`edit-cat-${cat.value}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                       >
-                        {language === 'mk' ? cat.mk : cat.en}
+                        {language === 'mk' ? cat.name_mk : cat.name_en}
                       </label>
                     </div>
                   ))}

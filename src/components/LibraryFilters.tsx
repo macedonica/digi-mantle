@@ -3,6 +3,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOptions';
+import { Loader2 } from 'lucide-react';
 
 interface FilterState {
   yearFrom: string;
@@ -21,50 +23,19 @@ interface LibraryFiltersProps {
 export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryFiltersProps) => {
   const { t, language } = useLanguage();
 
+  const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
+  const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
+  const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+
   const updateFilter = (key: keyof FilterState, value: string) => {
     onFilterChange({ ...filters, [key]: value });
   };
 
-  const availableLanguages = [
-    { value: 'Macedonian', mk: 'Македонски', en: 'Macedonian' },
-    { value: 'English', mk: 'Англиски', en: 'English' },
-    { value: 'German', mk: 'Германски', en: 'German' },
-    { value: 'French', mk: 'Француски', en: 'French' },
-    { value: 'Russian', mk: 'Руски', en: 'Russian' },
-    { value: 'Serbian', mk: 'Српски', en: 'Serbian' },
-    { value: 'Bulgarian', mk: 'Бугарски', en: 'Bulgarian' },
-    { value: 'Greek', mk: 'Грчки', en: 'Greek' },
-    { value: 'Turkish', mk: 'Турски', en: 'Turkish' },
-    { value: 'Albanian', mk: 'Албански', en: 'Albanian' },
-    { value: 'Church Slavonic', mk: 'Црковнословенски', en: 'Church Slavonic' },
-    { value: 'Old Church Slavonic', mk: 'Старословенски', en: 'Old Church Slavonic' },
-    { value: 'Glagolitic Script', mk: 'Глаголица', en: 'Glagolitic Script' },
-    { value: 'Slovenian', mk: 'Словенски', en: 'Slovenian' },
-    { value: 'Romanian', mk: 'Романски', en: 'Romanian' },
-    { value: 'Polish', mk: 'Полски', en: 'Polish' },
-    { value: 'Ottoman', mk: 'Отомански', en: 'Ottoman' },
-    { value: 'Ottoman Turkish', mk: 'Османотурски', en: 'Ottoman Turkish' },
-  ];
+  const availableCategories = activeType === 'book' ? bookCategories : imageCategories;
 
-  const bookCategories = [
-    { value: 'history', mk: 'Историја', en: 'History' },
-    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
-    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
-    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
-    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
-  ];
-
-  const testimonialCategories = [
-    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
-    { value: 'document', mk: 'Документ', en: 'Document' },
-    { value: 'map', mk: 'Карта', en: 'Map' },
-    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
-    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
-    { value: 'book', mk: 'Книга', en: 'Book' },
-    { value: 'photo', mk: 'Слика', en: 'Photo' },
-  ];
-
-  const availableCategories = activeType === 'book' ? bookCategories : testimonialCategories;
+  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading) {
+    return <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
 
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-6">
@@ -101,9 +72,9 @@ export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryF
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('Сите јазици', 'All languages')}</SelectItem>
-              {availableLanguages.map((lang) => (
+              {languages.map((lang) => (
                 <SelectItem key={lang.value} value={lang.value}>
-                  {language === 'mk' ? lang.mk : lang.en}
+                  {language === 'mk' ? lang.name_mk : lang.name_en}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -142,7 +113,7 @@ export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryF
                   htmlFor={`filter-cat-${cat.value}`}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
-                  {language === 'mk' ? cat.mk : cat.en}
+                  {language === 'mk' ? cat.name_mk : cat.name_en}
                 </label>
               </div>
             ))}

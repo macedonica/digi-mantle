@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      library_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean
+          name_en: string
+          name_mk: string
+          sort_order: number
+          type: string
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en: string
+          name_mk: string
+          sort_order?: number
+          type: string
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en?: string
+          name_mk?: string
+          sort_order?: number
+          type?: string
+          value?: string
+        }
+        Relationships: []
+      }
       library_items: {
         Row: {
           additional_images: string[] | null
@@ -107,6 +140,36 @@ export type Database = {
           year?: string | null
           year_en?: string | null
           year_mk?: string | null
+        }
+        Relationships: []
+      }
+      library_languages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean
+          name_en: string
+          name_mk: string
+          sort_order: number
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en: string
+          name_mk: string
+          sort_order?: number
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en?: string
+          name_mk?: string
+          sort_order?: number
+          value?: string
         }
         Relationships: []
       }

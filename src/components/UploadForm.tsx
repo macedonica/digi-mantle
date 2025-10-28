@@ -12,6 +12,7 @@ import { Loader2 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
+import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOptions';
 
 // Validation schema for form inputs
 const uploadSchema = z.object({
@@ -55,6 +56,10 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
+  const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
+  const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
+  const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+
   const [uploadType, setUploadType] = useState<'document' | 'image' | null>(null);
   const [bookContentType, setBookContentType] = useState<'pdf' | 'link'>('pdf');
   
@@ -80,50 +85,11 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     publisher_en: '',
   });
 
-  const availableLanguages = [
-    { mk: 'Македонски', en: 'Macedonian' },
-    { mk: 'Англиски', en: 'English' },
-    { mk: 'Германски', en: 'German' },
-    { mk: 'Француски', en: 'French' },
-    { mk: 'Руски', en: 'Russian' },
-    { mk: 'Српски', en: 'Serbian' },
-    { mk: 'Бугарски', en: 'Bulgarian' },
-    { mk: 'Грчки', en: 'Greek' },
-    { mk: 'Турски', en: 'Turkish' },
-    { mk: 'Албански', en: 'Albanian' },
-    { mk: 'Црковнословенски', en: 'Church Slavonic' },
-    { mk: 'Старословенски', en: 'Old Church Slavonic' },
-    { mk: 'Глаголица', en: 'Glagolitic Script' },
-    { mk: 'Словенски', en: 'Slovenian' },
-    { mk: 'Романски', en: 'Romanian' },
-    { mk: 'Полски', en: 'Polish' },
-    { mk: 'Отомански', en: 'Ottoman' },
-    { mk: 'Османотурски', en: 'Ottoman Turkish' },
-    { mk: 'Хрватски', en: 'Croatian' },
-    { mk: 'Латински', en: 'Latin' },
-    { mk: 'Коине', en: 'Koine' },
-    { mk: 'Италијански', en: 'Italian' }
-  ];
+  const availableCategories = uploadType === 'image' ? imageCategories : bookCategories;
 
-  const bookCategories = [
-    { value: 'history', mk: 'Историја', en: 'History' },
-    { value: 'archaeology', mk: 'Археологија', en: 'Archaeology' },
-    { value: 'literature', mk: 'Книжевност', en: 'Literature' },
-    { value: 'ethnology', mk: 'Етнологија', en: 'Ethnology' },
-    { value: 'folklore', mk: 'Фолклор', en: 'Folklore' },
-  ];
-
-  const testimonialCategories = [
-    { value: 'newspaper', mk: 'Весник', en: 'Newspaper' },
-    { value: 'document', mk: 'Документ', en: 'Document' },
-    { value: 'map', mk: 'Карта', en: 'Map' },
-    { value: 'artefact', mk: 'Артефакт', en: 'Artefact' },
-    { value: 'manuscript', mk: 'Ракопис', en: 'Manuscript' },
-    { value: 'book', mk: 'Книга', en: 'Book' },
-    { value: 'photo', mk: 'Слика', en: 'Photo' },
-  ];
-
-  const availableCategories = uploadType === 'image' ? testimonialCategories : bookCategories;
+  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading) {
+    return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
 
   const [files, setFiles] = useState<{
     thumbnail?: File;
@@ -497,30 +463,30 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <div className="space-y-2 md:col-span-2">
               <Label>{t('Јазици', 'Languages')}</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
-                {availableLanguages.map((lang) => (
-                  <div key={lang.en} className="flex items-center space-x-2">
+                {languages.map((lang) => (
+                  <div key={lang.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={`lang-${lang.en}`}
-                      checked={formData.languages.includes(lang.en)}
+                      id={`lang-${lang.value}`}
+                      checked={formData.languages.includes(lang.value)}
                       onCheckedChange={(checked) => {
                         if (checked) {
                           setFormData({ 
                             ...formData, 
-                            languages: [...formData.languages, lang.en] 
+                            languages: [...formData.languages, lang.value] 
                           });
                         } else {
                           setFormData({ 
                             ...formData, 
-                            languages: formData.languages.filter(l => l !== lang.en) 
+                            languages: formData.languages.filter(l => l !== lang.value) 
                           });
                         }
                       }}
                     />
                     <label 
-                      htmlFor={`lang-${lang.en}`}
+                      htmlFor={`lang-${lang.value}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                     >
-                      {language === 'mk' ? lang.mk : lang.en}
+                      {language === 'mk' ? lang.name_mk : lang.name_en}
                     </label>
                   </div>
                 ))}
@@ -553,7 +519,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                       htmlFor={`cat-${cat.value}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                     >
-                      {language === 'mk' ? cat.mk : cat.en}
+                      {language === 'mk' ? cat.name_mk : cat.name_en}
                     </label>
                   </div>
                 ))}

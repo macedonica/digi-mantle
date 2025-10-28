@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Library, LogOut } from 'lucide-react';
+import { Upload, Library, LogOut, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UploadForm } from '@/components/UploadForm';
 import { AdminLibraryManager } from '@/components/AdminLibraryManager';
+import { AdminOptionsManager } from '@/components/AdminOptionsManager';
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
@@ -43,7 +44,7 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="upload" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="upload">
                 <Upload className="mr-2 h-4 w-4" />
                 {t('Качување', 'Upload')}
@@ -51,6 +52,10 @@ const AdminDashboard = () => {
               <TabsTrigger value="manage">
                 <Library className="mr-2 h-4 w-4" />
                 {t('Управување', 'Manage')}
+              </TabsTrigger>
+              <TabsTrigger value="options">
+                <Settings className="mr-2 h-4 w-4" />
+                {t('Опции', 'Options')}
               </TabsTrigger>
             </TabsList>
 
@@ -100,6 +105,24 @@ const AdminDashboard = () => {
                   )}
                 </p>
                 <AdminLibraryManager />
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="options" className="mt-6">
+              <Card className="p-6 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Settings className="h-8 w-8 text-primary" />
+                  <h2 className="text-2xl font-bold">
+                    {t('Управувај со Опции', 'Manage Options')}
+                  </h2>
+                </div>
+                <p className="text-muted-foreground">
+                  {t(
+                    'Додавај, уредувај или избриши јазици и категории.',
+                    'Add, edit or delete languages and categories.'
+                  )}
+                </p>
+                <AdminOptionsManager />
               </Card>
             </TabsContent>
           </Tabs>
