@@ -641,27 +641,15 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="source_mk_link">{t('Извор/Линк (МК)', 'Source/Link (MK)')}</Label>
-                      <Input
-                        id="source_mk_link"
-                        type="url"
-                        placeholder="https://..."
-                        value={formData.source_mk}
-                        onChange={(e) => setFormData({ ...formData, source_mk: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="source_en_link">{t('Извор/Линк (EN)', 'Source/Link (EN)')}</Label>
-                      <Input
-                        id="source_en_link"
-                        type="url"
-                        placeholder="https://..."
-                        value={formData.source_en}
-                        onChange={(e) => setFormData({ ...formData, source_en: e.target.value })}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="source_link">{t('Извор/Линк', 'Source/Link')}</Label>
+                    <Input
+                      id="source_link"
+                      type="url"
+                      placeholder="https://..."
+                      value={formData.source_mk}
+                      onChange={(e) => setFormData({ ...formData, source_mk: e.target.value, source_en: e.target.value })}
+                    />
                   </div>
                 )}
               </div>
