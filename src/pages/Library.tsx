@@ -152,9 +152,19 @@ const Library = () => {
     return true;
   });
 
+  // Sync page number from URL params
+  useEffect(() => {
+    const pageParam = searchParams.get('page');
+    const pageNumber = pageParam ? parseInt(pageParam, 10) : 1;
+    if (pageNumber !== currentPage) {
+      setCurrentPage(pageNumber);
+    }
+  }, [searchParams]);
+
   // Reset to page 1 when filters, search, or type changes
   useEffect(() => {
     setCurrentPage(1);
+    setSearchParams({ page: '1' });
   }, [searchQuery, filters, activeType]);
 
   // Pagination calculations
