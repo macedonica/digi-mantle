@@ -259,12 +259,10 @@ export const AdminLibraryManager = () => {
       // Upload new PDF if provided
       let pdfUrl = editingItem.pdfUrl;
       if (newPdf) {
-        validateFile(
-          newPdf,
-          50 * 1024 * 1024, // 50MB
-          ['application/pdf'],
-          'PDF'
-        );
+        // No size limit for PDFs, only type validation
+        if (!['application/pdf'].includes(newPdf.type)) {
+          throw new Error('PDF must be a valid PDF file');
+        }
 
         const pdfPath = `${crypto.randomUUID()}-${newPdf.name}`;
         const { error: pdfError } = await supabase.storage
