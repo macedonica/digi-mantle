@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,17 @@ const languageNames: Record<string, { mk: string; en: string }> = {
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { language, t } = useLanguage();
+  
+  const handleBackToLibrary = () => {
+    const returnPage = searchParams.get('returnPage');
+    if (returnPage) {
+      navigate(`/library?page=${returnPage}`);
+    } else {
+      navigate(-1);
+    }
+  };
   const [item, setItem] = useState<LibraryItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [signedPdfUrl, setSignedPdfUrl] = useState<string | null>(null);
@@ -154,7 +164,7 @@ const ItemDetail = () => {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <h1 className="text-2xl font-bold">{t("Ставката не е пронајдена", "Item not found")}</h1>
-            <Button onClick={() => navigate(-1)}>{t("Назад", "Go Back")}</Button>
+            <Button onClick={handleBackToLibrary}>{t("Назад", "Go Back")}</Button>
           </div>
         </main>
         <Footer />
@@ -214,7 +224,7 @@ const ItemDetail = () => {
         {/* Back Button */}
         <section className="py-6 border-b border-border">
           <div className="container mx-auto px-4">
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={handleBackToLibrary}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t("Назад", "Back")}
             </Button>

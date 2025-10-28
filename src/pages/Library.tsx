@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SearchBar } from '@/components/SearchBar';
@@ -24,11 +24,15 @@ interface FilterState {
 
 const Library = () => {
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageParam = searchParams.get('page');
+    return pageParam ? parseInt(pageParam, 10) : 1;
+  });
   const [activeType, setActiveType] = useState<'book' | 'image'>('book');
   const [filters, setFilters] = useState<FilterState>({
     yearFrom: '',
@@ -161,6 +165,7 @@ const Library = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    setSearchParams({ page: page.toString() });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
