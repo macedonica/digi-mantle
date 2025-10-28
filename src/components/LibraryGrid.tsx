@@ -59,7 +59,9 @@ export const LibraryGrid = ({ items }: LibraryGridProps) => {
             <p className="text-sm text-muted-foreground">
               {language === 'mk' ? item.author : (item.authorEn || item.author)}
             </p>
-            <p className="text-sm text-muted-foreground">{item.year}</p>
+            <p className="text-sm text-muted-foreground">
+              {language === 'mk' ? (item.yearMk || item.year) : (item.yearEn || item.year)}
+            </p>
           </div>
         </div>
       ))}
