@@ -371,7 +371,7 @@ const ItemDetail = () => {
 
                 {/* Description */}
                 <div>
-                  <h2 className="text-xl font-bold mb-3 pb-3 border-b-2 border-primary">
+                  <h2 className="text-xl font-bold mb-3 pt-3 border-t-2 border-primary">
                     {item.type === "book" ? t("Опис", "Description") : t("Опис", "Description")}
                   </h2>
                   <div
