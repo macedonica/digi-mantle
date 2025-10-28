@@ -39,6 +39,11 @@ export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryF
     { value: 'Church Slavonic', mk: 'Црковнословенски', en: 'Church Slavonic' },
     { value: 'Old Church Slavonic', mk: 'Старословенски', en: 'Old Church Slavonic' },
     { value: 'Glagolitic Script', mk: 'Глаголица', en: 'Glagolitic Script' },
+    { value: 'Slovenian', mk: 'Словенски', en: 'Slovenian' },
+    { value: 'Romanian', mk: 'Романски', en: 'Romanian' },
+    { value: 'Polish', mk: 'Полски', en: 'Polish' },
+    { value: 'Ottoman', mk: 'Отомански', en: 'Ottoman' },
+    { value: 'Ottoman Turkish', mk: 'Османотурски', en: 'Ottoman Turkish' },
   ];
 
   const bookCategories = [

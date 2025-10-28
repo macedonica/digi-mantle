@@ -95,7 +95,12 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     { mk: 'Италијански', en: 'Italian' },
     { mk: 'Црковнословенски', en: 'Church Slavonic' },
     { mk: 'Старословенски', en: 'Old Church Slavonic' },
-    { mk: 'Глаголица', en: 'Glagolitic Script' }
+    { mk: 'Глаголица', en: 'Glagolitic Script' },
+    { mk: 'Словенски', en: 'Slovenian' },
+    { mk: 'Романски', en: 'Romanian' },
+    { mk: 'Полски', en: 'Polish' },
+    { mk: 'Отомански', en: 'Ottoman' },
+    { mk: 'Османотурски', en: 'Ottoman Turkish' }
   ];
 
   const bookCategories = [
