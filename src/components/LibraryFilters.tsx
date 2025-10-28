@@ -24,6 +24,22 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
     onFilterChange({ ...filters, [key]: value });
   };
 
+  const availableLanguages = [
+    { value: 'Macedonian', mk: 'Македонски', en: 'Macedonian' },
+    { value: 'English', mk: 'Англиски', en: 'English' },
+    { value: 'German', mk: 'Германски', en: 'German' },
+    { value: 'French', mk: 'Француски', en: 'French' },
+    { value: 'Russian', mk: 'Руски', en: 'Russian' },
+    { value: 'Serbian', mk: 'Српски', en: 'Serbian' },
+    { value: 'Bulgarian', mk: 'Бугарски', en: 'Bulgarian' },
+    { value: 'Greek', mk: 'Грчки', en: 'Greek' },
+    { value: 'Turkish', mk: 'Турски', en: 'Turkish' },
+    { value: 'Albanian', mk: 'Албански', en: 'Albanian' },
+    { value: 'Church Slavonic', mk: 'Црковнословенски', en: 'Church Slavonic' },
+    { value: 'Old Church Slavonic', mk: 'Старословенски', en: 'Old Church Slavonic' },
+    { value: 'Glagolitic Script', mk: 'Глаголица', en: 'Glagolitic Script' },
+  ];
+
   return (
     <div className="bg-card border border-border rounded-lg p-6 space-y-6">
       <h3 className="text-lg font-semibold">{t('Филтри', 'Filters')}</h3>
@@ -59,9 +75,11 @@ export const LibraryFilters = ({ filters, onFilterChange }: LibraryFiltersProps)
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('Сите јазици', 'All languages')}</SelectItem>
-              <SelectItem value="macedonian">{t('Македонски', 'Macedonian')}</SelectItem>
-              <SelectItem value="english">{t('Англиски', 'English')}</SelectItem>
-              <SelectItem value="other">{t('Други', 'Other')}</SelectItem>
+              {availableLanguages.map((lang) => (
+                <SelectItem key={lang.value} value={lang.value}>
+                  {language === 'mk' ? lang.mk : lang.en}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
