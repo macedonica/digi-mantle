@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -41,6 +41,7 @@ const Library = () => {
     author: '',
     categories: []
   });
+  const isFirstReset = useRef(true);
 
   // Fetch library items from Supabase
   useEffect(() => {
@@ -164,8 +165,12 @@ const Library = () => {
     }
   }, [searchParams]);
 
-  // Reset to page 1 when filters, search, or type changes
+  // Reset to page 1 when filters, search, or type changes (skip initial mount)
   useEffect(() => {
+    if (isFirstReset.current) {
+      isFirstReset.current = false;
+      return;
+    }
     setCurrentPage(1);
     setSearchParams({ page: '1' });
   }, [searchQuery, filters, activeType]);
