@@ -358,14 +358,31 @@ const ItemDetail = () => {
                       </div>
                     )}
 
-                    {(item.sourceMk || item.sourceEn) && (
-                      <div>
-                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Извор", "Source")}</dt>
-                        <dd className="text-base">
-                          {language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk}
-                        </dd>
-                      </div>
-                    )}
+                    {(item.sourceMk || item.sourceEn) && (() => {
+                      const sourceValue = language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk;
+                      const isUrl = sourceValue && /^https?:\/\//i.test(sourceValue);
+                      
+                      return (
+                        <div>
+                          <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Извор", "Source")}</dt>
+                          <dd className="text-base">
+                            {isUrl ? (
+                              <Button
+                                variant="outline"
+                                size="lg"
+                                className="font-semibold"
+                                onClick={() => window.open(sourceValue, '_blank', 'noopener,noreferrer')}
+                              >
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                {t("Извор", "Source")}
+                              </Button>
+                            ) : (
+                              sourceValue
+                            )}
+                          </dd>
+                        </div>
+                      );
+                    })()}
                   </dl>
                 </div>
 
