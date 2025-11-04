@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -45,12 +45,13 @@ const languageNames: Record<string, { mk: string; en: string }> = {
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { language, t } = useLanguage();
   
   const handleBackToLibrary = () => {
-    const returnPage = searchParams.get('returnPage');
-    navigate(`/library?page=${returnPage || '1'}`);
+    // Navigate back to the exact library state user was in
+    const from = location.state?.from || '/library?page=1';
+    navigate(from);
   };
   const [item, setItem] = useState<LibraryItem | null>(null);
   const [loading, setLoading] = useState(true);

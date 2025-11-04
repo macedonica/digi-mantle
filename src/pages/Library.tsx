@@ -26,20 +26,34 @@ const Library = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Initialize state from URL params
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(() => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) : 1;
   });
-  const [activeType, setActiveType] = useState<'book' | 'image'>('book');
-  const [filters, setFilters] = useState<FilterState>({
-    yearFrom: '',
-    yearTo: '',
-    language: 'all',
-    author: '',
-    categories: []
+  const [activeType, setActiveType] = useState<'book' | 'image'>(() => {
+    const typeParam = searchParams.get('type');
+    return typeParam === 'image' ? 'image' : 'book';
+  });
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const yearFrom = searchParams.get('yearFrom') || '';
+    const yearTo = searchParams.get('yearTo') || '';
+    const language = searchParams.get('language') || 'all';
+    const author = searchParams.get('author') || '';
+    const categoriesParam = searchParams.get('categories');
+    const categories = categoriesParam ? categoriesParam.split(',') : [];
+    
+    return {
+      yearFrom,
+      yearTo,
+      language,
+      author,
+      categories
+    };
   });
 
   // Fetch library items from Supabase
@@ -194,9 +208,45 @@ const Library = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    setSearchParams({ page: page.toString() });
+    updateUrlParams({ page: page.toString() });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Helper to update URL params while preserving all state
+  const updateUrlParams = (updates: Record<string, string>) => {
+    const newParams = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
+      }
+    });
+    setSearchParams(newParams);
+  };
+
+  // Update URL when state changes
+  useEffect(() => {
+    const params: Record<string, string> = {
+      page: currentPage.toString(),
+      type: activeType,
+    };
+    
+    if (searchQuery) params.q = searchQuery;
+    if (filters.yearFrom) params.yearFrom = filters.yearFrom;
+    if (filters.yearTo) params.yearTo = filters.yearTo;
+    if (filters.language !== 'all') params.language = filters.language;
+    if (filters.author) params.author = filters.author;
+    if (filters.categories.length > 0) params.categories = filters.categories.join(',');
+    
+    const newParams = new URLSearchParams(params);
+    const currentParamsStr = searchParams.toString();
+    const newParamsStr = newParams.toString();
+    
+    if (currentParamsStr !== newParamsStr) {
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [currentPage, activeType, searchQuery, filters]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -206,14 +256,14 @@ const Library = () => {
         {/* Mobile Search - Sticky */}
         <section className="md:hidden sticky top-[var(--header-height)] z-40 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
-            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
+            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); }} />
           </div>
         </section>
 
         {/* Desktop Search - Sticky */}
         <section className="hidden md:block sticky top-[var(--header-height)] z-40 py-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
           <div className="container mx-auto px-4">
-            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); setSearchParams({ page: '1' }); }} />
+            <SearchBar onSearch={(q) => { setSearchQuery(q); setCurrentPage(1); }} />
           </div>
         </section>
 
@@ -224,7 +274,7 @@ const Library = () => {
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
-                  onClick={() => { setActiveType('book'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
+                  onClick={() => { setActiveType('book'); setCurrentPage(1); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -234,7 +284,7 @@ const Library = () => {
                   {t('Книги', 'Books')}
                 </button>
                 <button
-                  onClick={() => { setActiveType('image'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -259,7 +309,7 @@ const Library = () => {
                     <DrawerTitle>{t('Филтри', 'Filters')}</DrawerTitle>
                   </DrawerHeader>
                   <div className="p-4 pb-6">
-                    <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} activeType={activeType} />
+                    <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); }} activeType={activeType} />
                     <div className="mt-6 flex justify-end">
                       <DrawerClose asChild>
                         <Button>{t('Готово', 'Done')}</Button>
@@ -278,7 +328,7 @@ const Library = () => {
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
-                  onClick={() => { setActiveType('book'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
+                  onClick={() => { setActiveType('book'); setCurrentPage(1); }}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'book' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -288,7 +338,7 @@ const Library = () => {
                   {t('Книги', 'Books')}
                 </button>
                 <button
-                  onClick={() => { setActiveType('image'); setCurrentPage(1); setSearchParams({ page: '1' }); }}
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); }}
                   className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
                       ? 'bg-primary text-primary-foreground shadow-sm' 
@@ -308,7 +358,7 @@ const Library = () => {
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Filters Sidebar - Hidden on mobile */}
               <aside className="hidden md:block lg:w-64 flex-shrink-0">
-                <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); setSearchParams({ page: '1' }); }} activeType={activeType} />
+                <LibraryFilters filters={filters} onFilterChange={(f) => { setFilters(f); setCurrentPage(1); }} activeType={activeType} />
               </aside>
 
                 {/* Results Grid */}

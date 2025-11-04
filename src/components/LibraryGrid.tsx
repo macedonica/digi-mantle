@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LibraryItem } from '@/data/mockLibraryItems';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Book, Image as ImageIcon } from 'lucide-react';
@@ -9,13 +9,12 @@ interface LibraryGridProps {
 
 export const LibraryGrid = ({ items }: LibraryGridProps) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { language } = useLanguage();
 
   const handleItemClick = (id: string) => {
-    // Preserve the current page in the URL so when user clicks back, they return to the same page
-    const currentPage = searchParams.get('page') || '1';
-    navigate(`/item/${id}?returnPage=${currentPage}`);
+    // Preserve the entire current URL search params and state
+    navigate(`/item/${id}${location.search}`, { state: { from: location.pathname + location.search } });
   };
 
   if (items.length === 0) {
