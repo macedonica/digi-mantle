@@ -11,6 +11,7 @@ import type { LibraryItem } from '@/data/mockLibraryItems';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -26,7 +27,8 @@ interface FilterState {
 const Library = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { data: newspapers = [] } = useLibraryNewspapers();
   
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
@@ -93,7 +95,9 @@ const Library = () => {
         pdfUrl: item.pdf_url || undefined,
         imageUrl: item.image_url || undefined,
         category: item.category,
-        additionalImages: item.additional_images || []
+        additionalImages: item.additional_images || [],
+        sourceMk: item.source_mk,
+        sourceEn: item.source_en
       }));
 
       setItems(transformedItems);
@@ -177,8 +181,12 @@ const Library = () => {
 
     // Newspaper filter (for periodicals)
     if (activeType === 'periodical' && filters.newspaper !== 'all') {
-      if (!item.sourceMk || !item.sourceMk.toLowerCase().includes(filters.newspaper.toLowerCase())) {
-        return false;
+      const selectedNewspaper = newspapers.find(n => n.value === filters.newspaper);
+      if (selectedNewspaper) {
+        const matchesNewspaper = 
+          item.sourceMk === selectedNewspaper.name_mk ||
+          item.sourceEn === selectedNewspaper.name_en;
+        if (!matchesNewspaper) return false;
       }
     }
 
