@@ -228,6 +228,18 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
       // Create database entry with appropriate type
       const itemType = uploadType === 'image' ? 'image' : uploadType === 'periodical' ? 'periodical' : 'book';
 
+      // For periodicals, find the selected newspaper and get the localized names
+      let source_mk = formData.source_mk || null;
+      let source_en = formData.source_en || null;
+      
+      if (uploadType === 'periodical' && formData.newspaper) {
+        const selectedNewspaper = newspapers.find(n => n.value === formData.newspaper);
+        if (selectedNewspaper) {
+          source_mk = selectedNewspaper.name_mk;
+          source_en = selectedNewspaper.name_en;
+        }
+      }
+
       const { error: dbError } = await supabase
         .from('library_items')
         .insert({
@@ -242,8 +254,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           type: itemType,
           type_mk: formData.type_mk || null,
           type_en: formData.type_en || null,
-          source_mk: uploadType === 'periodical' ? formData.newspaper : formData.source_mk || null,
-          source_en: uploadType === 'periodical' ? formData.newspaper : formData.source_en || null,
+          source_mk: source_mk,
+          source_en: source_en,
           description_mk: formData.description_mk || null,
           description_en: formData.description_en || null,
           keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : null,
