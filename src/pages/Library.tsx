@@ -266,30 +266,30 @@ const Library = () => {
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
                   onClick={() => { setActiveType('book'); setCurrentPage(1); }}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'book' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Книги', 'Books')}
                 </button>
                 <button
                   onClick={() => { setActiveType('periodical'); setCurrentPage(1); }}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'periodical' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Периодика', 'Periodical')}
                 </button>
                 <button
                   onClick={() => { setActiveType('image'); setCurrentPage(1); }}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'image' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Сведоштва', 'Testimonials')}
@@ -330,30 +330,30 @@ const Library = () => {
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
                 <button
                   onClick={() => { setActiveType('book'); setCurrentPage(1); }}
-                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'book' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Книги', 'Books')}
                 </button>
                 <button
                   onClick={() => { setActiveType('periodical'); setCurrentPage(1); }}
-                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'periodical' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Периодика', 'Periodical')}
                 </button>
                 <button
                   onClick={() => { setActiveType('image'); setCurrentPage(1); }}
-                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all border ${
                     activeType === 'image' 
-                      ? 'bg-primary text-primary-foreground shadow-sm' 
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
                   }`}
                 >
                   {t('Сведоштва', 'Testimonials')}
