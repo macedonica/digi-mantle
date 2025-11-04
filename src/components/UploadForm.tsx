@@ -88,18 +88,18 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     issue_number_en: '',
   });
 
-  const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
-
-  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading) {
-    return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
-  }
-
   const [files, setFiles] = useState<{
     thumbnail?: File;
     pdf?: File;
     image?: File;
     additionalImages?: File[];
   }>({});
+
+  const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
+
+  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading) {
+    return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
