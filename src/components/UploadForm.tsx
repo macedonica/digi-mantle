@@ -18,7 +18,7 @@ import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOpt
 const uploadSchema = z.object({
   title_mk: z.string().trim().min(1, 'Title (MK) is required').max(500, 'Title (MK) must be less than 500 characters'),
   title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
-  author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
+  author: z.string().trim().max(200, 'Author (MK) must be less than 200 characters').optional(),
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
   year_mk: z.string().trim().min(1, 'Year (MK) is required').max(200, 'Year (MK) must be less than 200 characters'),
   year_en: z.string().trim().min(1, 'Year (EN) is required').max(200, 'Year (EN) must be less than 200 characters'),
@@ -58,9 +58,10 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
+  const { data: periodicalCategories = [], isLoading: periodicalCategoriesLoading } = useLibraryCategories('periodical');
   const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
 
-  const [uploadType, setUploadType] = useState<'document' | 'image' | null>(null);
+  const [uploadType, setUploadType] = useState<'document' | 'image' | 'periodical' | null>(null);
   const [bookContentType, setBookContentType] = useState<'pdf' | 'link'>('pdf');
   
   const [formData, setFormData] = useState({
@@ -83,11 +84,13 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     publication_city_en: '',
     publisher: '',
     publisher_en: '',
+    issue_number_mk: '',
+    issue_number_en: '',
   });
 
-  const availableCategories = uploadType === 'image' ? imageCategories : bookCategories;
+  const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
 
-  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading) {
+  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading) {
     return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
 
@@ -220,7 +223,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
       }
 
       // Create database entry with appropriate type
-      const itemType = uploadType === 'image' ? 'image' : 'book';
+      const itemType = uploadType === 'image' ? 'image' : uploadType === 'periodical' ? 'periodical' : 'book';
 
       const { error: dbError } = await supabase
         .from('library_items')
@@ -250,6 +253,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           publisher: formData.publisher || null,
           publisher_en: formData.publisher_en || null,
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
+          issue_number_mk: formData.issue_number_mk || null,
+          issue_number_en: formData.issue_number_en || null,
         });
 
       if (dbError) throw dbError;
@@ -278,7 +283,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           <h3 className="text-lg font-semibold text-center mb-6">
             {t('Избери тип на содржина', 'Select Content Type')}
           </h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <Button
               type="button"
               variant="outline"
@@ -289,6 +294,17 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span className="font-semibold">{t('Документ/Книга', 'Document/Book')}</span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="h-32 flex flex-col gap-2"
+              onClick={() => setUploadType('periodical')}
+            >
+              <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+              <span className="font-semibold">{t('Периодика', 'Periodical')}</span>
             </Button>
             <Button
               type="button"
@@ -309,6 +325,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <h3 className="text-lg font-semibold">
               {uploadType === 'document' 
                 ? t('Качи Документ/Книга', 'Upload Document/Book')
+                : uploadType === 'periodical'
+                ? t('Качи Периодика', 'Upload Periodical')
                 : t('Качи Слика', 'Upload Image')}
             </h3>
             <Button
@@ -342,43 +360,69 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="author">{t('Автор (МК)', 'Author (MK)')}</Label>
-              <Input
-                id="author"
-                value={formData.author}
-                onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                required
-              />
-            </div>
+            {uploadType !== 'periodical' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="author">{t('Автор (МК)', 'Author (MK)')}</Label>
+                  <Input
+                    id="author"
+                    value={formData.author}
+                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
-              <Input
-                id="author_en"
-                value={formData.author_en}
-                onChange={(e) => setFormData({ ...formData, author_en: e.target.value })}
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+                  <Input
+                    id="author_en"
+                    value={formData.author_en}
+                    onChange={(e) => setFormData({ ...formData, author_en: e.target.value })}
+                    required
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
-              <Input
-                id="publisher"
-                value={formData.publisher}
-                onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
+                  <Input
+                    id="publisher"
+                    value={formData.publisher}
+                    onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
-              <Input
-                id="publisher_en"
-                value={formData.publisher_en}
-                onChange={(e) => setFormData({ ...formData, publisher_en: e.target.value })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
+                  <Input
+                    id="publisher_en"
+                    value={formData.publisher_en}
+                    onChange={(e) => setFormData({ ...formData, publisher_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+
+            {uploadType === 'periodical' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="issue_number_mk">{t('Број на весник (МК)', 'Newspaper Number (MK)')}</Label>
+                  <Input
+                    id="issue_number_mk"
+                    value={formData.issue_number_mk}
+                    onChange={(e) => setFormData({ ...formData, issue_number_mk: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="issue_number_en">{t('Број на весник (EN)', 'Newspaper Number (EN)')}</Label>
+                  <Input
+                    id="issue_number_en"
+                    value={formData.issue_number_en}
+                    onChange={(e) => setFormData({ ...formData, issue_number_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
@@ -575,7 +619,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             />
           </div>
 
-          {uploadType === 'document' ? (
+          {uploadType === 'document' || uploadType === 'periodical' ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="thumbnail">{t('Сликичка', 'Thumbnail')} *</Label>

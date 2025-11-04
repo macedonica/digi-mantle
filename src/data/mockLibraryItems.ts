@@ -7,7 +7,7 @@ import personality1 from '@/assets/personality1.jpg';
 
 export interface LibraryItem {
   id: string;
-  type: 'book' | 'image';
+  type: 'book' | 'image' | 'periodical';
   title: { mk: string; en: string };
   author: string;
   authorEn?: string;

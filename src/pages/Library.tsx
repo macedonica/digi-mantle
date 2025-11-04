@@ -35,9 +35,11 @@ const Library = () => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) : 1;
   });
-  const [activeType, setActiveType] = useState<'book' | 'image'>(() => {
+  const [activeType, setActiveType] = useState<'book' | 'image' | 'periodical'>(() => {
     const typeParam = searchParams.get('type');
-    return typeParam === 'image' ? 'image' : 'book';
+    if (typeParam === 'image') return 'image';
+    if (typeParam === 'periodical') return 'periodical';
+    return 'book';
   });
   const [filters, setFilters] = useState<FilterState>(() => {
     const yearFrom = searchParams.get('yearFrom') || '';
@@ -74,7 +76,7 @@ const Library = () => {
       // Transform database format to LibraryItem format
       const transformedItems: LibraryItem[] = (data || []).map(item => ({
         id: item.id,
-        type: item.type as 'book' | 'image',
+        type: item.type as 'book' | 'image' | 'periodical',
         title: { mk: item.title_mk, en: item.title_en },
         author: item.author,
         authorEn: item.author_en,
@@ -273,6 +275,16 @@ const Library = () => {
                   {t('Книги', 'Books')}
                 </button>
                 <button
+                  onClick={() => { setActiveType('periodical'); setCurrentPage(1); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'periodical' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Периодика', 'Periodical')}
+                </button>
+                <button
                   onClick={() => { setActiveType('image'); setCurrentPage(1); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                     activeType === 'image' 
@@ -325,6 +337,16 @@ const Library = () => {
                   }`}
                 >
                   {t('Книги', 'Books')}
+                </button>
+                <button
+                  onClick={() => { setActiveType('periodical'); setCurrentPage(1); }}
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all ${
+                    activeType === 'periodical' 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('Периодика', 'Periodical')}
                 </button>
                 <button
                   onClick={() => { setActiveType('image'); setCurrentPage(1); }}

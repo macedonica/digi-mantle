@@ -15,7 +15,7 @@ export interface LibraryCategory {
   name_mk: string;
   name_en: string;
   value: string;
-  type: 'book' | 'image';
+  type: 'book' | 'image' | 'periodical';
   sort_order: number;
   is_active: boolean;
 }
@@ -41,7 +41,7 @@ export const useLibraryLanguages = (includeInactive = false) => {
   });
 };
 
-export const useLibraryCategories = (type: 'book' | 'image', includeInactive = false) => {
+export const useLibraryCategories = (type: 'book' | 'image' | 'periodical', includeInactive = false) => {
   return useQuery({
     queryKey: ['library-categories', type, includeInactive],
     queryFn: async () => {

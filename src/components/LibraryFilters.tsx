@@ -17,7 +17,7 @@ interface FilterState {
 interface LibraryFiltersProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
-  activeType: 'book' | 'image';
+  activeType: 'book' | 'image' | 'periodical';
 }
 
 export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryFiltersProps) => {
@@ -26,14 +26,15 @@ export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryF
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
   const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+  const { data: periodicalCategories = [], isLoading: periodicalCategoriesLoading } = useLibraryCategories('periodical');
 
   const updateFilter = (key: keyof FilterState, value: string) => {
     onFilterChange({ ...filters, [key]: value });
   };
 
-  const availableCategories = activeType === 'book' ? bookCategories : imageCategories;
+  const availableCategories = activeType === 'book' ? bookCategories : activeType === 'periodical' ? periodicalCategories : imageCategories;
 
-  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading) {
+  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading || periodicalCategoriesLoading) {
     return <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin" /></div>;
   }
 

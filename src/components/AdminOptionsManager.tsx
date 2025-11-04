@@ -20,6 +20,7 @@ export const AdminOptionsManager = () => {
   
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages(true);
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book', true);
+  const { data: periodicalCategories = [], isLoading: periodicalCategoriesLoading } = useLibraryCategories('periodical', true);
   const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image', true);
 
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
@@ -31,7 +32,7 @@ export const AdminOptionsManager = () => {
   const [editingCategory, setEditingCategory] = useState<LibraryCategory | null>(null);
 
   const [languageForm, setLanguageForm] = useState({ name_mk: '', name_en: '', value: '' });
-  const [categoryForm, setCategoryForm] = useState({ name_mk: '', name_en: '', value: '', type: 'book' as 'book' | 'image' });
+  const [categoryForm, setCategoryForm] = useState({ name_mk: '', name_en: '', value: '', type: 'book' as 'book' | 'image' | 'periodical' });
 
   const handleSaveLanguage = async () => {
     if (!languageForm.name_mk || !languageForm.name_en || !languageForm.value) {
@@ -78,7 +79,7 @@ export const AdminOptionsManager = () => {
           .eq('id', editingCategory.id);
         if (error) throw error;
       } else {
-        const relevantCategories = categoryForm.type === 'book' ? bookCategories : imageCategories;
+        const relevantCategories = categoryForm.type === 'book' ? bookCategories : categoryForm.type === 'periodical' ? periodicalCategories : imageCategories;
         const maxOrder = Math.max(...relevantCategories.map(c => c.sort_order), 0);
         const { error } = await supabase
           .from('library_categories')
@@ -128,7 +129,7 @@ export const AdminOptionsManager = () => {
   };
 
   const handleReorder = async (id: string, type: 'language' | 'category', direction: 'up' | 'down') => {
-    const items = type === 'language' ? languages : [...bookCategories, ...imageCategories];
+    const items = type === 'language' ? languages : [...bookCategories, ...periodicalCategories, ...imageCategories];
     const currentIndex = items.findIndex(item => item.id === id);
     if (currentIndex === -1) return;
 
@@ -150,7 +151,7 @@ export const AdminOptionsManager = () => {
     }
   };
 
-  if (languagesLoading || bookCategoriesLoading || imageCategoriesLoading) {
+  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading) {
     return <div>{t('Се вчитува...', 'Loading...')}</div>;
   }
 
@@ -243,12 +244,13 @@ export const AdminOptionsManager = () => {
               <div className="space-y-4">
                 <div>
                   <Label>{t('Тип', 'Type')}</Label>
-                  <Select value={categoryForm.type} onValueChange={(value: 'book' | 'image') => setCategoryForm({ ...categoryForm, type: value })}>
+                  <Select value={categoryForm.type} onValueChange={(value: 'book' | 'image' | 'periodical') => setCategoryForm({ ...categoryForm, type: value })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="book">{t('Книга', 'Book')}</SelectItem>
+                      <SelectItem value="periodical">{t('Периодика', 'Periodical')}</SelectItem>
                       <SelectItem value="image">{t('Слика', 'Image')}</SelectItem>
                     </SelectContent>
                   </Select>
@@ -289,6 +291,37 @@ export const AdminOptionsManager = () => {
                       <ChevronUp className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleReorder(cat.id, 'category', 'down')} disabled={index === bookCategories.length - 1}>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => { setEditingCategory(cat); setCategoryForm({ name_mk: cat.name_mk, name_en: cat.name_en, value: cat.value, type: cat.type }); setCategoryDialogOpen(true); }}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => { setItemToDelete({ id: cat.id, type: 'category' }); setDeleteDialogOpen(true); }}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">{t('Категории за Периодика', 'Periodical Categories')}</h4>
+            <div className="space-y-2">
+              {periodicalCategories.map((cat, index) => (
+                <div key={cat.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <p className="font-medium">{language === 'mk' ? cat.name_mk : cat.name_en}</p>
+                      <p className="text-sm text-muted-foreground">{cat.value}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch checked={cat.is_active} onCheckedChange={() => handleToggleActive(cat.id, 'category', cat.is_active)} />
+                    <Button variant="ghost" size="icon" onClick={() => handleReorder(cat.id, 'category', 'up')} disabled={index === 0}>
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleReorder(cat.id, 'category', 'down')} disabled={index === periodicalCategories.length - 1}>
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => { setEditingCategory(cat); setCategoryForm({ name_mk: cat.name_mk, name_en: cat.name_en, value: cat.value, type: cat.type }); setCategoryDialogOpen(true); }}>
