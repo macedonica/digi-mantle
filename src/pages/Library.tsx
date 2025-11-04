@@ -20,6 +20,7 @@ interface FilterState {
   language: string;
   author: string;
   categories: string[];
+  newspaper: string;
 }
 
 const Library = () => {
@@ -46,6 +47,7 @@ const Library = () => {
     const yearTo = searchParams.get('yearTo') || '';
     const language = searchParams.get('language') || 'all';
     const author = searchParams.get('author') || '';
+    const newspaper = searchParams.get('newspaper') || 'all';
     const categoriesParam = searchParams.get('categories');
     const categories = categoriesParam ? categoriesParam.split(',') : [];
     
@@ -54,7 +56,8 @@ const Library = () => {
       yearTo,
       language,
       author,
-      categories
+      categories,
+      newspaper
     };
   });
 
@@ -172,6 +175,13 @@ const Library = () => {
       return false;
     }
 
+    // Newspaper filter (for periodicals)
+    if (activeType === 'periodical' && filters.newspaper !== 'all') {
+      if (!item.sourceMk || !item.sourceMk.toLowerCase().includes(filters.newspaper.toLowerCase())) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -229,6 +239,7 @@ const Library = () => {
     if (filters.language !== 'all') params.language = filters.language;
     if (filters.author) params.author = filters.author;
     if (filters.categories.length > 0) params.categories = filters.categories.join(',');
+    if (filters.newspaper !== 'all') params.newspaper = filters.newspaper;
     
     const newParams = new URLSearchParams(params);
     const currentParamsStr = searchParams.toString();

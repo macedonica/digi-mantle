@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
-import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOptions';
+import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 
 // Validation schema for form inputs
 const uploadSchema = z.object({
@@ -23,7 +23,8 @@ const uploadSchema = z.object({
   year_mk: z.string().trim().min(1, 'Year (MK) is required').max(200, 'Year (MK) must be less than 200 characters'),
   year_en: z.string().trim().min(1, 'Year (EN) is required').max(200, 'Year (EN) must be less than 200 characters'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
-  categories: z.array(z.string()).min(1, 'At least one category is required'),
+  categories: z.array(z.string()).optional(),
+  newspaper: z.string().optional(),
   type_mk: z.string().optional(),
   type_en: z.string().optional(),
   source_mk: z.string().optional(),
@@ -60,6 +61,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
   const { data: periodicalCategories = [], isLoading: periodicalCategoriesLoading } = useLibraryCategories('periodical');
   const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+  const { data: newspapers = [], isLoading: newspapersLoading } = useLibraryNewspapers();
 
   const [uploadType, setUploadType] = useState<'document' | 'image' | 'periodical' | null>(null);
   const [bookContentType, setBookContentType] = useState<'pdf' | 'link'>('pdf');
@@ -73,6 +75,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     year_en: new Date().getFullYear().toString(),
     languages: [] as string[],
     categories: [] as string[],
+    newspaper: '', // Add newspaper field
     type_mk: '',
     type_en: '',
     source_mk: '',
@@ -97,7 +100,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
 
-  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading) {
+  if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading || newspapersLoading) {
     return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
 
@@ -235,12 +238,12 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           year_mk: formData.year_mk,
           year_en: formData.year_en,
           language: formData.languages,
-          category: formData.categories,
+          category: uploadType === 'periodical' ? [] : formData.categories,
           type: itemType,
           type_mk: formData.type_mk || null,
           type_en: formData.type_en || null,
-          source_mk: formData.source_mk || null,
-          source_en: formData.source_en || null,
+          source_mk: uploadType === 'periodical' ? formData.newspaper : formData.source_mk || null,
+          source_en: uploadType === 'periodical' ? formData.newspaper : formData.source_en || null,
           description_mk: formData.description_mk || null,
           description_en: formData.description_en || null,
           keywords: formData.keywords ? formData.keywords.split(',').map(k => k.trim()) : null,
@@ -537,38 +540,56 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </div>
             </div>
 
-            <div className="space-y-2 md:col-span-2">
-              <Label>{t('Категории', 'Categories')}</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
-                {availableCategories.map((cat) => (
-                  <div key={cat.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`cat-${cat.value}`}
-                      checked={formData.categories.includes(cat.value)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setFormData({ 
-                            ...formData, 
-                            categories: [...formData.categories, cat.value] 
-                          });
-                        } else {
-                          setFormData({ 
-                            ...formData, 
-                            categories: formData.categories.filter(c => c !== cat.value) 
-                          });
-                        }
-                      }}
-                    />
-                    <label 
-                      htmlFor={`cat-${cat.value}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {language === 'mk' ? cat.name_mk : cat.name_en}
-                    </label>
-                  </div>
-                ))}
+            {uploadType === 'periodical' ? (
+              <div className="space-y-2 md:col-span-2">
+                <Label>{t('Весник', 'Newspaper')}</Label>
+                <Select value={formData.newspaper} onValueChange={(value) => setFormData({ ...formData, newspaper: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('Избери весник', 'Select newspaper')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {newspapers.map((newspaper) => (
+                      <SelectItem key={newspaper.value} value={newspaper.value}>
+                        {language === 'mk' ? newspaper.name_mk : newspaper.name_en}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-2 md:col-span-2">
+                <Label>{t('Категории', 'Categories')}</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">
+                  {availableCategories.map((cat) => (
+                    <div key={cat.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`cat-${cat.value}`}
+                        checked={formData.categories.includes(cat.value)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setFormData({ 
+                              ...formData, 
+                              categories: [...formData.categories, cat.value] 
+                            });
+                          } else {
+                            setFormData({ 
+                              ...formData, 
+                              categories: formData.categories.filter(c => c !== cat.value) 
+                            });
+                          }
+                        }}
+                      />
+                      <label 
+                        htmlFor={`cat-${cat.value}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {language === 'mk' ? cat.name_mk : cat.name_en}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="keywords">{t('Клучни зборови (одвоени со запирка)', 'Keywords (comma separated)')}</Label>

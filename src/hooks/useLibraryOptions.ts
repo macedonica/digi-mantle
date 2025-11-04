@@ -62,3 +62,33 @@ export const useLibraryCategories = (type: 'book' | 'image' | 'periodical', incl
     },
   });
 };
+
+export interface LibraryNewspaper {
+  id: string;
+  name_mk: string;
+  name_en: string;
+  value: string;
+  sort_order: number;
+  is_active: boolean;
+}
+
+export const useLibraryNewspapers = (includeInactive = false) => {
+  return useQuery({
+    queryKey: ['library-newspapers', includeInactive],
+    queryFn: async () => {
+      let query = supabase
+        .from('library_newspapers')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (!includeInactive) {
+        query = query.eq('is_active', true);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data as LibraryNewspaper[];
+    },
+  });
+};

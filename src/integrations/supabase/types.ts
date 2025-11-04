@@ -179,6 +179,36 @@ export type Database = {
         }
         Relationships: []
       }
+      library_newspapers: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean
+          name_en: string
+          name_mk: string
+          sort_order: number
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en: string
+          name_mk: string
+          sort_order?: number
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          name_en?: string
+          name_mk?: string
+          sort_order?: number
+          value?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
