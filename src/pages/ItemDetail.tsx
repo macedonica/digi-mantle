@@ -310,11 +310,13 @@ const ItemDetail = () => {
                 <div className="flex items-center gap-2">
                   {item.type === "book" ? (
                     <BookIcon className="h-5 w-5 text-primary" />
+                  ) : item.type === "periodical" ? (
+                    <BookIcon className="h-5 w-5 text-primary" />
                   ) : (
                     <ImageIcon className="h-5 w-5 text-primary" />
                   )}
                   <span className="text-sm font-medium text-primary">
-                    {item.type === "book" ? t("Книга", "Book") : t("Сведоштво", "Testimonial")}
+                    {item.type === "book" ? t("Книга", "Book") : item.type === "periodical" ? t("Периодика", "Periodical") : t("Сведоштво", "Testimonial")}
                   </span>
                 </div>
 
@@ -381,7 +383,7 @@ const ItemDetail = () => {
                       </div>
                     )}
 
-                    {(item.sourceMk || item.sourceEn) && (() => {
+                    {(item.sourceMk || item.sourceEn) && item.type !== 'periodical' && (() => {
                       const sourceValue = language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk;
                       const isUrl = sourceValue && /^https?:\/\//i.test(sourceValue);
                       
