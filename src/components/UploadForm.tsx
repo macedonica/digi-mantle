@@ -439,23 +439,27 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
-              <Input
-                id="publication_city"
-                value={formData.publication_city}
-                onChange={(e) => setFormData({ ...formData, publication_city: e.target.value })}
-              />
-            </div>
+            {uploadType !== 'periodical' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
+                  <Input
+                    id="publication_city"
+                    value={formData.publication_city}
+                    onChange={(e) => setFormData({ ...formData, publication_city: e.target.value })}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
-              <Input
-                id="publication_city_en"
-                value={formData.publication_city_en}
-                onChange={(e) => setFormData({ ...formData, publication_city_en: e.target.value })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
+                  <Input
+                    id="publication_city_en"
+                    value={formData.publication_city_en}
+                    onChange={(e) => setFormData({ ...formData, publication_city_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="year_mk">{t('Година (МК)', 'Year (MK)')}</Label>
@@ -501,23 +505,27 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
-              <Input
-                id="source_mk"
-                value={formData.source_mk}
-                onChange={(e) => setFormData({ ...formData, source_mk: e.target.value })}
-              />
-            </div>
+            {uploadType === 'image' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
+                  <Input
+                    id="source_mk"
+                    value={formData.source_mk}
+                    onChange={(e) => setFormData({ ...formData, source_mk: e.target.value })}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
-              <Input
-                id="source_en"
-                value={formData.source_en}
-                onChange={(e) => setFormData({ ...formData, source_en: e.target.value })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
+                  <Input
+                    id="source_en"
+                    value={formData.source_en}
+                    onChange={(e) => setFormData({ ...formData, source_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2 md:col-span-2">
               <Label>{t('Јазици', 'Languages')}</Label>
