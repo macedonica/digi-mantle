@@ -338,6 +338,15 @@ const ItemDetail = () => {
                       </dd>
                     </div>
 
+                    {item.type === 'periodical' && (item.sourceMk || item.sourceEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Весник", "Newspaper")}</dt>
+                        <dd className="text-base">
+                          {language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk}
+                        </dd>
+                      </div>
+                    )}
+
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Јазици", "Languages")}</dt>
                       <dd className="text-base">{item.language.map(translateLanguage).join(", ")}</dd>
