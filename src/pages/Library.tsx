@@ -173,16 +173,6 @@ const Library = () => {
     return true;
   });
 
-  // Sync page number from URL params
-  useEffect(() => {
-    const pageParam = searchParams.get('page');
-    const pageNumber = pageParam ? parseInt(pageParam, 10) : 1;
-    if (pageNumber !== currentPage) {
-      setCurrentPage(pageNumber);
-    }
-  }, [searchParams]);
-
-
   // Clamp page if out of range when results change (skip while loading)
   useEffect(() => {
     if (loading) return;
@@ -196,7 +186,6 @@ const Library = () => {
     }
     if (currentPage > total) {
       setCurrentPage(total);
-      setSearchParams({ page: total.toString() });
     }
   }, [loading, filteredItems.length, currentPage]);
 
@@ -246,7 +235,7 @@ const Library = () => {
     if (currentParamsStr !== newParamsStr) {
       setSearchParams(newParams, { replace: true });
     }
-  }, [currentPage, activeType, searchQuery, filters]);
+  }, [currentPage, activeType, searchQuery, filters, searchParams, setSearchParams]);
 
   return (
     <div className="min-h-screen flex flex-col">
