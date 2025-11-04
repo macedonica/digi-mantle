@@ -15,18 +15,19 @@ import type { LibraryItem } from '@/data/mockLibraryItems';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
-import { useLibraryLanguages, useLibraryCategories } from '@/hooks/useLibraryOptions';
+import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 
 // Validation schema for edit form
 const editSchema = z.object({
   title_mk: z.string().trim().min(1, 'Title (MK) is required').max(500, 'Title (MK) must be less than 500 characters'),
   title_en: z.string().trim().min(1, 'Title (EN) is required').max(500, 'Title (EN) must be less than 500 characters'),
-  author: z.string().trim().min(1, 'Author (MK) is required').max(200, 'Author (MK) must be less than 200 characters'),
+  author: z.string().trim().max(200, 'Author (MK) must be less than 200 characters').optional(),
   author_en: z.string().trim().max(200, 'Author (EN) must be less than 200 characters').optional(),
   year_mk: z.string().trim().min(1, 'Year (MK) is required').max(200, 'Year (MK) must be less than 200 characters'),
   year_en: z.string().trim().min(1, 'Year (EN) is required').max(200, 'Year (EN) must be less than 200 characters'),
   languages: z.array(z.string()).min(1, 'At least one language is required'),
-  categories: z.array(z.string()).min(1, 'At least one category is required'),
+  categories: z.array(z.string()).optional(),
+  newspaper: z.string().optional(),
   type: z.string().min(1, 'Type is required'),
   type_mk: z.string().max(200, 'Type (MK) must be less than 200 characters').optional(),
   type_en: z.string().max(200, 'Type (EN) must be less than 200 characters').optional(),
@@ -39,6 +40,8 @@ const editSchema = z.object({
   publication_city_en: z.string().max(200, 'Publication city (EN) must be less than 200 characters').optional(),
   publisher: z.string().max(300, 'Publisher (MK) must be less than 300 characters').optional(),
   publisher_en: z.string().max(300, 'Publisher (EN) must be less than 300 characters').optional(),
+  issue_number_mk: z.string().optional(),
+  issue_number_en: z.string().optional(),
 });
 
 // File validation helper
@@ -67,6 +70,7 @@ export const AdminLibraryManager = () => {
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
   const { data: imageCategories = [], isLoading: imageCategoriesLoading } = useLibraryCategories('image');
+  const { data: newspapers = [], isLoading: newspapersLoading } = useLibraryNewspapers();
 
   const [editFormData, setEditFormData] = useState({
     title_mk: '',
@@ -77,6 +81,7 @@ export const AdminLibraryManager = () => {
     year_en: new Date().getFullYear().toString(),
     languages: [] as string[],
     categories: [] as string[],
+    newspaper: '',
     type: '',
     type_mk: '',
     type_en: '',
@@ -89,6 +94,8 @@ export const AdminLibraryManager = () => {
     publication_city_en: '',
     publisher: '',
     publisher_en: '',
+    issue_number_mk: '',
+    issue_number_en: '',
   });
 
 
@@ -135,7 +142,9 @@ export const AdminLibraryManager = () => {
         publicationCityEn: item.publication_city_en,
         publisher: item.publisher,
         publisherEn: item.publisher_en,
-        additionalImages: item.additional_images || []
+        additionalImages: item.additional_images || [],
+        issueNumberMk: (item as any).issue_number_mk,
+        issueNumberEn: (item as any).issue_number_en,
       }));
       setItems(transformedItems);
     }
@@ -145,6 +154,16 @@ export const AdminLibraryManager = () => {
   const handleEdit = (item: LibraryItem) => {
     setEditingItem(item);
     const yearValue = typeof item.year === 'number' ? item.year.toString() : (item.year || '');
+    
+    // For periodicals, try to find the newspaper by matching the source name
+    let newspaperValue = '';
+    if (item.type === 'periodical' && item.sourceMk) {
+      const matchingNewspaper = newspapers.find(n => 
+        n.name_mk === item.sourceMk || n.name_en === item.sourceEn
+      );
+      newspaperValue = matchingNewspaper?.value || '';
+    }
+    
     setEditFormData({
       title_mk: item.title.mk,
       title_en: item.title.en,
@@ -154,6 +173,7 @@ export const AdminLibraryManager = () => {
       year_en: item.yearEn || yearValue,
       languages: item.language,
       categories: item.category,
+      newspaper: newspaperValue,
       type: item.type,
       type_mk: item.typeMk || '',
       type_en: item.typeEn || '',
@@ -166,6 +186,8 @@ export const AdminLibraryManager = () => {
       publication_city_en: item.publicationCityEn || '',
       publisher: item.publisher || '',
       publisher_en: item.publisherEn || '',
+      issue_number_mk: (item as any).issueNumberMk || '',
+      issue_number_en: (item as any).issueNumberEn || '',
     });
   };
 
@@ -258,22 +280,34 @@ export const AdminLibraryManager = () => {
         pdfUrl = publicUrl;
       }
 
+      // For periodicals, convert newspaper value to localized names
+      let source_mk = editFormData.source_mk || null;
+      let source_en = editFormData.source_en || null;
+      
+      if (editFormData.type === 'periodical' && editFormData.newspaper) {
+        const selectedNewspaper = newspapers.find(n => n.value === editFormData.newspaper);
+        if (selectedNewspaper) {
+          source_mk = selectedNewspaper.name_mk;
+          source_en = selectedNewspaper.name_en;
+        }
+      }
+
       const { error } = await supabase
         .from('library_items')
         .update({
           title_mk: editFormData.title_mk,
           title_en: editFormData.title_en,
-          author: editFormData.author,
-          author_en: editFormData.author_en,
+          author: editFormData.author || null,
+          author_en: editFormData.author_en || null,
           year_mk: editFormData.year_mk,
           year_en: editFormData.year_en,
           language: editFormData.languages,
-          category: editFormData.categories,
+          category: editFormData.type === 'periodical' ? [] : editFormData.categories,
           type: editFormData.type,
           type_mk: editFormData.type_mk || null,
           type_en: editFormData.type_en || null,
-          source_mk: editFormData.source_mk || null,
-          source_en: editFormData.source_en || null,
+          source_mk: source_mk,
+          source_en: source_en,
           description_mk: editFormData.description_mk || null,
           description_en: editFormData.description_en || null,
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
@@ -284,6 +318,8 @@ export const AdminLibraryManager = () => {
           thumbnail_url: thumbnailUrl,
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
           pdf_url: pdfUrl || null,
+          issue_number_mk: editFormData.issue_number_mk || null,
+          issue_number_en: editFormData.issue_number_en || null,
         })
         .eq('id', editingItem.id);
 
@@ -443,38 +479,63 @@ export const AdminLibraryManager = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, title_en: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_author">{t('Автор (МК)', 'Author (MK)')}</Label>
-                <Input
-                  id="edit_author"
-                  value={editFormData.author}
-                  onChange={(e) => setEditFormData({ ...editFormData, author: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
-                <Input
-                  id="edit_author_en"
-                  value={editFormData.author_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, author_en: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
-                <Input
-                  id="edit_publisher"
-                  value={editFormData.publisher}
-                  onChange={(e) => setEditFormData({ ...editFormData, publisher: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
-                <Input
-                  id="edit_publisher_en"
-                  value={editFormData.publisher_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, publisher_en: e.target.value })}
-                />
-              </div>
+              {editFormData.type !== 'periodical' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_author">{t('Автор (МК)', 'Author (MK)')}</Label>
+                    <Input
+                      id="edit_author"
+                      value={editFormData.author}
+                      onChange={(e) => setEditFormData({ ...editFormData, author: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+                    <Input
+                      id="edit_author_en"
+                      value={editFormData.author_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, author_en: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
+                    <Input
+                      id="edit_publisher"
+                      value={editFormData.publisher}
+                      onChange={(e) => setEditFormData({ ...editFormData, publisher: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
+                    <Input
+                      id="edit_publisher_en"
+                      value={editFormData.publisher_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, publisher_en: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
+              
+              {editFormData.type === 'periodical' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_issue_number_mk">{t('Број на весник (МК)', 'Newspaper Number (MK)')}</Label>
+                    <Input
+                      id="edit_issue_number_mk"
+                      value={editFormData.issue_number_mk}
+                      onChange={(e) => setEditFormData({ ...editFormData, issue_number_mk: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_issue_number_en">{t('Број на весник (EN)', 'Newspaper Number (EN)')}</Label>
+                    <Input
+                      id="edit_issue_number_en"
+                      value={editFormData.issue_number_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, issue_number_en: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="edit_publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
                 <Input
@@ -579,38 +640,56 @@ export const AdminLibraryManager = () => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>{t('Категории', 'Categories')}</Label>
-                <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
-                  {(editFormData.type === 'image' ? imageCategories : bookCategories).map((cat) => (
-                    <div key={cat.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`edit-cat-${cat.value}`}
-                        checked={editFormData.categories.includes(cat.value)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setEditFormData({ 
-                              ...editFormData, 
-                              categories: [...editFormData.categories, cat.value] 
-                            });
-                          } else {
-                            setEditFormData({ 
-                              ...editFormData, 
-                              categories: editFormData.categories.filter(c => c !== cat.value) 
-                            });
-                          }
-                        }}
-                      />
-                      <label 
-                        htmlFor={`edit-cat-${cat.value}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {language === 'mk' ? cat.name_mk : cat.name_en}
-                      </label>
-                    </div>
-                  ))}
+              {editFormData.type === 'periodical' ? (
+                <div className="space-y-2 col-span-2">
+                  <Label htmlFor="edit_newspaper">{t('Весник', 'Newspaper')}</Label>
+                  <Select value={editFormData.newspaper} onValueChange={(value) => setEditFormData({ ...editFormData, newspaper: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('Избери весник', 'Select newspaper')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {newspapers.map((newspaper) => (
+                        <SelectItem key={newspaper.value} value={newspaper.value}>
+                          {language === 'mk' ? newspaper.name_mk : newspaper.name_en}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label>{t('Категории', 'Categories')}</Label>
+                  <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
+                    {(editFormData.type === 'image' ? imageCategories : bookCategories).map((cat) => (
+                      <div key={cat.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`edit-cat-${cat.value}`}
+                          checked={editFormData.categories.includes(cat.value)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setEditFormData({ 
+                                ...editFormData, 
+                                categories: [...editFormData.categories, cat.value] 
+                              });
+                            } else {
+                              setEditFormData({ 
+                                ...editFormData, 
+                                categories: editFormData.categories.filter(c => c !== cat.value) 
+                              });
+                            }
+                          }}
+                        />
+                        <label 
+                          htmlFor={`edit-cat-${cat.value}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {language === 'mk' ? cat.name_mk : cat.name_en}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit_keywords">{t('Клучни зборови', 'Keywords')}</Label>
