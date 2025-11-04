@@ -84,16 +84,18 @@ export const LibraryFilters = ({ filters, onFilterChange, activeType }: LibraryF
           </Select>
         </div>
 
-        {/* Author */}
-        <div className="space-y-2">
-          <Label>{t('Автор', 'Author')}</Label>
-          <Input
-            type="text"
-            placeholder={t('Име на автор', 'Author name')}
-            value={filters.author}
-            onChange={(e) => updateFilter('author', e.target.value)}
-          />
-        </div>
+        {/* Author filter - only show for non-periodical types */}
+        {activeType !== 'periodical' && (
+          <div className="space-y-2">
+            <Label>{t('Автор', 'Author')}</Label>
+            <Input
+              type="text"
+              placeholder={t('Име на автор', 'Author name')}
+              value={filters.author}
+              onChange={(e) => updateFilter('author', e.target.value)}
+            />
+          </div>
+        )}
 
         {/* Categories or Newspaper based on activeType */}
         {activeType === 'periodical' ? (

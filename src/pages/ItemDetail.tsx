@@ -324,10 +324,12 @@ const ItemDetail = () => {
                 {/* Metadata */}
                 <div className="space-y-4">
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    <div>
-                      <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
-                      <dd className="text-base">{language === "mk" ? item.author : item.authorEn || item.author}</dd>
-                    </div>
+                    {item.type !== 'periodical' && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
+                        <dd className="text-base">{language === "mk" ? item.author : item.authorEn || item.author}</dd>
+                      </div>
+                    )}
 
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Година", "Year")}</dt>
@@ -341,7 +343,7 @@ const ItemDetail = () => {
                       <dd className="text-base">{item.language.map(translateLanguage).join(", ")}</dd>
                     </div>
 
-                    {(item.publisher || item.publisherEn) && (
+                    {item.type !== 'periodical' && (item.publisher || item.publisherEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground mb-1">
                           {t("Издавач", "Published By")}
@@ -355,7 +357,7 @@ const ItemDetail = () => {
                     {(item.publicationCity || item.publicationCityEn) && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground mb-1">
-                          {t("Град на издавање", "Publication City")}
+                          {item.type === 'periodical' ? t("Место на издавање", "Publication Place") : t("Град на издавање", "Publication City")}
                         </dt>
                         <dd className="text-base">
                           {language === "mk" ? item.publicationCity : item.publicationCityEn || item.publicationCity}

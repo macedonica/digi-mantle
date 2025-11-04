@@ -534,24 +534,24 @@ export const AdminLibraryManager = () => {
                       onChange={(e) => setEditFormData({ ...editFormData, issue_number_en: e.target.value })}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publication_city">{t('Место на издавање (МК)', 'Publication Place (MK)')}</Label>
+                    <Input
+                      id="edit_publication_city"
+                      value={editFormData.publication_city}
+                      onChange={(e) => setEditFormData({ ...editFormData, publication_city: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publication_city_en">{t('Место на издавање (EN)', 'Publication Place (EN)')}</Label>
+                    <Input
+                      id="edit_publication_city_en"
+                      value={editFormData.publication_city_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, publication_city_en: e.target.value })}
+                    />
+                  </div>
                 </>
               )}
-              <div className="space-y-2">
-                <Label htmlFor="edit_publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
-                <Input
-                  id="edit_publication_city"
-                  value={editFormData.publication_city}
-                  onChange={(e) => setEditFormData({ ...editFormData, publication_city: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
-                <Input
-                  id="edit_publication_city_en"
-                  value={editFormData.publication_city_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, publication_city_en: e.target.value })}
-                />
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="edit_year_mk">{t('Година (МК)', 'Year (MK)')}</Label>
                 <Input
@@ -570,6 +570,27 @@ export const AdminLibraryManager = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, year_en: e.target.value })}
                 />
               </div>
+
+              {editFormData.type !== 'periodical' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
+                    <Input
+                      id="edit_publication_city"
+                      value={editFormData.publication_city}
+                      onChange={(e) => setEditFormData({ ...editFormData, publication_city: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publication_city_en">{t('Град на издавање (EN)', 'Publication City (EN)')}</Label>
+                    <Input
+                      id="edit_publication_city_en"
+                      value={editFormData.publication_city_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, publication_city_en: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
 
               {editFormData.type === 'image' && (
                 <>
@@ -592,22 +613,26 @@ export const AdminLibraryManager = () => {
                 </>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="edit_source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
-                <Input
-                  id="edit_source_mk"
-                  value={editFormData.source_mk}
-                  onChange={(e) => setEditFormData({ ...editFormData, source_mk: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
-                <Input
-                  id="edit_source_en"
-                  value={editFormData.source_en}
-                  onChange={(e) => setEditFormData({ ...editFormData, source_en: e.target.value })}
-                />
-              </div>
+              {editFormData.type !== 'periodical' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_source_mk">{t('Извор (МК)', 'Source (MK)')}</Label>
+                    <Input
+                      id="edit_source_mk"
+                      value={editFormData.source_mk}
+                      onChange={(e) => setEditFormData({ ...editFormData, source_mk: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_source_en">{t('Извор (EN)', 'Source (EN)')}</Label>
+                    <Input
+                      id="edit_source_en"
+                      value={editFormData.source_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, source_en: e.target.value })}
+                    />
+                  </div>
+                </>
+              )}
               <div className="space-y-2 col-span-2">
                 <Label>{t('Јазици', 'Languages')}</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border rounded-lg">

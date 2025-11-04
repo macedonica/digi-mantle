@@ -439,6 +439,28 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </>
             )}
 
+            {uploadType === 'periodical' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="publication_city">{t('Место на издавање (МК)', 'Publication Place (MK)')}</Label>
+                  <Input
+                    id="publication_city"
+                    value={formData.publication_city}
+                    onChange={(e) => setFormData({ ...formData, publication_city: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="publication_city_en">{t('Место на издавање (EN)', 'Publication Place (EN)')}</Label>
+                  <Input
+                    id="publication_city_en"
+                    value={formData.publication_city_en}
+                    onChange={(e) => setFormData({ ...formData, publication_city_en: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+
             {uploadType !== 'periodical' && (
               <>
                 <div className="space-y-2">
