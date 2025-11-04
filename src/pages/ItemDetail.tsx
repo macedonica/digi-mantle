@@ -279,7 +279,7 @@ const ItemDetail = () => {
                 </div>
 
                 {/* Action Buttons */}
-                {item.type === "book" && (
+                {(item.type === "book" || item.type === "periodical") && (
                   <div className="flex justify-center mt-4">
                     {signedPdfUrl ? (
                       <Button variant="hero" className="w-4/5" size="lg" onClick={handleOpenPDF}>
