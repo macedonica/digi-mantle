@@ -297,8 +297,8 @@ export const AdminLibraryManager = () => {
         .update({
           title_mk: editFormData.title_mk,
           title_en: editFormData.title_en,
-          author: editFormData.author || null,
-          author_en: editFormData.author_en || null,
+          author: editFormData.author || '',
+          author_en: editFormData.author_en || '',
           year_mk: editFormData.year_mk,
           year_en: editFormData.year_en,
           language: editFormData.languages,
