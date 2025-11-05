@@ -326,7 +326,7 @@ const ItemDetail = () => {
                 {/* Metadata */}
                 <div className="space-y-4">
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    {(item.author || item.authorEn) && (
+                    {item.type !== 'periodical' && (
                       <div>
                         <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
                         <dd className="text-base">{language === "mk" ? item.author : item.authorEn || item.author}</dd>
