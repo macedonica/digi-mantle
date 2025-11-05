@@ -136,14 +136,20 @@ const Library = () => {
 
   // Reset filters when activeType changes
   useEffect(() => {
-    setFilters({
-      yearFrom: '',
-      yearTo: '',
-      language: 'all',
-      author: '',
-      categories: [],
-      newspaper: 'all'
-    });
+    // Only reset if not coming from URL params (user actively changed type)
+    const typeFromUrl = searchParams.get('type');
+    const isTypeChangeFromUser = typeFromUrl !== activeType;
+    
+    if (isTypeChangeFromUser) {
+      setFilters({
+        yearFrom: '',
+        yearTo: '',
+        language: 'all',
+        author: '',
+        categories: [],
+        newspaper: 'all'
+      });
+    }
   }, [activeType]);
 
   const filteredItems = items.filter(item => {
