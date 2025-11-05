@@ -134,6 +134,18 @@ const Library = () => {
     }
   }, [location.state]);
 
+  // Reset filters when activeType changes
+  useEffect(() => {
+    setFilters({
+      yearFrom: '',
+      yearTo: '',
+      language: 'all',
+      author: '',
+      categories: [],
+      newspaper: 'all'
+    });
+  }, [activeType]);
+
   const filteredItems = items.filter(item => {
     // Type filter (from toggle)
     if (item.type !== activeType) return false;
