@@ -778,7 +778,7 @@ export const AdminLibraryManager = () => {
                 )}
               </div>
 
-              {editingItem?.type === 'book' && (
+              {(editingItem?.type === 'book' || editingItem?.type === 'periodical') && (
                 <div className="space-y-2">
                   <Label htmlFor="edit_pdf">{t('Нов PDF (Опционално)', 'New PDF (Optional)')}</Label>
                   <Input
