@@ -264,6 +264,8 @@ export type Database = {
           description_mk: string | null
           id: string | null
           image_url: string | null
+          issue_number_en: string | null
+          issue_number_mk: string | null
           keywords: string[] | null
           language: string[] | null
           pdf_url: string | null
@@ -294,6 +296,8 @@ export type Database = {
           description_mk?: string | null
           id?: string | null
           image_url?: string | null
+          issue_number_en?: string | null
+          issue_number_mk?: string | null
           keywords?: string[] | null
           language?: string[] | null
           pdf_url?: string | null
@@ -324,6 +328,8 @@ export type Database = {
           description_mk?: string | null
           id?: string | null
           image_url?: string | null
+          issue_number_en?: string | null
+          issue_number_mk?: string | null
           keywords?: string[] | null
           language?: string[] | null
           pdf_url?: string | null

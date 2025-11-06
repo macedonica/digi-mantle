@@ -97,7 +97,9 @@ const Library = () => {
         category: item.category,
         additionalImages: item.additional_images || [],
         sourceMk: item.source_mk,
-        sourceEn: item.source_en
+        sourceEn: item.source_en,
+        issueNumberMk: (item as any).issue_number_mk,
+        issueNumberEn: (item as any).issue_number_en,
       }));
 
       setItems(transformedItems);
