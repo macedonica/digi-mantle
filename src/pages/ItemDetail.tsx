@@ -103,6 +103,8 @@ const ItemDetail = () => {
           publisher: data.publisher,
           publisherEn: data.publisher_en,
           additionalImages: data.additional_images || [],
+          issueNumberMk: (data as any).issue_number_mk,
+          issueNumberEn: (data as any).issue_number_en,
         };
         setItem(transformedItem);
 
@@ -326,13 +328,6 @@ const ItemDetail = () => {
                 {/* Metadata */}
                 <div className="space-y-4">
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    {item.type !== 'periodical' && (
-                      <div>
-                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
-                        <dd className="text-base">{language === "mk" ? item.author : item.authorEn || item.author}</dd>
-                      </div>
-                    )}
-
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Година", "Year")}</dt>
                       <dd className="text-base">
@@ -345,6 +340,15 @@ const ItemDetail = () => {
                         <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Весник", "Newspaper")}</dt>
                         <dd className="text-base">
                           {language === "mk" ? item.sourceMk : item.sourceEn || item.sourceMk}
+                        </dd>
+                      </div>
+                    )}
+
+                    {item.type === 'periodical' && ((item as any).issueNumberMk || (item as any).issueNumberEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Број на весник", "Newspaper Number")}</dt>
+                        <dd className="text-base">
+                          {language === "mk" ? (item as any).issueNumberMk : (item as any).issueNumberEn || (item as any).issueNumberMk}
                         </dd>
                       </div>
                     )}

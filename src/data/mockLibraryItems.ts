@@ -30,6 +30,8 @@ export interface LibraryItem {
   publisher?: string;
   publisherEn?: string;
   additionalImages?: string[];
+  issueNumberMk?: string;
+  issueNumberEn?: string;
 }
 
 export const mockLibraryItems: LibraryItem[] = [

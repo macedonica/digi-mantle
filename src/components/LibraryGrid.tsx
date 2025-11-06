@@ -55,9 +55,17 @@ export const LibraryGrid = ({ items }: LibraryGridProps) => {
             <h3 className="font-bold text-sm line-clamp-2 min-h-[2.5rem]">
               {item.title[language]}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              {language === 'mk' ? item.author : (item.authorEn || item.author)}
-            </p>
+            {item.type === 'periodical' ? (
+              <p className="text-sm text-muted-foreground">
+                {language === 'mk' 
+                  ? (item as any).issueNumberMk || '' 
+                  : (item as any).issueNumberEn || (item as any).issueNumberMk || ''}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {language === 'mk' ? item.author : (item.authorEn || item.author)}
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
               {language === 'mk' ? (item.yearMk || item.year) : (item.yearEn || item.year)}
             </p>
