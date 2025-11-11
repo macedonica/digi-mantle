@@ -33,6 +33,8 @@ export const FeaturedCarousel = () => {
         author: item.author,
         authorEn: item.author_en,
         year: item.year,
+        yearMk: item.year_mk,
+        yearEn: item.year_en,
         language: item.language || [],
         keywords: item.keywords || [],
         description: { mk: item.description_mk || '', en: item.description_en || '' },
@@ -150,10 +152,10 @@ export const FeaturedCarousel = () => {
                   {language === 'mk' ? item.issueNumberMk : item.issueNumberEn}
                 </p>
               )}
-              {item.year && (
+              {(language === 'mk' ? item.yearMk : item.yearEn) && (
                 <p className="text-xs text-muted-foreground">
                   {language === 'mk' ? 'Година: ' : 'Year: '}
-                  {item.year}
+                  {language === 'mk' ? item.yearMk : item.yearEn}
                 </p>
               )}
             </div>
