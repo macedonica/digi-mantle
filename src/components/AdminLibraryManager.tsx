@@ -16,6 +16,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
 import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
+import { SearchBar } from '@/components/SearchBar';
 
 // Validation schema for edit form
 const editSchema = z.object({
@@ -66,6 +67,8 @@ export const AdminLibraryManager = () => {
   const [newThumbnail, setNewThumbnail] = useState<File | null>(null);
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
   const [newPdf, setNewPdf] = useState<File | null>(null);
+  const [selectedType, setSelectedType] = useState<string>('book');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
@@ -381,46 +384,89 @@ export const AdminLibraryManager = () => {
     );
   }
 
+  // Filter items by type and search query
+  const filteredItems = items.filter(item => {
+    const matchesType = item.type === selectedType;
+    
+    if (!searchQuery) return matchesType;
+    
+    const searchLower = searchQuery.toLowerCase();
+    const titleMatch = item.title.mk.toLowerCase().includes(searchLower) || 
+                       item.title.en.toLowerCase().includes(searchLower);
+    const authorMatch = item.author?.toLowerCase().includes(searchLower);
+    const keywordsMatch = item.keywords.some(k => k.toLowerCase().includes(searchLower));
+    
+    return matchesType && (titleMatch || authorMatch || keywordsMatch);
+  });
+
   return (
-    <div className="space-y-4">
-      {items.length === 0 ? (
-        <p className="text-center text-muted-foreground py-8">
-          {t('Нема ставки во библиотеката', 'No items in the library')}
-        </p>
-      ) : (
-        items.map((item) => (
-          <Card key={item.id} className="p-4">
-            <div className="flex items-start gap-4">
-              <img
-                src={item.thumbnail}
-                alt={item.title[language]}
-                className="w-20 h-20 object-cover rounded"
-              />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-lg truncate">{item.title[language]}</h3>
-                <p className="text-sm text-muted-foreground">{item.author} • {item.year}</p>
-                <p className="text-sm text-muted-foreground">{item.category}</p>
+    <div className="space-y-6">
+      {/* Type Filter Buttons */}
+      <div className="flex gap-2 flex-wrap">
+        <Button
+          variant={selectedType === 'book' ? 'default' : 'outline'}
+          onClick={() => setSelectedType('book')}
+        >
+          {t('Книги', 'Books')}
+        </Button>
+        <Button
+          variant={selectedType === 'image' ? 'default' : 'outline'}
+          onClick={() => setSelectedType('image')}
+        >
+          {t('Сведоштва', 'Testimonies')}
+        </Button>
+        <Button
+          variant={selectedType === 'periodical' ? 'default' : 'outline'}
+          onClick={() => setSelectedType('periodical')}
+        >
+          {t('Периодика', 'Periodicals')}
+        </Button>
+      </div>
+
+      {/* Search Bar */}
+      <SearchBar onSearch={setSearchQuery} />
+
+      {/* Items List */}
+      <div className="space-y-4">
+        {filteredItems.length === 0 ? (
+          <p className="text-center text-muted-foreground py-8">
+            {t('Нема ставки во оваа категорија', 'No items in this category')}
+          </p>
+        ) : (
+          filteredItems.map((item) => (
+            <Card key={item.id} className="p-4">
+              <div className="flex items-start gap-4">
+                <img
+                  src={item.thumbnail}
+                  alt={item.title[language]}
+                  className="w-20 h-20 object-cover rounded"
+                />
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-lg truncate">{item.title[language]}</h3>
+                  <p className="text-sm text-muted-foreground">{item.author} • {item.year}</p>
+                  <p className="text-sm text-muted-foreground">{item.category}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeletingId(item.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(item)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDeletingId(item.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))
-      )}
+            </Card>
+          ))
+        )}
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingItem} onOpenChange={(open) => {
