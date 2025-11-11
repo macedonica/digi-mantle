@@ -44,7 +44,9 @@ export const FeaturedCarousel = () => {
         publicationCityEn: item.publication_city_en,
         publisher: item.publisher,
         publisherEn: item.publisher_en,
-        additionalImages: item.additional_images || []
+        additionalImages: item.additional_images || [],
+        issueNumberMk: item.issue_number_mk,
+        issueNumberEn: item.issue_number_en
       }));
 
       setFeaturedItems(transformedItems);
@@ -142,7 +144,21 @@ export const FeaturedCarousel = () => {
               <p className="text-xs text-muted-foreground">
                 {language === 'mk' ? item.author : (item.authorEn || item.author)}
               </p>
-              <p className="text-xs text-muted-foreground">{item.year}</p>
+              {item.type === 'periodical' && (language === 'mk' ? item.issueNumberMk : item.issueNumberEn) && (
+                <p className="text-xs text-muted-foreground">
+                  {language === 'mk' ? 'Број на весник: ' : 'Newspaper number: '}
+                  {language === 'mk' ? item.issueNumberMk : item.issueNumberEn}
+                </p>
+              )}
+              {item.type === 'periodical' && (language === 'mk' ? item.year : (item.year)) && (
+                <p className="text-xs text-muted-foreground">
+                  {language === 'mk' ? 'Година на издавање: ' : 'Year of publication: '}
+                  {item.year}
+                </p>
+              )}
+              {item.type !== 'periodical' && (
+                <p className="text-xs text-muted-foreground">{item.year}</p>
+              )}
             </div>
           </div>
         ))}
