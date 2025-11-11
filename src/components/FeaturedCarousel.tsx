@@ -150,14 +150,11 @@ export const FeaturedCarousel = () => {
                   {language === 'mk' ? item.issueNumberMk : item.issueNumberEn}
                 </p>
               )}
-              {item.type === 'periodical' && (language === 'mk' ? item.year : (item.year)) && (
+              {item.year && (
                 <p className="text-xs text-muted-foreground">
-                  {language === 'mk' ? 'Година на издавање: ' : 'Year of publication: '}
+                  {language === 'mk' ? 'Година: ' : 'Year: '}
                   {item.year}
                 </p>
-              )}
-              {item.type !== 'periodical' && (
-                <p className="text-xs text-muted-foreground">{item.year}</p>
               )}
             </div>
           </div>
