@@ -11,20 +11,12 @@ export const Footer = () => {
           <p className="text-sm text-muted-foreground">
             © 2025 {t('Дигитален Архив. Сите права задржани.', 'Digital Archive. All rights reserved.')}
           </p>
-          <div className="flex gap-4">
-            <Link 
-              to="/terms" 
-              className="text-sm text-primary hover:underline"
-            >
-              {t('Услови за користење', 'Terms of Use')}
-            </Link>
-            <a 
-              href="mailto:b.macedonica@gmail.com" 
-              className="text-sm text-primary hover:underline"
-            >
-              {t('Контакт', 'Contact')}
-            </a>
-          </div>
+          <Link 
+            to="/terms" 
+            className="text-sm text-primary hover:underline"
+          >
+            {t('Услови за користење', 'Terms of Use')}
+          </Link>
         </div>
       </div>
     </footer>
