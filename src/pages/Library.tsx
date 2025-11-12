@@ -155,7 +155,8 @@ const Library = () => {
   }, [activeType]);
 
   // Helper function to extract 4-digit year from a string
-  const extractYear = (yearValue: string | number): number | null => {
+  const extractYear = (yearValue: string | number | null | undefined): number | null => {
+    if (!yearValue) return null;
     if (typeof yearValue === 'number') return yearValue;
     const match = yearValue.match(/\b(\d{4})\b/);
     return match ? parseInt(match[1], 10) : null;
