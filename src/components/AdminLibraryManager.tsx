@@ -68,6 +68,7 @@ export const AdminLibraryManager = () => {
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
   const [newPdf, setNewPdf] = useState<File | null>(null);
   const [newWatermark, setNewWatermark] = useState<File | null>(null);
+  const [removeWatermark, setRemoveWatermark] = useState(false);
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -299,7 +300,9 @@ export const AdminLibraryManager = () => {
 
       // Upload new watermark if provided
       let watermarkUrl = editingItem.watermarkUrl;
-      if (newWatermark) {
+      if (removeWatermark) {
+        watermarkUrl = null;
+      } else if (newWatermark) {
         validateFile(
           newWatermark,
           2 * 1024 * 1024, // 2MB
@@ -365,6 +368,7 @@ export const AdminLibraryManager = () => {
       setNewAdditionalImages([]);
       setNewPdf(null);
       setNewWatermark(null);
+      setRemoveWatermark(false);
       fetchItems();
     } catch (error: any) {
       toast({
@@ -874,12 +878,43 @@ export const AdminLibraryManager = () => {
                   id="edit_watermark"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setNewWatermark(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    setNewWatermark(e.target.files?.[0] || null);
+                    setRemoveWatermark(false);
+                  }}
                 />
-                {editingItem?.watermarkUrl && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('Тековниот воден жиг е поставен', 'Current watermark is set')}
-                  </p>
+                {editingItem?.watermarkUrl && !removeWatermark && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      {t('Тековниот воден жиг е поставен', 'Current watermark is set')}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setRemoveWatermark(true);
+                        setNewWatermark(null);
+                      }}
+                    >
+                      {t('Отстрани воден жиг', 'Remove Watermark')}
+                    </Button>
+                  </div>
+                )}
+                {removeWatermark && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-destructive">
+                      {t('Водениот жиг ќе биде отстранет', 'Watermark will be removed')}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRemoveWatermark(false)}
+                    >
+                      {t('Откажи', 'Cancel')}
+                    </Button>
+                  </div>
                 )}
                 <p className="text-sm text-muted-foreground">
                   {t('Квадратна слика која ќе се прикаже под сликичката', 'Square image that will be displayed under the thumbnail')}
