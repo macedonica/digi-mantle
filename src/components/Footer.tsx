@@ -1,4 +1,5 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from 'react-router-dom';
 
 export const Footer = () => {
   const { t } = useLanguage();
@@ -10,12 +11,20 @@ export const Footer = () => {
           <p className="text-sm text-muted-foreground">
             © 2025 {t('Дигитален Архив. Сите права задржани.', 'Digital Archive. All rights reserved.')}
           </p>
-          <a 
-            href="mailto:contact@digitalarchive.mk" 
-            className="text-sm text-primary hover:underline"
-          >
-            {t('Контакт', 'Contact')}
-          </a>
+          <div className="flex gap-4">
+            <Link 
+              to="/terms" 
+              className="text-sm text-primary hover:underline"
+            >
+              {t('Услови за користење', 'Terms of Use')}
+            </Link>
+            <a 
+              href="mailto:b.macedonica@gmail.com" 
+              className="text-sm text-primary hover:underline"
+            >
+              {t('Контакт', 'Contact')}
+            </a>
+          </div>
         </div>
       </div>
     </footer>

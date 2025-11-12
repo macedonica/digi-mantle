@@ -12,6 +12,7 @@ import Library from "./pages/Library";
 import ItemDetail from "./pages/ItemDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import TermsOfUse from "./pages/TermsOfUse";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/library" element={<Library />} />
             <Route path="/item/:id" element={<ItemDetail />} />
+            <Route path="/terms" element={<TermsOfUse />} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-dashboard" element={
               <ProtectedRoute>
