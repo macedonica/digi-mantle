@@ -316,8 +316,8 @@ export const AdminLibraryManager = () => {
           keywords: editFormData.keywords ? editFormData.keywords.split(',').map(k => k.trim()) : null,
           publication_city: editFormData.publication_city || null,
           publication_city_en: editFormData.publication_city_en || null,
-          publisher: editFormData.type === 'periodical' ? null : (editFormData.publisher || null),
-          publisher_en: editFormData.type === 'periodical' ? null : (editFormData.publisher_en || null),
+          publisher: editFormData.publisher || null,
+          publisher_en: editFormData.publisher_en || null,
           thumbnail_url: thumbnailUrl,
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
           pdf_url: pdfUrl || null,
@@ -618,6 +618,22 @@ export const AdminLibraryManager = () => {
                       id="edit_type_en"
                       value={editFormData.type_en}
                       onChange={(e) => setEditFormData({ ...editFormData, type_en: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publisher">{t('Издавач (МК)', 'Published By (MK)')}</Label>
+                    <Input
+                      id="edit_publisher"
+                      value={editFormData.publisher}
+                      onChange={(e) => setEditFormData({ ...editFormData, publisher: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_publisher_en">{t('Издавач (EN)', 'Published By (EN)')}</Label>
+                    <Input
+                      id="edit_publisher_en"
+                      value={editFormData.publisher_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, publisher_en: e.target.value })}
                     />
                   </div>
                 </>
