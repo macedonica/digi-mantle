@@ -308,7 +308,7 @@ const ItemDetail = () => {
 
                 {/* Watermark Display */}
                 {item.watermarkUrl && (
-                  <div className="flex justify-center mt-4">
+                  <div className="flex justify-center mt-8">
                     <img 
                       src={item.watermarkUrl} 
                       alt="Watermark" 
