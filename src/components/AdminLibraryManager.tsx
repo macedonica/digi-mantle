@@ -67,6 +67,7 @@ export const AdminLibraryManager = () => {
   const [newThumbnail, setNewThumbnail] = useState<File | null>(null);
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
   const [newPdf, setNewPdf] = useState<File | null>(null);
+  const [newWatermark, setNewWatermark] = useState<File | null>(null);
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -148,6 +149,7 @@ export const AdminLibraryManager = () => {
         additionalImages: item.additional_images || [],
         issueNumberMk: (item as any).issue_number_mk,
         issueNumberEn: (item as any).issue_number_en,
+        watermarkUrl: (item as any).watermark_url,
       }));
       setItems(transformedItems);
     }
@@ -295,6 +297,30 @@ export const AdminLibraryManager = () => {
         }
       }
 
+      // Upload new watermark if provided
+      let watermarkUrl = editingItem.watermarkUrl;
+      if (newWatermark) {
+        validateFile(
+          newWatermark,
+          2 * 1024 * 1024, // 2MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Watermark'
+        );
+
+        const watermarkPath = `${crypto.randomUUID()}-${newWatermark.name}`;
+        const { error: watermarkError } = await supabase.storage
+          .from('library-images')
+          .upload(watermarkPath, newWatermark);
+
+        if (watermarkError) throw watermarkError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('library-images')
+          .getPublicUrl(watermarkPath);
+        
+        watermarkUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('library_items')
         .update({
@@ -323,6 +349,7 @@ export const AdminLibraryManager = () => {
           pdf_url: pdfUrl || null,
           issue_number_mk: editFormData.issue_number_mk || null,
           issue_number_en: editFormData.issue_number_en || null,
+          watermark_url: watermarkUrl || null,
         })
         .eq('id', editingItem.id);
 
@@ -337,6 +364,7 @@ export const AdminLibraryManager = () => {
       setNewThumbnail(null);
       setNewAdditionalImages([]);
       setNewPdf(null);
+      setNewWatermark(null);
       fetchItems();
     } catch (error: any) {
       toast({
@@ -839,6 +867,24 @@ export const AdminLibraryManager = () => {
                   </p>
                 </div>
               )}
+
+              <div className="space-y-2">
+                <Label htmlFor="edit_watermark">{t('Воден жиг (Опционално)', 'Watermark (Optional)')}</Label>
+                <Input
+                  id="edit_watermark"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setNewWatermark(e.target.files?.[0] || null)}
+                />
+                {editingItem?.watermarkUrl && (
+                  <p className="text-sm text-muted-foreground">
+                    {t('Тековниот воден жиг е поставен', 'Current watermark is set')}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {t('Квадратна слика која ќе се прикаже под сликичката', 'Square image that will be displayed under the thumbnail')}
+                </p>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">

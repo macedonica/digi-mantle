@@ -96,6 +96,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     pdf?: File;
     image?: File;
     additionalImages?: File[];
+    watermark?: File;
   }>({});
 
   const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
@@ -225,6 +226,30 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
         }
       }
 
+      // Upload watermark if provided
+      let watermarkUrl = null;
+      if (files.watermark) {
+        validateFile(
+          files.watermark,
+          2 * 1024 * 1024, // 2MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Watermark'
+        );
+        
+        const watermarkPath = `${crypto.randomUUID()}-${files.watermark.name}`;
+        const { error: watermarkError } = await supabase.storage
+          .from('library-images')
+          .upload(watermarkPath, files.watermark);
+
+        if (watermarkError) throw watermarkError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('library-images')
+          .getPublicUrl(watermarkPath);
+        
+        watermarkUrl = publicUrl;
+      }
+
       // Create database entry with appropriate type
       const itemType = uploadType === 'image' ? 'image' : uploadType === 'periodical' ? 'periodical' : 'book';
 
@@ -270,6 +295,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
           issue_number_mk: formData.issue_number_mk || null,
           issue_number_en: formData.issue_number_en || null,
+          watermark_url: watermarkUrl,
         });
 
       if (dbError) throw dbError;
@@ -777,6 +803,19 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </div>
             </div>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="watermark">{t('Воден жиг (Опционално)', 'Watermark (Optional)')}</Label>
+            <Input
+              id="watermark"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFiles({ ...files, watermark: e.target.files?.[0] })}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t('Квадратна слика која ќе се прикаже под сликичката', 'Square image that will be displayed under the thumbnail')}
+            </p>
+          </div>
 
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? (

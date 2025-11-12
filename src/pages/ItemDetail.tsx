@@ -105,6 +105,7 @@ const ItemDetail = () => {
           additionalImages: data.additional_images || [],
           issueNumberMk: (data as any).issue_number_mk,
           issueNumberEn: (data as any).issue_number_en,
+          watermarkUrl: (data as any).watermark_url,
         };
         setItem(transformedItem);
 
@@ -302,6 +303,17 @@ const ItemDetail = () => {
                         {t("Отвори Извор", "Open Source")}
                       </Button>
                     ) : null}
+                  </div>
+                )}
+
+                {/* Watermark Display */}
+                {item.watermarkUrl && (
+                  <div className="flex justify-center mt-4">
+                    <img 
+                      src={item.watermarkUrl} 
+                      alt="Watermark" 
+                      className="max-w-[150px] w-full h-auto rounded-lg shadow-md"
+                    />
                   </div>
                 )}
               </div>
