@@ -22,25 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { LibraryItem } from "@/data/mockLibraryItems";
 import DOMPurify from "dompurify";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
-const languageNames: Record<string, { mk: string; en: string }> = {
-  Macedonian: { mk: "Македонски", en: "Macedonian" },
-  English: { mk: "Англиски", en: "English" },
-  German: { mk: "Германски", en: "German" },
-  French: { mk: "Француски", en: "French" },
-  Russian: { mk: "Руски", en: "Russian" },
-  Serbian: { mk: "Српски", en: "Serbian" },
-  Bulgarian: { mk: "Бугарски", en: "Bulgarian" },
-  Greek: { mk: "Грчки", en: "Greek" },
-  Turkish: { mk: "Турски", en: "Turkish" },
-  Albanian: { mk: "Албански", en: "Albanian" },
-  Црковнословенски: { mk: "Црковнословенски", en: "Church Slavonic" },
-  "Church Slavonic": { mk: "Црковнословенски", en: "Church Slavonic" },
-  Старословенски: { mk: "Старословенски", en: "Old Church Slavonic" },
-  "Old Church Slavonic": { mk: "Старословенски", en: "Old Church Slavonic" },
-  Глаголица: { mk: "Глаголица", en: "Glagolitic Script" },
-  "Glagolitic Script": { mk: "Глаголица", en: "Glagolitic Script" },
-};
+import { useLibraryLanguages } from "@/hooks/useLibraryOptions";
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -62,8 +44,14 @@ const ItemDetail = () => {
   const [isZoomDialogOpen, setIsZoomDialogOpen] = useState(false);
   const [zoomImageIndex, setZoomImageIndex] = useState(0);
 
+  const { data: languages = [] } = useLibraryLanguages();
+
   const translateLanguage = (lang: string) => {
-    return languageNames[lang]?.[language] || lang;
+    const languageOption = languages.find(l => l.value === lang);
+    if (languageOption) {
+      return language === 'mk' ? languageOption.name_mk : languageOption.name_en;
+    }
+    return lang;
   };
 
   useEffect(() => {
