@@ -154,12 +154,19 @@ const Library = () => {
     }
   }, [activeType]);
 
-  // Helper function to extract 4-digit year from a string
+  // Helper function to extract year from a string (supports 4-digit years in text)
   const extractYear = (yearValue: string | number | null | undefined): number | null => {
     if (!yearValue) return null;
     if (typeof yearValue === 'number') return yearValue;
     const match = yearValue.match(/\b(\d{4})\b/);
     return match ? parseInt(match[1], 10) : null;
+  };
+
+  // Helper function to parse year from filter input (supports partial years)
+  const parseFilterYear = (yearValue: string): number | null => {
+    if (!yearValue) return null;
+    const parsed = parseInt(yearValue, 10);
+    return isNaN(parsed) ? null : parsed;
   };
 
   const filteredItems = items.filter(item => {
@@ -183,8 +190,8 @@ const Library = () => {
 
     // Year range filter
     const itemYear = extractYear(item.year) ?? extractYear(item.yearMk) ?? extractYear(item.yearEn);
-    const fromYear = extractYear(filters.yearFrom);
-    const toYear = extractYear(filters.yearTo);
+    const fromYear = parseFilterYear(filters.yearFrom);
+    const toYear = parseFilterYear(filters.yearTo);
     const hasYearFilter = fromYear !== null || toYear !== null;
     if (hasYearFilter && itemYear === null) return false;
     if (fromYear !== null && itemYear! < fromYear) return false;
