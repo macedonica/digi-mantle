@@ -4,42 +4,36 @@ import { Footer } from "@/components/Footer";
 import { FeaturedCarousel } from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Search, BookOpen, Mountain, FileText, Users, Music } from "lucide-react";
+import { Search, BookOpen, FileText, Image as ImageIcon } from "lucide-react";
 import heroImage from "@/assets/hero-archive.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
   const { language, t } = useLanguage();
 
-  const navigateToLibrary = (category?: string) => {
-    navigate("/library", { state: { category } });
+  const navigateToLibrary = (type?: string) => {
+    if (type) {
+      navigate(`/library?type=${type}`);
+    } else {
+      navigate("/library");
+    }
   };
 
-  const thematicCategories = [
+  const typeCategories = [
     {
       icon: BookOpen,
-      title: { mk: "Историја", en: "History" },
-      category: "history",
-    },
-    {
-      icon: Mountain,
-      title: { mk: "Археологија", en: "Archaeology" },
-      category: "archaeology",
+      title: { mk: "Книги", en: "Books" },
+      type: "book",
     },
     {
       icon: FileText,
-      title: { mk: "Книжевност", en: "Literature" },
-      category: "literature",
+      title: { mk: "Периодика", en: "Periodicals" },
+      type: "periodical",
     },
     {
-      icon: Users,
-      title: { mk: "Етнологија", en: "Ethnology" },
-      category: "ethnology",
-    },
-    {
-      icon: Music,
-      title: { mk: "Фолклор", en: "Folklore" },
-      category: "folklore",
+      icon: ImageIcon,
+      title: { mk: "Слики", en: "Images" },
+      type: "image",
     },
   ];
 
@@ -82,21 +76,21 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Thematic Categories */}
+        {/* Type Categories */}
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">{t("Истражувајте по Теми", "Explore by Themes")}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
-              {thematicCategories.map((category, index) => {
+            <h2 className="text-3xl font-bold text-center mb-12">{t("Истражувајте по Тип", "Explore by Type")}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {typeCategories.map((category, index) => {
                 const Icon = category.icon;
                 return (
                   <button
                     key={index}
-                    onClick={() => navigateToLibrary(category.category)}
+                    onClick={() => navigateToLibrary(category.type)}
                     className="card-elevated p-8 space-y-4 text-center hover:bg-primary/5 transition-all"
                   >
                     <Icon className="h-12 w-12 mx-auto text-primary" />
-                    <h3 className="font-bold">{category.title[language]}</h3>
+                    <h3 className="font-bold text-lg">{category.title[language]}</h3>
                   </button>
                 );
               })}
