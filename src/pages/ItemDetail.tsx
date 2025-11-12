@@ -162,7 +162,7 @@ const ItemDetail = () => {
 
   const handleOpenPDF = () => {
     if (signedPdfUrl) {
-      window.open(signedPdfUrl, "_blank");
+      window.open(signedPdfUrl, "_blank", "noopener,noreferrer");
     }
   };
 
