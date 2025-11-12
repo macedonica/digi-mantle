@@ -182,9 +182,13 @@ const Library = () => {
     }
 
     // Year range filter
-    const itemYear = extractYear(item.year);
-    if (filters.yearFrom && itemYear !== null && itemYear < parseInt(filters.yearFrom)) return false;
-    if (filters.yearTo && itemYear !== null && itemYear > parseInt(filters.yearTo)) return false;
+    const itemYear = extractYear(item.year) ?? extractYear(item.yearMk) ?? extractYear(item.yearEn);
+    const fromYear = extractYear(filters.yearFrom);
+    const toYear = extractYear(filters.yearTo);
+    const hasYearFilter = fromYear !== null || toYear !== null;
+    if (hasYearFilter && itemYear === null) return false;
+    if (fromYear !== null && itemYear! < fromYear) return false;
+    if (toYear !== null && itemYear! > toYear) return false;
 
     // Language filter
     if (filters.language !== 'all' && 
