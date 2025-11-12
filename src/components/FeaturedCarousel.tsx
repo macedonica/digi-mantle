@@ -49,7 +49,7 @@ export const FeaturedCarousel = () => {
         additionalImages: item.additional_images || [],
         issueNumberMk: item.issue_number_mk,
         issueNumberEn: item.issue_number_en,
-        watermarkUrl: item.watermark_url
+        watermarkUrl: (item as any).watermark_url
       }));
 
       setFeaturedItems(transformedItems);
