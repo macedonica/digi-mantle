@@ -353,6 +353,15 @@ const ItemDetail = () => {
                       </div>
                     )}
 
+                    {(item.author || item.authorEn) && (
+                      <div>
+                        <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Автор", "Author")}</dt>
+                        <dd className="text-base">
+                          {language === "mk" ? item.author : item.authorEn || item.author}
+                        </dd>
+                      </div>
+                    )}
+
                     <div>
                       <dt className="text-sm font-medium text-muted-foreground mb-1">{t("Јазици", "Languages")}</dt>
                       <dd className="text-base">{item.language.map(translateLanguage).join(", ")}</dd>
