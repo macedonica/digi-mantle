@@ -62,11 +62,11 @@ export const LibraryGrid = ({ items }: LibraryGridProps) => {
                   ? (item as any).issueNumberMk || '' 
                   : (item as any).issueNumberEn || (item as any).issueNumberMk || ''}
               </p>
-            ) : (
+            ) : (item.author || item.authorEn) ? (
               <p className="text-sm text-muted-foreground">
                 {language === 'mk' ? item.author : (item.authorEn || item.author)}
               </p>
-            )}
+            ) : null}
             <p className="text-sm text-muted-foreground">
               {language === 'mk' ? (item.yearMk || item.year) : (item.yearEn || item.year)}
             </p>

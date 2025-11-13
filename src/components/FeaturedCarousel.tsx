@@ -144,9 +144,11 @@ export const FeaturedCarousel = () => {
               <h3 className="text-sm font-bold line-clamp-2 min-h-[2.5rem]">
                 {item.title[language]}
               </h3>
-              <p className="text-xs text-muted-foreground">
-                {language === 'mk' ? item.author : (item.authorEn || item.author)}
-              </p>
+              {(item.author || item.authorEn) && (
+                <p className="text-xs text-muted-foreground">
+                  {language === 'mk' ? item.author : (item.authorEn || item.author)}
+                </p>
+              )}
               {item.type === 'periodical' && (language === 'mk' ? item.issueNumberMk : item.issueNumberEn) && (
                 <p className="text-xs text-muted-foreground">
                   {language === 'mk' ? 'Број на весник: ' : 'Newspaper number: '}
