@@ -107,9 +107,16 @@ export const AdminLibraryManager = () => {
   });
 
 
+
   useEffect(() => {
     fetchItems();
   }, []);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedType, searchQuery]);
+
 
   const fetchItems = async () => {
     setLoading(true);
@@ -433,11 +440,6 @@ export const AdminLibraryManager = () => {
     
     return matchesType && (titleMatch || authorMatch || keywordsMatch);
   });
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedType, searchQuery]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
