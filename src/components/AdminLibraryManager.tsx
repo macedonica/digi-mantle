@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -71,6 +72,8 @@ export const AdminLibraryManager = () => {
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
@@ -431,6 +434,47 @@ export const AdminLibraryManager = () => {
     return matchesType && (titleMatch || authorMatch || keywordsMatch);
   });
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedType, searchQuery]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('ellipsis');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('ellipsis');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('ellipsis');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+        pages.push('ellipsis');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
   return (
     <div className="space-y-6">
       {/* Type Filter Buttons */}
@@ -460,12 +504,12 @@ export const AdminLibraryManager = () => {
 
       {/* Items List */}
       <div className="space-y-4">
-        {filteredItems.length === 0 ? (
+        {paginatedItems.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">
             {t('Нема ставки во оваа категорија', 'No items in this category')}
           </p>
         ) : (
-          filteredItems.map((item) => (
+          paginatedItems.map((item) => (
             <Card key={item.id} className="p-4">
               <div className="flex items-start gap-4">
                 <img
@@ -499,6 +543,43 @@ export const AdminLibraryManager = () => {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+            
+            {getPageNumbers().map((pageNum, idx) => (
+              <PaginationItem key={idx}>
+                {pageNum === 'ellipsis' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    onClick={() => setCurrentPage(pageNum as number)}
+                    isActive={currentPage === pageNum}
+                    className="cursor-pointer"
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingItem} onOpenChange={(open) => {
