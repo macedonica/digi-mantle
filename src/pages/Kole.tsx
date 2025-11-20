@@ -155,12 +155,15 @@ const Kole = () => {
 
         {/* Section 1: Photo Left, Text Right */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
-          <div className="flex justify-center">
+          <div className="flex flex-col justify-center">
             <img 
               src={koleMangov} 
               alt="Коле Мангов" 
               className="w-full max-w-md rounded-lg shadow-lg"
             />
+            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
+              {language === 'mk' ? 'Коле Мангов - македонски публицист и борец за човекови права' : 'Kole Mangov - Macedonian publicist and human rights activist'}
+            </p>
           </div>
           <div className="prose prose-lg max-w-none">
             <p className="text-foreground leading-relaxed whitespace-pre-line">
@@ -176,23 +179,29 @@ const Kole = () => {
               {data.sections[1].text}
             </p>
           </div>
-          <div className="flex justify-center md:order-2">
+          <div className="flex flex-col justify-center md:order-2">
             <img 
               src={koleMangov} 
               alt="Коле Мангов" 
               className="w-full max-w-md rounded-lg shadow-lg"
             />
+            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md mx-auto">
+              {language === 'mk' ? 'Коле Мангов - судија и поет' : 'Kole Mangov - judge and poet'}
+            </p>
           </div>
         </div>
 
         {/* Section 3: Photo Left, Text Right */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
-          <div className="flex justify-center">
+          <div className="flex flex-col justify-center">
             <img 
               src={koleMangov} 
               alt="Коле Мангов" 
               className="w-full max-w-md rounded-lg shadow-lg"
             />
+            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
+              {language === 'mk' ? 'Коле Мангов - основач на здружението Достоинство' : 'Kole Mangov - founder of the Dignity association'}
+            </p>
           </div>
           <div className="prose prose-lg max-w-none">
             <p className="text-foreground leading-relaxed whitespace-pre-line">
