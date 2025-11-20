@@ -33,6 +33,7 @@ export interface LibraryItem {
   issueNumberMk?: string;
   issueNumberEn?: string;
   watermarkUrl?: string;
+  watermarkLink?: string;
 }
 
 export const mockLibraryItems: LibraryItem[] = [

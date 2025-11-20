@@ -70,6 +70,8 @@ export const AdminLibraryManager = () => {
   const [newPdf, setNewPdf] = useState<File | null>(null);
   const [newWatermark, setNewWatermark] = useState<File | null>(null);
   const [removeWatermark, setRemoveWatermark] = useState(false);
+  const [watermarkClickable, setWatermarkClickable] = useState(false);
+  const [watermarkLink, setWatermarkLink] = useState('');
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,6 +163,7 @@ export const AdminLibraryManager = () => {
         issueNumberMk: (item as any).issue_number_mk,
         issueNumberEn: (item as any).issue_number_en,
         watermarkUrl: (item as any).watermark_url,
+        watermarkLink: (item as any).watermark_link,
       }));
       setItems(transformedItems);
     }
@@ -205,6 +208,15 @@ export const AdminLibraryManager = () => {
       issue_number_mk: (item as any).issueNumberMk || '',
       issue_number_en: (item as any).issueNumberEn || '',
     });
+
+    // Set watermark link state
+    if (item.watermarkUrl && item.watermarkLink) {
+      setWatermarkClickable(true);
+      setWatermarkLink(item.watermarkLink);
+    } else {
+      setWatermarkClickable(false);
+      setWatermarkLink('');
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -363,6 +375,7 @@ export const AdminLibraryManager = () => {
           issue_number_mk: editFormData.issue_number_mk || null,
           issue_number_en: editFormData.issue_number_en || null,
           watermark_url: watermarkUrl || null,
+          watermark_link: (watermarkUrl && watermarkClickable && watermarkLink) ? watermarkLink : null,
         })
         .eq('id', editingItem.id);
 
@@ -379,6 +392,8 @@ export const AdminLibraryManager = () => {
       setNewPdf(null);
       setNewWatermark(null);
       setRemoveWatermark(false);
+      setWatermarkClickable(false);
+      setWatermarkLink('');
       fetchItems();
     } catch (error: any) {
       toast({
@@ -590,6 +605,10 @@ export const AdminLibraryManager = () => {
           setNewThumbnail(null);
           setNewAdditionalImages([]);
           setNewPdf(null);
+          setNewWatermark(null);
+          setRemoveWatermark(false);
+          setWatermarkClickable(false);
+          setWatermarkLink('');
         }
       }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -1002,6 +1021,38 @@ export const AdminLibraryManager = () => {
                 <p className="text-sm text-muted-foreground">
                   {t('Квадратна слика која ќе се прикаже под сликичката', 'Square image that will be displayed under the thumbnail')}
                 </p>
+
+                {/* Watermark link options */}
+                {(editingItem?.watermarkUrl || newWatermark) && !removeWatermark && (
+                  <>
+                    <div className="flex items-center space-x-2 pt-2">
+                      <Checkbox
+                        id="edit_watermarkClickable"
+                        checked={watermarkClickable}
+                        onCheckedChange={(checked) => setWatermarkClickable(checked === true)}
+                      />
+                      <Label htmlFor="edit_watermarkClickable" className="cursor-pointer">
+                        {t('Направи водениот жиг кликлив', 'Make watermark clickable')}
+                      </Label>
+                    </div>
+
+                    {watermarkClickable && (
+                      <div className="space-y-2 pt-2">
+                        <Label htmlFor="edit_watermarkLink">{t('Линк за воден жиг', 'Watermark Link')}</Label>
+                        <Input
+                          id="edit_watermarkLink"
+                          type="url"
+                          placeholder="https://example.com"
+                          value={watermarkLink}
+                          onChange={(e) => setWatermarkLink(e.target.value)}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          {t('Внесете URL каде сакате да води водениот жиг', 'Enter the URL where the watermark should link to')}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 

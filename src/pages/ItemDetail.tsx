@@ -94,6 +94,7 @@ const ItemDetail = () => {
           issueNumberMk: (data as any).issue_number_mk,
           issueNumberEn: (data as any).issue_number_en,
           watermarkUrl: (data as any).watermark_url,
+          watermarkLink: (data as any).watermark_link,
         };
         setItem(transformedItem);
 
@@ -297,11 +298,26 @@ const ItemDetail = () => {
                 {/* Watermark Display */}
                 {item.watermarkUrl && (
                   <div className="flex justify-center mt-16">
-                    <img 
-                      src={item.watermarkUrl} 
-                      alt="Watermark" 
-                      className="max-w-[200px] lg:max-w-[267px] mx-auto h-auto rounded-lg shadow-md"
-                    />
+                    {item.watermarkLink ? (
+                      <a 
+                        href={item.watermarkLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="block transition-transform hover:scale-105"
+                      >
+                        <img 
+                          src={item.watermarkUrl} 
+                          alt="Watermark" 
+                          className="max-w-[200px] lg:max-w-[267px] mx-auto h-auto rounded-lg shadow-md cursor-pointer"
+                        />
+                      </a>
+                    ) : (
+                      <img 
+                        src={item.watermarkUrl} 
+                        alt="Watermark" 
+                        className="max-w-[200px] lg:max-w-[267px] mx-auto h-auto rounded-lg shadow-md"
+                      />
+                    )}
                   </div>
                 )}
               </div>
