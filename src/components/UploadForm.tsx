@@ -99,6 +99,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
     watermark?: File;
   }>({});
 
+  const [watermarkClickable, setWatermarkClickable] = useState(false);
+  const [watermarkLink, setWatermarkLink] = useState('');
+
   const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
 
   if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading || newspapersLoading) {
@@ -296,6 +299,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           issue_number_mk: formData.issue_number_mk || null,
           issue_number_en: formData.issue_number_en || null,
           watermark_url: watermarkUrl,
+          watermark_link: watermarkClickable && watermarkLink ? watermarkLink : null,
         });
 
       if (dbError) throw dbError;
@@ -804,7 +808,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-4 border rounded-lg p-4">
             <Label htmlFor="watermark">{t('Воден жиг (Опционално)', 'Watermark (Optional)')}</Label>
             <Input
               id="watermark"
@@ -815,6 +819,37 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <p className="text-sm text-muted-foreground">
               {t('Квадратна слика која ќе се прикаже под сликичката', 'Square image that will be displayed under the thumbnail')}
             </p>
+
+            {files.watermark && (
+              <>
+                <div className="flex items-center space-x-2 pt-2">
+                  <Checkbox
+                    id="watermarkClickable"
+                    checked={watermarkClickable}
+                    onCheckedChange={(checked) => setWatermarkClickable(checked === true)}
+                  />
+                  <Label htmlFor="watermarkClickable" className="cursor-pointer">
+                    {t('Направи водениот жиг кликлив', 'Make watermark clickable')}
+                  </Label>
+                </div>
+
+                {watermarkClickable && (
+                  <div className="space-y-2 pt-2">
+                    <Label htmlFor="watermarkLink">{t('Линк за воден жиг', 'Watermark Link')}</Label>
+                    <Input
+                      id="watermarkLink"
+                      type="url"
+                      placeholder="https://example.com"
+                      value={watermarkLink}
+                      onChange={(e) => setWatermarkLink(e.target.value)}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {t('Внесете URL каде сакате да води водениот жиг', 'Enter the URL where the watermark should link to')}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">

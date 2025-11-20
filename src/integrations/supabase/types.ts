@@ -77,6 +77,7 @@ export type Database = {
           type_mk: string | null
           updated_at: string | null
           uploaded_by: string | null
+          watermark_link: string | null
           watermark_url: string | null
           year: string | null
           year_en: string | null
@@ -111,6 +112,7 @@ export type Database = {
           type_mk?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
+          watermark_link?: string | null
           watermark_url?: string | null
           year?: string | null
           year_en?: string | null
@@ -145,6 +147,7 @@ export type Database = {
           type_mk?: string | null
           updated_at?: string | null
           uploaded_by?: string | null
+          watermark_link?: string | null
           watermark_url?: string | null
           year?: string | null
           year_en?: string | null
