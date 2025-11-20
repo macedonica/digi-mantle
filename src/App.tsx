@@ -13,6 +13,7 @@ import ItemDetail from "./pages/ItemDetail";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import TermsOfUse from "./pages/TermsOfUse";
+import Kole from "./pages/Kole";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/library" element={<Library />} />
             <Route path="/item/:id" element={<ItemDetail />} />
             <Route path="/terms" element={<TermsOfUse />} />
+            <Route path="/kole" element={<Kole />} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-dashboard" element={
               <ProtectedRoute>
