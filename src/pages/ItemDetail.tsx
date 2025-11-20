@@ -300,7 +300,7 @@ const ItemDetail = () => {
                     <img 
                       src={item.watermarkUrl} 
                       alt="Watermark" 
-                      className="max-w-[200px] lg:max-w-[320px] mx-auto h-auto rounded-lg shadow-md"
+                      className="max-w-[200px] lg:max-w-[267px] mx-auto h-auto rounded-lg shadow-md"
                     />
                   </div>
                 )}
