@@ -243,30 +243,33 @@ const Kole = () => {
             {data.poemsTitle}
           </h3>
 
-          {/* Poem 1 */}
-          <div className="mb-12 bg-muted/30 p-8 rounded-lg">
-            <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
-              {data.poem1Title}
-            </h4>
-            <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4">
-              {data.poem1}
-            </pre>
-            <p className="text-sm text-muted-foreground italic text-center">
-              {data.poem1Note}
-            </p>
-          </div>
+          {/* Poems side by side */}
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Poem 1 */}
+            <div className="bg-muted/30 p-8 rounded-lg flex flex-col">
+              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
+                {data.poem1Title}
+              </h4>
+              <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4 flex-1">
+                {data.poem1}
+              </pre>
+              <p className="text-sm text-muted-foreground italic text-center">
+                {data.poem1Note}
+              </p>
+            </div>
 
-          {/* Poem 2 */}
-          <div className="bg-muted/30 p-8 rounded-lg">
-            <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
-              {data.poem2Title}
-            </h4>
-            <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4">
-              {data.poem2}
-            </pre>
-            <p className="text-sm text-muted-foreground italic text-center">
-              {data.poem2Note}
-            </p>
+            {/* Poem 2 */}
+            <div className="bg-muted/30 p-8 rounded-lg flex flex-col">
+              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
+                {data.poem2Title}
+              </h4>
+              <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4 flex-1">
+                {data.poem2}
+              </pre>
+              <p className="text-sm text-muted-foreground italic text-center">
+                {data.poem2Note}
+              </p>
+            </div>
           </div>
         </div>
       </main>
