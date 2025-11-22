@@ -191,18 +191,8 @@ const Kole = () => {
           </div>
         </div>
 
-        {/* Section 3: Photo Left, Text Right */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
-          <div className="flex flex-col justify-center">
-            <img 
-              src={koleMangov} 
-              alt="Коле Мангов" 
-              className="w-full max-w-md rounded-lg shadow-lg"
-            />
-            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
-              {language === 'mk' ? 'Коле Мангов - основач на здружението Достоинство' : 'Kole Mangov - founder of the Dignity association'}
-            </p>
-          </div>
+        {/* Section 3: Full width text only */}
+        <div className="mb-16">
           <div className="prose prose-lg max-w-none">
             <p className="text-foreground leading-relaxed whitespace-pre-line">
               {data.sections[2].text}
@@ -217,6 +207,18 @@ const Kole = () => {
               {data.humanRights}
             </p>
           </div>
+        </div>
+
+        {/* Third Image - Centered above quote */}
+        <div className="flex flex-col items-center mb-12">
+          <img 
+            src={koleMangov} 
+            alt="Коле Мангов" 
+            className="w-full max-w-md rounded-lg shadow-lg"
+          />
+          <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
+            {language === 'mk' ? 'Коле Мангов - основач на здружението Достоинство' : 'Kole Mangov - founder of the Dignity association'}
+          </p>
         </div>
 
         {/* Quote */}
