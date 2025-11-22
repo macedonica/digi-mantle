@@ -239,7 +239,7 @@ const Kole = () => {
 
         {/* Poems Section */}
         <div className="border-t border-border pt-16">
-          <h3 className="text-3xl font-bold text-foreground mb-12 text-center">
+          <h3 className="text-3xl font-bold text-primary mb-12 text-center">
             {data.poemsTitle}
           </h3>
 
