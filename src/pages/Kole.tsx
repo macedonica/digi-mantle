@@ -148,7 +148,7 @@ const Kole = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             {data.title}
           </h1>
-          <h2 className="text-2xl md:text-3xl text-muted-foreground">
+          <h2 className="text-2xl md:text-3xl text-primary">
             {data.subtitle}
           </h2>
         </div>
