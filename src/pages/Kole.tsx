@@ -246,7 +246,7 @@ const Kole = () => {
           {/* Poems side by side */}
           <div className="grid md:grid-cols-2 gap-8">
             {/* Poem 1 */}
-            <div className="bg-muted/40 p-8 rounded-lg flex flex-col">
+            <div className="bg-muted/60 p-8 rounded-lg flex flex-col">
               <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
                 {data.poem1Title}
               </h4>
@@ -259,7 +259,7 @@ const Kole = () => {
             </div>
 
             {/* Poem 2 */}
-            <div className="bg-muted/40 p-8 rounded-lg flex flex-col">
+            <div className="bg-muted/60 p-8 rounded-lg flex flex-col">
               <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
                 {data.poem2Title}
               </h4>
