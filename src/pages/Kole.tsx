@@ -38,7 +38,8 @@ const Kole = () => {
 Борбата за македонските прашања ја водел на високо ниво и остварувал лична кореспонденција со видни политичари и дипломати од сиот свет, како што се: Жао де Деуш Пињеира, претседавач на Министерскиот совет на Европската заедница; Романо Проди, претседател на Европската комисија; Медлин Олбрајт, државен секретар на САД; Бутрос Бутрос Гали, генерален секретар на Обединетите Нации; Ото Фон Хабзбург, пратеник во Европскиот парламент, други претседатели на држави и шефови на дипломатии. За неговата работа бил интервјуиран од бројни медиуми од земјата и од странство, меѓу кои од Грција, Белгија, Словенија, Јапонија, итн.
 
 Во едно обраќање во медиумите тој сосема прецизно ја доловува формулата, како според него треба секој поединец да настапува, во заштита на човековите права:`,
-    quote: 'Очекувам писма да бидат испраќани и од вас како читатели до многу релевантни личности. Би требало да станеме поактивни околу ова прашање за да престане употребата на кратенката ФИРОМ. Не е збор за спор за името! Зошто нашата власт не ѝ врати на Грција со "поранешна турска провинција Грција"...Негацијата на Македонците како малцинство во Грција помина во негација на Македонците како нација. Јас, без знаење на англискиот јазик, толку можам...',
+    quote:
+      'Очекувам писма да бидат испраќани и од вас како читатели до многу релевантни личности. Би требало да станеме поактивни околу ова прашање за да престане употребата на кратенката ФИРОМ. Не е збор за спор за името! Зошто нашата власт не ѝ врати на Грција со "поранешна турска провинција Грција"...Негацијата на Македонците како малцинство во Грција помина во негација на Македонците како нација. Јас, без знаење на англискиот јазик, толку можам...',
     legacy: `Неговиот публицистички опус е издаден во две книги „За македонските човечки права", публицистика, 1995 во издание на МРТ – Македонско радио и „Во одбрана на македонскиот национален идентитет", публицистика, 1998 во издание на НИП „Глобус", Скопје.
 
 Коле Мангов почина на 73 годишна возраст на 1 јануари 2013 во Скопје. Бил оженет и татко на две ќерки.`,
@@ -118,7 +119,8 @@ const Kole = () => {
 Кога ми се најавува
 Говорот на коските
 И говорот на крвта`,
-    poem2Note: 'Песна објавена во "Нова Македонија", Скопје, 20 јуни 1982 година и во "Песната меѓу двете лета", издание на Струшките вечери на поезијата, Струга, 1982, на македонски, англиски, француски и руски јазик.',
+    poem2Note:
+      'Песна објавена во "Нова Македонија", Скопје, 20 јуни 1982 година и во "Песната меѓу двете лета", издание на Струшките вечери на поезијата, Струга, 1982, на македонски, англиски, француски и руски јазик.',
   };
 
   const contentEN = {
@@ -158,60 +160,49 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
     poem1Note: "(Published in Studentski Zbor, Skopje, 18 April 1980, and in Macedonia, Skopje, August 1981)",
     poem2Title: "INSCRIPTION",
     poem2: "[Poem text to be added]",
-    poem2Note: "(Published in Nova Makedonija, Skopje, 20 June 1982, and in The Poem Between the Two Summers, Struga Poetry Evenings, Struga, 1982, in Macedonian, English, French, and Russian)",
+    poem2Note:
+      "(Published in Nova Makedonija, Skopje, 20 June 1982, and in The Poem Between the Two Summers, Struga Poetry Evenings, Struga, 1982, in Macedonian, English, French, and Russian)",
   };
 
-  const data = language === 'mk' ? contentMK : contentEN;
+  const data = language === "mk" ? contentMK : contentEN;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
         {/* Title Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {data.title}
-          </h1>
-          <h2 className="text-2xl md:text-3xl text-primary">
-            {data.subtitle}
-          </h2>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{data.title}</h1>
+          <h2 className="text-2xl md:text-3xl text-primary">{data.subtitle}</h2>
         </div>
 
         {/* Section 1: Photo Left, Text Right */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
           <div className="flex flex-col justify-center">
-            <img 
-              src={koleMangov1} 
-              alt="Коле Мангов" 
-              className="w-full max-w-xl rounded-lg shadow-lg"
-            />
+            <img src={koleMangov1} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
-              {language === 'mk' ? 'Коле Мангов промоција на книгата За македонските човекови права' : 'Kole Mangov - Macedonian publicist and human rights activist'}
+              {language === "mk"
+                ? "Коле Мангов - промоција на книгата За македонските човекови права"
+                : "Kole Mangov - promoting the book On Macedonian Human Rights"}
             </p>
           </div>
           <div className="prose prose-lg max-w-none">
-            <p className="text-foreground leading-relaxed whitespace-pre-line">
-              {data.sections[0].text}
-            </p>
+            <p className="text-foreground leading-relaxed whitespace-pre-line">{data.sections[0].text}</p>
           </div>
         </div>
 
         {/* Section 2: Text Left, Photo Right */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
           <div className="prose prose-lg max-w-none md:order-1">
-            <p className="text-foreground leading-relaxed whitespace-pre-line">
-              {data.sections[1].text}
-            </p>
+            <p className="text-foreground leading-relaxed whitespace-pre-line">{data.sections[1].text}</p>
           </div>
           <div className="flex flex-col justify-center md:order-2">
-            <img 
-              src={koleMangov2} 
-              alt="Коле Мангов" 
-              className="w-full max-w-xl rounded-lg shadow-lg"
-            />
+            <img src={koleMangov2} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl mx-auto">
-              {language === 'mk' ? 'Коле Мангов со сопругата Лилјана Мангова' : 'Kole Mangov with his wife Liljana Mangova'}
+              {language === "mk"
+                ? "Коле Мангов со сопругата Лилјана Мангова"
+                : "Kole Mangov with his wife Liljana Mangova"}
             </p>
           </div>
         </div>
@@ -219,30 +210,24 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
         {/* Section 3: Full width text only */}
         <div className="mb-16">
           <div className="prose prose-lg max-w-none">
-            <p className="text-foreground leading-relaxed whitespace-pre-line">
-              {data.sections[2].text}
-            </p>
+            <p className="text-foreground leading-relaxed whitespace-pre-line">{data.sections[2].text}</p>
           </div>
         </div>
 
         {/* Human Rights Work */}
         <div className="mb-16">
           <div className="prose prose-lg max-w-none">
-            <p className="text-foreground leading-relaxed whitespace-pre-line">
-              {data.humanRights}
-            </p>
+            <p className="text-foreground leading-relaxed whitespace-pre-line">{data.humanRights}</p>
           </div>
         </div>
 
         {/* Third Image - Centered above quote */}
         <div className="flex flex-col items-center mb-12">
-          <img 
-            src={koleMangov3} 
-            alt="Коле Мангов" 
-            className="w-full max-w-xl rounded-lg shadow-lg"
-          />
+          <img src={koleMangov3} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
           <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
-            {language === 'mk' ? 'Коле Мангов на II-то изборно собрание на Достоинство' : 'Kole Mangov at the 2nd electoral assembly of Dignity'}
+            {language === "mk"
+              ? "Коле Мангов на II-то изборно собрание на Достоинство"
+              : "Kole Mangov at the 2nd electoral assembly of Dignity"}
           </p>
         </div>
 
@@ -256,44 +241,32 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
         {/* Legacy */}
         <div className="mb-16">
           <div className="prose prose-lg max-w-none">
-            <p className="text-foreground leading-relaxed whitespace-pre-line">
-              {data.legacy}
-            </p>
+            <p className="text-foreground leading-relaxed whitespace-pre-line">{data.legacy}</p>
           </div>
         </div>
 
         {/* Poems Section */}
         <div className="border-t border-border pt-16">
-          <h3 className="text-3xl font-bold text-primary mb-12 text-center">
-            {data.poemsTitle}
-          </h3>
+          <h3 className="text-3xl font-bold text-primary mb-12 text-center">{data.poemsTitle}</h3>
 
           {/* Poems side by side */}
           <div className="grid md:grid-cols-2 gap-8">
             {/* Poem 1 */}
             <div className="bg-muted/60 p-8 rounded-lg flex flex-col">
-              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
-                {data.poem1Title}
-              </h4>
+              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">{data.poem1Title}</h4>
               <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4 flex-1">
                 {data.poem1}
               </pre>
-              <p className="text-sm text-muted-foreground italic text-center">
-                {data.poem1Note}
-              </p>
+              <p className="text-sm text-muted-foreground italic text-center">{data.poem1Note}</p>
             </div>
 
             {/* Poem 2 */}
             <div className="bg-muted/60 p-8 rounded-lg flex flex-col">
-              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">
-                {data.poem2Title}
-              </h4>
+              <h4 className="text-2xl font-bold text-foreground mb-6 text-center">{data.poem2Title}</h4>
               <pre className="text-foreground leading-relaxed whitespace-pre-wrap font-serif text-lg mb-4 flex-1">
                 {data.poem2}
               </pre>
-              <p className="text-sm text-muted-foreground italic text-center">
-                {data.poem2Note}
-              </p>
+              <p className="text-sm text-muted-foreground italic text-center">{data.poem2Note}</p>
             </div>
           </div>
         </div>
