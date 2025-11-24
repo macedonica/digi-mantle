@@ -125,20 +125,40 @@ const Kole = () => {
     title: "KOLE MANGOV",
     subtitle: "BIOGRAPHY",
     sections: [
-      { text: "[English translation coming soon]" },
-      { text: "[English translation coming soon]" },
-      { text: "[English translation coming soon]" },
+      {
+        text: `Kole Mangov was a Macedonian publicist, judge, poet, and fighter for the human rights of Macedonians discriminated against by the Republic of Greece, as well as a defender of the constitutional name of the Republic of Macedonia. He was born on 2 August 1940 in the village of Banica (Greek: Vevi), in the Lerin region (today's Florina) in northern Greece (the Central Macedonia region, known in Macedonia as the Aegean part). In Greece, his family surname "Mangovi" was changed to "Mangos." His mother, Lena Mangova, born Nitchova (in Greek: Eleni Mangou, born Nitsopoulou), died during the Greek Civil War, when he was two years old, and his father, Pavle Mangov (in Greek: Pavlos Mangos) was killed in the Greek Civil War. In 1945, as a five-year-old refugee child, he crossed the then Greek–Yugoslav border together with other Macedonians fleeing Greece. Registered as Nikola Mangovski in the Socialist Federal Republic of Yugoslavia (SFRY), he later changed his name to Kole Mangov to reflect the way he was addressed in his native village.`,
+      },
+      {
+        text: `As an orphaned child, he grew up, alongside other Macedonian refugee children from Greece, in the "Lazo Trpovski" children's home in Bitola, where he also completed his secondary education at the "Goce Delchev" Gymnasium. He had a half-brother, Risto, who remained in Greece and spent his life there, and a half-sister, Mare, who, like him, crossed the border as a child and lived her life in Macedonia, then part of SFRY.
+
+Mangov graduated from the Faculty of Law in Skopje. He served as a judge in the Basic Court – Skopje, later in the Commercial Court – Skopje, and after the reorganization of the judiciary, in the Court of Appeals – Skopje. As a legal expert, he was a member of the Committee on Constitutional Issues of the Assembly of the Socialist Republic of Macedonia, established on 25 January 1991, and he participated in drafting the Constitution of the Republic of Macedonia, adopted on 17 November 1991.`,
+      },
+      {
+        text: `In his youth, Mangov began writing poetry. He authored two poetry books: Gladostrav (Fear of Hunger) (Misla, 1975) and Vik (Scream) (Kultura, 1979). He also appeared at the Struga Poetry Evenings. In 1997 he became a member of the Writers' Association of Macedonia.
+
+During the late 1970s and early 1980s, facing the censorship and restrictions on media freedom, speech, and expression in socialist Macedonia and the Yugoslav regime, particularly concerning national issues, he published opinion pieces on Macedonian national history and contemporary Macedonian issues in Macedonian periodicals abroad. His works appeared in the Macedonian Voice / Canadian-Macedonian Voice (Toronto, Canada), Macedonian Word (Detroit, USA), Macedonian Newspaper (Gothenburg, Sweden), Vesnik (Perth, Australia), and others. Some of these opinion pieces were reprinted in Macedonia, the journal of the Macedonian Emigrants' Association. With the emergence of political pluralism, his writings began appearing in Nova Makedonija, Vecher, Mlad Borec, 21, Belgrade's Borba, Glas, and Republika.
+
+For a period, following his first week-long visit to his native village Banica and the Lerin region in Greece, he published opinion pieces written from the perspective of the local people in the Aegean dialect under the pseudonym Plamen Zharov. These pieces appeared in Macedonia (Toronto, Canada) and were subsequently reprinted in other Macedonian diaspora publications.`,
+      },
     ],
-    humanRights: "[English translation coming soon]",
-    quote: "[English translation coming soon]",
-    legacy: "[English translation coming soon]",
-    poemsTitle: "Two poems from his work:",
-    poem1Title: "CONDEMN ME RUSSELL'S COURT",
-    poem1: "[English translation coming soon]",
-    poem1Note: "",
+    humanRights: `On 3 June 1990, together with several associates, Mangov founded, and became president of, the Association for the Protection of the Human Rights of Macedonians Discriminated Against by the Republic of Greece, "Dignity" ("Dostoinstvo"). Through this association, and in his individual capacity, he tirelessly advocated for the human rights of Macedonians born in Greece who fled during and after the Second World War and during and after the Greek Civil War (1946-1949), due to the violence and terror they faced there. He also advocated for the rights of Macedonians still living in Greece and for the recognition of Macedonia as an independent state and under its constitutional name.
+
+In December 1992, under his leadership, the association Dignity (Dostoinstvo), together with the Committee of the Helsinki Citizens' Assembly in Macedonia, launched a campaign to send prepared postcards to the Secretary - General of the United Nations, Boutros Boutros-Ghali, urging him to support Macedonia's admission to the United Nations. The front of the postcard featured Simon Shemov's 1975 drawing-collage Leap Toward the Clouds.
+
+Mangov conducted his advocacy for the Macedonian human rights at a high international level, establishing personal correspondence with leading global politicians and diplomats, including João de Deus Pinheiro, chairman of the Council of Ministers of the European Community; Romano Prodi, president of the European Commission; Madeleine Albright, U.S. Secretary of State; Boutros Boutros-Ghali, UN Secretary-General; Otto von Habsburg, member of the European Parliament; as well as other presidents, ministers, and diplomats. He was interviewed by numerous media outlets from Macedonia and abroad, including reporters from Greece, Belgium, Slovenia, Japan, and others.
+
+In one public statement, he succinctly expressed his view i.e. the formula of how individuals should act in defense of human rights:`,
+    quote: `"I expect letters to be sent from you as readers to many relevant officials. We must become more active on this issue so that the use of the acronym FYROM ceases. This is not a dispute about the name! Why doesn't our government respond to Greece with 'Former Turkish Province Greece'? … The negation of Macedonians as a minority in Greece has turned into the negation of Macedonians as a nation. I, without knowledge of English, can only do this much…"`,
+    legacy: `His writings were collected in two books: For Macedonian Human Rights (MRT – Macedonian Radio, 1995) and In Defense of the Macedonian National Identity (NIP "Globus," 1998).
+
+Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was married and the father of two daughters.`,
+    poemsTitle: "Two of his poems",
+    poem1Title: "CONDEMN ME, RUSSELL TRIBUNAL",
+    poem1: "[Poem text to be added]",
+    poem1Note: "(Published in Studentski Zbor, Skopje, 18 April 1980, and in Macedonia, Skopje, August 1981)",
     poem2Title: "INSCRIPTION",
-    poem2: "[English translation coming soon]",
-    poem2Note: "",
+    poem2: "[Poem text to be added]",
+    poem2Note: "(Published in Nova Makedonija, Skopje, 20 June 1982, and in The Poem Between the Two Summers, Struga Poetry Evenings, Struga, 1982, in Macedonian, English, French, and Russian)",
   };
 
   const data = language === 'mk' ? contentMK : contentEN;
