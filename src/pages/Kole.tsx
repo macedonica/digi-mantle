@@ -2,6 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import koleMangov from "@/assets/kole-mangov.jpg";
+import koleMangov1 from "@/assets/kole-mangov-promotion.jpg";
 
 const Kole = () => {
   const { t } = useLanguage();
@@ -157,7 +158,7 @@ const Kole = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
           <div className="flex flex-col justify-center">
             <img 
-              src={koleMangov} 
+              src={koleMangov1} 
               alt="Коле Мангов" 
               className="w-full max-w-md rounded-lg shadow-lg"
             />
