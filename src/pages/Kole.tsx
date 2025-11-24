@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import koleMangov from "@/assets/kole-mangov.jpg";
 import koleMangov1 from "@/assets/kole-mangov-promotion.jpg";
+import koleMangov2 from "@/assets/kole-mangov-wife.jpg";
 
 const Kole = () => {
   const { t } = useLanguage();
@@ -182,12 +183,12 @@ const Kole = () => {
           </div>
           <div className="flex flex-col justify-center md:order-2">
             <img 
-              src={koleMangov} 
+              src={koleMangov2} 
               alt="Коле Мангов" 
               className="w-full max-w-md rounded-lg shadow-lg"
             />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-md mx-auto">
-              {language === 'mk' ? 'Коле Мангов - судија и поет' : 'Kole Mangov - judge and poet'}
+              {language === 'mk' ? 'Коле Мангов со сопругата Лилјана Мангова' : 'Kole Mangov with his wife Liljana Mangova'}
             </p>
           </div>
         </div>
