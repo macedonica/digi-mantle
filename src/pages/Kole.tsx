@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import koleMangov from "@/assets/kole-mangov.jpg";
 import koleMangov1 from "@/assets/kole-mangov-promotion.jpg";
 import koleMangov2 from "@/assets/kole-mangov-wife.jpg";
+import koleMangov3 from "@/assets/kole-mangov-assembly.jpg";
 
 const Kole = () => {
   const { t } = useLanguage();
@@ -214,12 +215,12 @@ const Kole = () => {
         {/* Third Image - Centered above quote */}
         <div className="flex flex-col items-center mb-12">
           <img 
-            src={koleMangov} 
+            src={koleMangov3} 
             alt="Коле Мангов" 
             className="w-full max-w-md rounded-lg shadow-lg"
           />
           <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
-            {language === 'mk' ? 'Коле Мангов - основач на здружението Достоинство' : 'Kole Mangov - founder of the Dignity association'}
+            {language === 'mk' ? 'Коле Мангов на II-то изборно собрание на Достоинство' : 'Kole Mangov at the 2nd electoral assembly of Dignity'}
           </p>
         </div>
 
