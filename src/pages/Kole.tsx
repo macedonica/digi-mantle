@@ -162,9 +162,9 @@ const Kole = () => {
             <img 
               src={koleMangov1} 
               alt="Коле Мангов" 
-              className="w-full max-w-md rounded-lg shadow-lg"
+              className="w-full max-w-xl rounded-lg shadow-lg"
             />
-            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
+            <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
               {language === 'mk' ? 'Коле Мангов - македонски публицист и борец за човекови права' : 'Kole Mangov - Macedonian publicist and human rights activist'}
             </p>
           </div>
@@ -186,9 +186,9 @@ const Kole = () => {
             <img 
               src={koleMangov2} 
               alt="Коле Мангов" 
-              className="w-full max-w-md rounded-lg shadow-lg"
+              className="w-full max-w-xl rounded-lg shadow-lg"
             />
-            <p className="text-sm text-muted-foreground mt-3 text-center max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl mx-auto">
               {language === 'mk' ? 'Коле Мангов со сопругата Лилјана Мангова' : 'Kole Mangov with his wife Liljana Mangova'}
             </p>
           </div>
@@ -217,9 +217,9 @@ const Kole = () => {
           <img 
             src={koleMangov3} 
             alt="Коле Мангов" 
-            className="w-full max-w-md rounded-lg shadow-lg"
+            className="w-full max-w-xl rounded-lg shadow-lg"
           />
-          <p className="text-sm text-muted-foreground mt-3 text-center max-w-md">
+          <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
             {language === 'mk' ? 'Коле Мангов на II-то изборно собрание на Достоинство' : 'Kole Mangov at the 2nd electoral assembly of Dignity'}
           </p>
         </div>
