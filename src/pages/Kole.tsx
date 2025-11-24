@@ -165,7 +165,7 @@ const Kole = () => {
               className="w-full max-w-xl rounded-lg shadow-lg"
             />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
-              {language === 'mk' ? 'Коле Мангов - македонски публицист и борец за човекови права' : 'Kole Mangov - Macedonian publicist and human rights activist'}
+              {language === 'mk' ? 'Коле Мангов промоција на книгата За македонските човекови права' : 'Kole Mangov - Macedonian publicist and human rights activist'}
             </p>
           </div>
           <div className="prose prose-lg max-w-none">
