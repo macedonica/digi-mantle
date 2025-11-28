@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SearchBar } from '@/components/SearchBar';
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLibraryNewspapers } from '@/hooks/useLibraryOptions';
+import koleBannerMk from '@/assets/kole-banner-mk.jpg';
+import koleBannerEn from '@/assets/kole-banner-en.jpg';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -418,6 +420,19 @@ const Library = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Kole Mangov Banner */}
+        <section className="py-6">
+          <div className="container mx-auto px-4">
+            <Link to="/kole" className="block">
+              <img 
+                src={language === 'mk' ? koleBannerMk : koleBannerEn} 
+                alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
+                className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              />
+            </Link>
           </div>
         </section>
 
