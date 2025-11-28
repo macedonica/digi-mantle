@@ -40,8 +40,9 @@ const Library = () => {
     const pageParam = searchParams.get('page');
     return pageParam ? parseInt(pageParam, 10) : 1;
   });
-  const [activeType, setActiveType] = useState<'book' | 'periodical'>(() => {
+  const [activeType, setActiveType] = useState<'book' | 'image' | 'periodical'>(() => {
     const typeParam = searchParams.get('type');
+    if (typeParam === 'image') return 'image';
     if (typeParam === 'periodical') return 'periodical';
     return 'book';
   });
@@ -343,6 +344,16 @@ const Library = () => {
                 >
                   {t('Периодика', 'Periodical')}
                 </button>
+                <button
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all border ${
+                    activeType === 'image' 
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
+                  }`}
+                >
+                  {t('Сведоштва', 'Testimonials')}
+                </button>
               </div>
             </div>
           </div>
@@ -414,6 +425,16 @@ const Library = () => {
                   }`}
                 >
                   {t('Периодика', 'Periodical')}
+                </button>
+                <button
+                  onClick={() => { setActiveType('image'); setCurrentPage(1); }}
+                  className={`px-6 py-2.5 rounded-md text-sm font-medium transition-all border ${
+                    activeType === 'image' 
+                      ? 'bg-primary text-primary-foreground shadow-sm border-primary' 
+                      : 'text-muted-foreground hover:text-foreground border-primary/30'
+                  }`}
+                >
+                  {t('Сведоштва', 'Testimonials')}
                 </button>
               </div>
             </div>
