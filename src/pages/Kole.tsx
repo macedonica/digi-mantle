@@ -5,6 +5,7 @@ import koleMangov from "@/assets/kole-mangov.jpg";
 import koleMangov1 from "@/assets/kole-mangov-promotion.jpg";
 import koleMangov2 from "@/assets/kole-mangov-wife.jpg";
 import koleMangov3 from "@/assets/kole-mangov-assembly.jpg";
+import copyrightIcon from "@/assets/copyright-icon.jpg";
 
 const Kole = () => {
   const { t } = useLanguage();
@@ -43,6 +44,7 @@ const Kole = () => {
     legacy: `Неговиот публицистички опус е издаден во две книги „За македонските човечки права", публицистика, 1995 во издание на МРТ – Македонско радио и „Во одбрана на македонскиот национален идентитет", публицистика, 1998 во издание на НИП „Глобус", Скопје.
 
 Коле Мангов почина на 73 годишна возраст на 1 јануари 2013 во Скопје. Бил оженет и татко на две ќерки.`,
+    copyrightNotice: "Сликите упторебени во оваа статија ги предаваме во јавна сопственост, но истите не смеат да се фотоманипулираат",
     poemsTitle: "Две песни од неговиот опус:",
     poem1Title: "ОСУДИ МЕ РАСЕЛОВ СУДЕ",
     poem1: `Осуди ме Раселов суде
@@ -154,6 +156,7 @@ In one public statement, he succinctly expressed his view i.e. the formula of ho
     legacy: `His writings were collected in two books: For Macedonian Human Rights (MRT – Macedonian Radio, 1995) and In Defense of the Macedonian National Identity (NIP "Globus," 1998).
 
 Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was married and the father of two daughters.`,
+    copyrightNotice: "The images incorporated in this article are hereby dedicated to the public domain. However, they may not be subjected to any form of photomanipulation.",
     poemsTitle: "Two of his poems",
     poem1Title: "CONDEMN ME, RUSSELL TRIBUNAL",
     poem1: "[Poem text to be added]",
@@ -247,6 +250,18 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
 
         {/* Poems Section */}
         <div className="border-t border-border pt-16">
+          {/* Copyright Notice */}
+          <div className="mb-8 flex items-center justify-center gap-3">
+            <img 
+              src={copyrightIcon} 
+              alt="Copyright" 
+              className="w-5 h-5 object-contain"
+            />
+            <p className="text-sm text-muted-foreground italic text-center">
+              {data.copyrightNotice}
+            </p>
+          </div>
+
           <h3 className="text-3xl font-bold text-primary mb-12 text-center">{data.poemsTitle}</h3>
 
           {/* Poems side by side */}
