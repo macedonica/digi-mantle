@@ -251,13 +251,13 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
         {/* Poems Section */}
         <div className="border-t border-border pt-16">
           {/* Copyright Notice */}
-          <div className="mb-8 flex items-center justify-center gap-3">
+          <div className="mb-8 pb-8 border-b border-border flex items-center justify-center gap-3">
             <img 
               src={copyrightIcon} 
               alt="Copyright" 
               className="w-5 h-5 object-contain"
             />
-            <p className="text-sm text-muted-foreground italic text-center">
+            <p className="text-base text-muted-foreground italic text-center">
               {data.copyrightNotice}
             </p>
           </div>
