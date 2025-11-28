@@ -359,18 +359,6 @@ const Library = () => {
           </div>
         </section>
 
-        {/* Kole Mangov Banner - Mobile */}
-        <section className="md:hidden py-4">
-          <div className="container mx-auto px-4 flex justify-center">
-            <Link to="/kole" className="block max-w-xs w-full">
-              <img 
-                src={language === 'mk' ? koleBannerMk : koleBannerEn} 
-                alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
-                className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-              />
-            </Link>
-          </div>
-        </section>
 
         {/* Mobile Filters Button */}
         <section className="md:hidden py-4 border-b border-border">
@@ -441,18 +429,6 @@ const Library = () => {
           </div>
         </section>
 
-        {/* Kole Mangov Banner - Desktop */}
-        <section className="hidden md:block py-6">
-          <div className="container mx-auto px-4 flex justify-center">
-            <Link to="/kole" className="block max-w-xs w-full">
-              <img 
-                src={language === 'mk' ? koleBannerMk : koleBannerEn} 
-                alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
-                className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-              />
-            </Link>
-          </div>
-        </section>
 
         {/* Results Section */}
         <section className="py-12">
