@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Search, BookOpen, FileText, Image as ImageIcon } from "lucide-react";
 import heroImage from "@/assets/hero-archive.jpg";
+import koleBannerMk from "@/assets/kole-banner-mk-large.jpg";
+import koleBannerEn from "@/assets/kole-banner-en-large.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -95,6 +97,22 @@ const Index = () => {
                 );
               })}
             </div>
+          </div>
+        </section>
+
+        {/* Kole Mangov Archive Banner */}
+        <section className="py-12">
+          <div className="container mx-auto px-4 flex justify-center">
+            <button
+              onClick={() => navigate("/kole")}
+              className="block max-w-md w-full hover:scale-105 transition-transform duration-300"
+            >
+              <img 
+                src={language === 'mk' ? koleBannerMk : koleBannerEn} 
+                alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
+                className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              />
+            </button>
           </div>
         </section>
 
