@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -11,6 +12,10 @@ const Kole = () => {
   const { t } = useLanguage();
 
   const { language } = useLanguage();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const contentMK = {
     title: "КОЛЕ МАНГОВ",
