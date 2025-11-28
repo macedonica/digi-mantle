@@ -425,8 +425,8 @@ const Library = () => {
 
         {/* Kole Mangov Banner */}
         <section className="py-6">
-          <div className="container mx-auto px-4">
-            <Link to="/kole" className="block">
+          <div className="container mx-auto px-4 flex justify-center">
+            <Link to="/kole" className="block max-w-2xl w-full">
               <img 
                 src={language === 'mk' ? koleBannerMk : koleBannerEn} 
                 alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
