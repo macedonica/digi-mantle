@@ -318,9 +318,9 @@ const Library = () => {
           </div>
         </section>
 
-        {/* Mobile Type Toggle & Filters - Scrollable */}
+        {/* Mobile Type Toggle - Scrollable */}
         <section className="md:hidden py-4 border-b border-border">
-          <div className="container mx-auto px-4 space-y-3">
+          <div className="container mx-auto px-4">
             {/* Type Toggle */}
             <div className="flex justify-center">
               <div className="inline-flex rounded-lg border border-border bg-muted p-1">
@@ -356,7 +356,25 @@ const Library = () => {
                 </button>
               </div>
             </div>
-            
+          </div>
+        </section>
+
+        {/* Kole Mangov Banner - Mobile */}
+        <section className="md:hidden py-4">
+          <div className="container mx-auto px-4 flex justify-center">
+            <Link to="/kole" className="block max-w-xs w-full">
+              <img 
+                src={language === 'mk' ? koleBannerMk : koleBannerEn} 
+                alt={language === 'mk' ? 'Архивата на Коле Мангов' : 'Kole Mangov Archive'}
+                className="w-full h-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              />
+            </Link>
+          </div>
+        </section>
+
+        {/* Mobile Filters Button */}
+        <section className="md:hidden py-4 border-b border-border">
+          <div className="container mx-auto px-4">
             <div className="flex justify-end">
               <Drawer>
                 <DrawerTrigger asChild>
@@ -423,8 +441,8 @@ const Library = () => {
           </div>
         </section>
 
-        {/* Kole Mangov Banner */}
-        <section className="py-6">
+        {/* Kole Mangov Banner - Desktop */}
+        <section className="hidden md:block py-6">
           <div className="container mx-auto px-4 flex justify-center">
             <Link to="/kole" className="block max-w-xs w-full">
               <img 
