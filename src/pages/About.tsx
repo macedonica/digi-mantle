@@ -111,14 +111,14 @@ const About = () => {
               <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
                 <p>
                   {t(
-                    "Дигиталниот архив беше основан во 2020 година со цел да се зачува и дигитализира македонското културно наследство. Од тогаш, нашата колекција пораснала на над 10,000 дигитализирани ставки.",
-                    "The Digital Archive was founded in 2020 with the goal of preserving and digitizing Macedonian cultural heritage. Since then, our collection has grown to over 10,000 digitized items.",
+                    "Дигиталниот архив беше основан во 2020 година (КОВИД пандемијата) со цел да се зачува и дигитализира македонското културно наследство. Од тогаш, нашата колекција пораснала на над 5000 дигитализирани ставки, кои систематски ќе бидат поставени на нашата страница.",
+                    "The Digital Archive was founded in 2020 (COVID Pandemic) with the goal of preserving and digitizing Macedonian cultural heritage. Since then, our collection has grown to over 5,000 digitized items, which will be uploaded on the website.",
                   )}
                 </p>
                 <p>
                   {t(
-                    "Работиме во соработка со библиотеки, музеи и приватни колекционери за да обезбедиме пристап до редки и вредни материјали. Нашиот тим на стручњаци се грижи за квалитетот и точноста на секоја дигитализирана ставка.",
-                    "We work in collaboration with libraries, museums and private collectors to provide access to rare and valuable materials. Our team of experts ensures the quality and accuracy of each digitized item.",
+                    "Работиме во соработка со библиотеки, музеи и приватни колекционери за да обезбедиме пристап до редки и вредни материјали. Нашиот тим се грижи за квалитетот и точноста на секоја дигитализирана ставка.",
+                    "We work in collaboration with libraries, museums and private collectors to provide access to rare and valuable materials. Our team ensures the quality and accuracy of each digitized item.",
                   )}
                 </p>
               </div>
