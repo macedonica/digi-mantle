@@ -718,6 +718,22 @@ export const AdminLibraryManager = () => {
               {editFormData.type !== 'periodical' && (
                 <>
                   <div className="space-y-2">
+                    <Label htmlFor="edit_author">{t('Автор (МК)', 'Author (MK)')}</Label>
+                    <Input
+                      id="edit_author"
+                      value={editFormData.author}
+                      onChange={(e) => setEditFormData({ ...editFormData, author: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+                    <Input
+                      id="edit_author_en"
+                      value={editFormData.author_en}
+                      onChange={(e) => setEditFormData({ ...editFormData, author_en: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="edit_publication_city">{t('Град на издавање (МК)', 'Publication City (MK)')}</Label>
                     <Input
                       id="edit_publication_city"
