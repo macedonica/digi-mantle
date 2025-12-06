@@ -554,8 +554,30 @@ export const AdminLibraryManager = () => {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
+              </div>
+            </div>
+            
+            {/* Author Fields - show for all types except periodical */}
+            {editFormData.type !== 'periodical' && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit_author">{t('Автор (МК)', 'Author (MK)')}</Label>
+                  <Input
+                    id="edit_author"
+                    value={editFormData.author}
+                    onChange={(e) => setEditFormData({ ...editFormData, author: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit_author_en">{t('Автор (EN)', 'Author (EN)')}</Label>
+                  <Input
+                    id="edit_author_en"
+                    value={editFormData.author_en}
+                    onChange={(e) => setEditFormData({ ...editFormData, author_en: e.target.value })}
+                  />
                 </div>
               </div>
+            )}
             </Card>
           ))
         )}
