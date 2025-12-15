@@ -111,7 +111,7 @@ const About = () => {
               <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
                 <p>
                   {t(
-                    "Дигиталниот архив беше основан во 2020 година (КОВИД пандемијата) со цел да се зачува и дигитализира македонското културно наследство. Од тогаш, нашата колекција пораснала на над 5000 дигитализирани ставки, кои систематски ќе бидат поставени на нашата страница.",
+                    "Дигиталниот архив беше основан во 2020 година (КОВИД пандемијата) со цел да се зачува и дигитализира македонското културно наследство. Од тогаш, нашата колекција порасна на над 5000 дигитализирани ставки, кои систематски ќе бидат поставени на нашата страница.",
                     "The Digital Archive was founded in 2020 (COVID Pandemic) with the goal of preserving and digitizing Macedonian cultural heritage. Since then, our collection has grown to over 5,000 digitized items, which will be uploaded on the website.",
                   )}
                 </p>
