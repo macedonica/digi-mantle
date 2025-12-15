@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Download } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import ReactQuill from 'react-quill';
@@ -18,6 +18,7 @@ import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
 import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 import { SearchBar } from '@/components/SearchBar';
+import * as XLSX from 'xlsx';
 
 // Validation schema for edit form
 const editSchema = z.object({
@@ -75,6 +76,7 @@ export const AdminLibraryManager = () => {
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [exporting, setExporting] = useState(false);
   const itemsPerPage = 12;
 
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
@@ -492,27 +494,93 @@ export const AdminLibraryManager = () => {
     return pages;
   };
 
+  const handleExportExcel = async () => {
+    setExporting(true);
+    try {
+      // Fetch all items from database (not just filtered)
+      const { data, error } = await supabase
+        .from('library_items')
+        .select('title_mk, title_en, author, author_en, type')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data for Excel
+      const excelData = (data || []).map(item => ({
+        'Наслов (MK)': item.title_mk,
+        'Title (EN)': item.title_en,
+        'Автор (MK)': item.author || '',
+        'Author (EN)': item.author_en || '',
+        'Тип / Type': item.type === 'book' ? 'Книга / Book' : 
+                      item.type === 'periodical' ? 'Периодика / Periodical' : 
+                      'Сведоштво / Testimony'
+      }));
+
+      // Create workbook and worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Library Items');
+
+      // Auto-size columns
+      const maxWidth = 50;
+      const colWidths = Object.keys(excelData[0] || {}).map(key => ({
+        wch: Math.min(maxWidth, Math.max(key.length, ...excelData.map(row => String(row[key as keyof typeof row] || '').length)))
+      }));
+      worksheet['!cols'] = colWidths;
+
+      // Download file
+      XLSX.writeFile(workbook, 'library_items.xlsx');
+
+      toast({
+        title: t('Успешно', 'Success'),
+        description: t('Excel фајлот е преземен', 'Excel file downloaded'),
+      });
+    } catch (error: any) {
+      toast({
+        title: t('Грешка', 'Error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Type Filter Buttons */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center justify-between">
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant={selectedType === 'book' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('book')}
+          >
+            {t('Книги', 'Books')}
+          </Button>
+          <Button
+            variant={selectedType === 'image' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('image')}
+          >
+            {t('Сведоштва', 'Testimonies')}
+          </Button>
+          <Button
+            variant={selectedType === 'periodical' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('periodical')}
+          >
+            {t('Периодика', 'Periodicals')}
+          </Button>
+        </div>
         <Button
-          variant={selectedType === 'book' ? 'default' : 'outline'}
-          onClick={() => setSelectedType('book')}
+          variant="outline"
+          onClick={handleExportExcel}
+          disabled={exporting}
         >
-          {t('Книги', 'Books')}
-        </Button>
-        <Button
-          variant={selectedType === 'image' ? 'default' : 'outline'}
-          onClick={() => setSelectedType('image')}
-        >
-          {t('Сведоштва', 'Testimonies')}
-        </Button>
-        <Button
-          variant={selectedType === 'periodical' ? 'default' : 'outline'}
-          onClick={() => setSelectedType('periodical')}
-        >
-          {t('Периодика', 'Periodicals')}
+          {exporting ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <Download className="h-4 w-4 mr-2" />
+          )}
+          {t('Преземи Excel', 'Download Excel')}
         </Button>
       </div>
 
