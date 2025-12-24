@@ -11,10 +11,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const OLD_SUPABASE_URL = "https://kkvjdxxrhvcmfavbreso.supabase.co";
-    const OLD_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmpkeHhyaHZjbWZhdmJyZXNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3MzM1MzQsImV4cCI6MjA3NjMwOTUzNH0.C-h80C4_LvkmBfacdzGl1oAH2PfSmfcUu62bSdVMAD0";
+    // Use service role key to access private buckets
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabase = createClient(OLD_SUPABASE_URL, OLD_SUPABASE_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     const { data: items, error } = await supabase
       .from("public_library_items")
@@ -40,8 +41,41 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Generate signed URLs for PDFs (they're in a private bucket)
+    console.log(`Generating signed URLs for ${pdfUrls.length} PDFs...`);
+    const signedPdfUrls: { original: string; signed: string; filename: string }[] = [];
+    
+    for (const pdfUrl of pdfUrls) {
+      try {
+        // Extract path from URL - format: .../storage/v1/object/public/library-pdfs/filename.pdf
+        const urlParts = pdfUrl.split('/library-pdfs/');
+        if (urlParts.length === 2) {
+          const filePath = urlParts[1];
+          const { data: signedData, error: signedError } = await supabase.storage
+            .from('library-pdfs')
+            .createSignedUrl(filePath, 3600); // 1 hour expiry
+          
+          if (signedError) {
+            console.error(`Failed to sign URL for ${filePath}:`, signedError.message);
+            signedPdfUrls.push({ original: pdfUrl, signed: '', filename: filePath });
+          } else {
+            signedPdfUrls.push({ original: pdfUrl, signed: signedData.signedUrl, filename: filePath });
+          }
+        } else {
+          console.error(`Unexpected PDF URL format: ${pdfUrl}`);
+          signedPdfUrls.push({ original: pdfUrl, signed: '', filename: pdfUrl.split('/').pop() || 'unknown.pdf' });
+        }
+      } catch (err) {
+        console.error(`Error signing URL for ${pdfUrl}:`, err);
+        signedPdfUrls.push({ original: pdfUrl, signed: '', filename: pdfUrl.split('/').pop() || 'unknown.pdf' });
+      }
+    }
+
+    const validSignedPdfs = signedPdfUrls.filter(p => p.signed);
+    console.log(`Successfully signed ${validSignedPdfs.length} of ${pdfUrls.length} PDFs`);
+
     const imageUrlsJson = JSON.stringify(imageUrls);
-    const pdfUrlsJson = JSON.stringify(pdfUrls);
+    const signedPdfUrlsJson = JSON.stringify(signedPdfUrls);
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -64,6 +98,7 @@ Deno.serve(async (req) => {
     .file-name { flex: 1; word-break: break-all; font-family: monospace; font-size: 13px; }
     .download-btn { background: #2563eb; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; white-space: nowrap; }
     .download-btn:hover { background: #1d4ed8; }
+    .download-btn.disabled { background: #9ca3af; pointer-events: none; }
     .zip-btn { background: #059669; color: white; padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; font-size: 16px; font-weight: 600; margin-right: 10px; }
     .zip-btn:hover { background: #047857; }
     .zip-btn:disabled { background: #9ca3af; cursor: not-allowed; }
@@ -75,6 +110,8 @@ Deno.serve(async (req) => {
     .progress-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #059669); transition: width 0.3s; width: 0%; }
     .progress-text { text-align: center; margin-top: 8px; font-size: 14px; color: #4b5563; }
     .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .success { color: #059669; }
+    .error { color: #dc2626; }
   </style>
 </head>
 <body>
@@ -94,7 +131,7 @@ Deno.serve(async (req) => {
   <div class="summary">
     <h2>📊 Summary</h2>
     <p><strong>Total Images:</strong> ${imageUrls.length}</p>
-    <p><strong>Total PDFs:</strong> ${pdfUrls.length}</p>
+    <p><strong>Total PDFs:</strong> ${pdfUrls.length} <span class="success">(${validSignedPdfs.length} with signed URLs)</span></p>
     <p><strong>Total Files:</strong> ${imageUrls.length + pdfUrls.length}</p>
     
     <div class="buttons">
@@ -126,13 +163,15 @@ Deno.serve(async (req) => {
 
   <div class="section">
     <h2>📄 PDFs (${pdfUrls.length} files)</h2>
-    <p>These go in your <code>library-pdfs</code> bucket:</p>
+    <p>These go in your <code>library-pdfs</code> bucket (using signed URLs for private access):</p>
     <ul class="file-list">
-      ${pdfUrls.map(url => {
-        const filename = url.split('/').pop() || 'unknown';
+      ${signedPdfUrls.map(pdf => {
         return `<li class="file-item">
-          <span class="file-name">${filename}</span>
-          <a href="${url}" download="${filename}" class="download-btn" target="_blank">Download</a>
+          <span class="file-name">${pdf.filename}</span>
+          ${pdf.signed 
+            ? `<a href="${pdf.signed}" download="${pdf.filename}" class="download-btn" target="_blank">Download</a>`
+            : `<span class="download-btn disabled">No signed URL</span>`
+          }
         </li>`;
       }).join('')}
     </ul>
@@ -140,10 +179,13 @@ Deno.serve(async (req) => {
 
   <script>
     const imageUrls = ${imageUrlsJson};
-    const pdfUrls = ${pdfUrlsJson};
+    const signedPdfUrls = ${signedPdfUrlsJson};
     
     async function downloadZip(type) {
-      const urls = type === 'images' ? imageUrls : pdfUrls;
+      const urls = type === 'images' 
+        ? imageUrls.map(url => ({ url, filename: url.split('/').pop() || 'file' }))
+        : signedPdfUrls.filter(p => p.signed).map(p => ({ url: p.signed, filename: p.filename }));
+      
       const filename = type === 'images' ? 'library-images.zip' : 'library-pdfs.zip';
       
       const progressContainer = document.getElementById('progress-container');
@@ -164,16 +206,15 @@ Deno.serve(async (req) => {
       for (let i = 0; i < urls.length; i += batchSize) {
         const batch = urls.slice(i, i + batchSize);
         
-        await Promise.all(batch.map(async (url) => {
+        await Promise.all(batch.map(async (item) => {
           try {
-            const response = await fetch(url);
+            const response = await fetch(item.url);
             if (!response.ok) throw new Error('HTTP ' + response.status);
             const blob = await response.blob();
-            const name = url.split('/').pop() || 'file';
-            zip.file(name, blob);
+            zip.file(item.filename, blob);
           } catch (err) {
-            console.error('Failed to download:', url, err);
-            failed.push(url);
+            console.error('Failed to download:', item.filename, err);
+            failed.push(item.filename);
           }
           completed++;
           const percent = Math.round((completed / total) * 100);
