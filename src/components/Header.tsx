@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,6 @@ export const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
   const { user, isAdmin, signOut } = useAuth();
   const headerRef = useRef<HTMLElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -68,7 +67,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/admin-dashboard')}
+                  onClick={() => window.location.href = '/admin-dashboard'}
                   className="hidden lg:inline-flex"
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />
@@ -77,7 +76,7 @@ export const Header = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/admin-dashboard')}
+                  onClick={() => window.location.href = '/admin-dashboard'}
                   className="lg:hidden"
                   title={t('Контролна Табла', 'Dashboard')}
                 >
