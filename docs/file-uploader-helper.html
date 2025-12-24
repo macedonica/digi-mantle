@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Renamer & Uploader for Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #1a1a2e;
+      color: #eee;
+    }
+    h1 { color: #c9a227; margin-bottom: 10px; }
+    h2 { color: #c9a227; margin-top: 30px; }
+    .subtitle { color: #888; margin-bottom: 30px; }
+    .config-section {
+      background: #252545;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    label { display: block; margin-bottom: 5px; font-weight: 500; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #1a1a2e;
+      color: #eee;
+      margin-bottom: 15px;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 20px 0;
+      padding: 15px;
+      border: 2px dashed #444;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+    button {
+      background: #c9a227;
+      color: #1a1a2e;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover { background: #d4b23a; }
+    button:disabled { background: #555; color: #888; cursor: not-allowed; }
+    .btn-secondary { background: #444; color: #eee; }
+    .btn-secondary:hover { background: #555; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+    th { background: #252545; color: #c9a227; }
+    tr:hover { background: #252545; }
+    .status { font-weight: 500; }
+    .status.pending { color: #888; }
+    .status.uploading { color: #f0ad4e; }
+    .status.success { color: #5cb85c; }
+    .status.error { color: #d9534f; }
+    .changed { color: #5bc0de; }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #c9a227;
+      transition: width 0.3s;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .stat-box {
+      background: #252545;
+      padding: 15px 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-number { font-size: 24px; font-weight: bold; color: #c9a227; }
+    .stat-label { font-size: 12px; color: #888; }
+    .bucket-select {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .bucket-option {
+      padding: 10px 20px;
+      border: 2px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bucket-option.selected {
+      border-color: #c9a227;
+      background: rgba(201, 162, 39, 0.1);
+    }
+    .bucket-option:hover { border-color: #c9a227; }
+    .mapping-output {
+      background: #1a1a2e;
+      border: 1px solid #444;
+      padding: 15px;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .instructions {
+      background: #252545;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #c9a227;
+    }
+    .instructions h3 { margin-top: 0; color: #c9a227; }
+    .instructions ol { margin: 0; padding-left: 20px; }
+    .instructions li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>📁 File Renamer & Uploader</h1>
+  <p class="subtitle">Sanitize filenames and upload to your Supabase Storage</p>
+
+  <div class="instructions">
+    <h3>How to use:</h3>
+    <ol>
+      <li>Enter your <strong>new Supabase project URL</strong> and <strong>Service Role Key</strong> (found in Project Settings → API)</li>
+      <li>Select the target bucket (library-images or library-pdfs)</li>
+      <li>Select all the files you extracted from the ZIP</li>
+      <li>Review the filename changes, then click "Upload All"</li>
+      <li>Copy the URL mapping SQL and run it on your new database</li>
+    </ol>
+  </div>
+
+  <div class="config-section">
+    <h2>🔧 Supabase Configuration</h2>
+    <label>New Supabase Project URL:</label>
+    <input type="text" id="supabaseUrl" placeholder="https://your-project-id.supabase.co">
+    
+    <label>Service Role Key (keep this secret!):</label>
+    <input type="password" id="serviceKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+    
+    <label>Select Target Bucket:</label>
+    <div class="bucket-select">
+      <div class="bucket-option selected" data-bucket="library-images" onclick="selectBucket('library-images')">
+        🖼️ library-images (public)
+      </div>
+      <div class="bucket-option" data-bucket="library-pdfs" onclick="selectBucket('library-pdfs')">
+        📄 library-pdfs (private)
+      </div>
+    </div>
+  </div>
+
+  <div class="config-section">
+    <h2>📂 Select Files</h2>
+    <input type="file" id="fileInput" multiple accept="image/*,.pdf">
+    <p style="color: #888; font-size: 14px;">Select all files from your extracted ZIP folder</p>
+  </div>
+
+  <div id="filePreview" style="display: none;">
+    <h2>📋 File Preview</h2>
+    
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-number" id="totalFiles">0</div>
+        <div class="stat-label">Total Files</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="renamedFiles">0</div>
+        <div class="stat-label">Will Be Renamed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="uploadedFiles">0</div>
+        <div class="stat-label">Uploaded</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number" id="errorFiles">0</div>
+        <div class="stat-label">Errors</div>
+      </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar" style="display: none;">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+
+    <button onclick="uploadAll()" id="uploadBtn">🚀 Upload All Files</button>
+    <button onclick="downloadMapping()" class="btn-secondary">📥 Download URL Mapping</button>
+    <button onclick="generateSql()" class="btn-secondary">📝 Generate SQL Update Script</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Original Filename</th>
+          <th>New Filename</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="fileTable"></tbody>
+    </table>
+  </div>
+
+  <div id="sqlOutput" style="display: none; margin-top: 30px;">
+    <h2>📝 SQL Update Script</h2>
+    <p style="color: #888;">Run this SQL on your new Supabase database to update the URLs:</p>
+    <div class="mapping-output" id="sqlContent"></div>
+    <button onclick="copySql()" style="margin-top: 10px;">📋 Copy SQL</button>
+  </div>
+
+  <script>
+    let files = [];
+    let selectedBucket = 'library-images';
+    let uploadResults = [];
+
+    function selectBucket(bucket) {
+      selectedBucket = bucket;
+      document.querySelectorAll('.bucket-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.bucket === bucket);
+      });
+    }
+
+    function sanitizeFilename(filename) {
+      // Get file extension
+      const lastDot = filename.lastIndexOf('.');
+      const ext = lastDot > 0 ? filename.substring(lastDot) : '';
+      const name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+      
+      // Decode URL-encoded characters first
+      let decoded = name;
+      try {
+        decoded = decodeURIComponent(name);
+      } catch (e) {
+        // If decoding fails, use original
+      }
+      
+      // Replace Cyrillic with transliteration
+      const cyrillicMap = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ж': 'zh',
+        'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n',
+        'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f',
+        'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sht', 'ъ': 'a', 'ь': '',
+        'ю': 'yu', 'я': 'ya', 'ѓ': 'gj', 'ѕ': 'dz', 'ј': 'j', 'љ': 'lj', 'њ': 'nj',
+        'ќ': 'kj', 'џ': 'dj', 'є': 'ye', 'і': 'i', 'ї': 'yi', 'ґ': 'g',
+        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ж': 'Zh',
+        'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N',
+        'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F',
+        'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sht', 'Ъ': 'A', 'Ь': '',
+        'Ю': 'Yu', 'Я': 'Ya', 'Ѓ': 'Gj', 'Ѕ': 'Dz', 'Ј': 'J', 'Љ': 'Lj', 'Њ': 'Nj',
+        'Ќ': 'Kj', 'Џ': 'Dj', 'Є': 'Ye', 'І': 'I', 'Ї': 'Yi', 'Ґ': 'G'
+      };
+      
+      let sanitized = '';
+      for (const char of decoded) {
+        if (cyrillicMap[char]) {
+          sanitized += cyrillicMap[char];
+        } else if (/[a-zA-Z0-9._-]/.test(char)) {
+          sanitized += char;
+        } else if (char === ' ') {
+          sanitized += '-';
+        } else if (char === '(' || char === ')' || char === '[' || char === ']') {
+          sanitized += '-';
+        } else {
+          // Skip other special characters
+        }
+      }
+      
+      // Clean up multiple hyphens and leading/trailing hyphens
+      sanitized = sanitized
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .toLowerCase();
+      
+      // Ensure we have a valid filename
+      if (!sanitized) {
+        sanitized = 'file-' + Date.now();
+      }
+      
+      return sanitized + ext.toLowerCase();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      files = Array.from(e.target.files);
+      uploadResults = [];
+      
+      if (files.length === 0) {
+        document.getElementById('filePreview').style.display = 'none';
+        return;
+      }
+      
+      document.getElementById('filePreview').style.display = 'block';
+      document.getElementById('sqlOutput').style.display = 'none';
+      
+      const tbody = document.getElementById('fileTable');
+      tbody.innerHTML = '';
+      
+      let renamedCount = 0;
+      
+      files.forEach((file, index) => {
+        const newName = sanitizeFilename(file.name);
+        const changed = newName !== file.name;
+        if (changed) renamedCount++;
+        
+        uploadResults.push({
+          originalName: file.name,
+          newName: newName,
+          file: file,
+          status: 'pending'
+        });
+        
+        const row = document.createElement('tr');
+        row.id = `row-${index}`;
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td style="word-break: break-all;">${file.name}</td>
+          <td style="word-break: break-all;" class="${changed ? 'changed' : ''}">${newName}</td>
+          <td class="status pending" id="status-${index}">Pending</td>
+        `;
+        tbody.appendChild(row);
+      });
+      
+      document.getElementById('totalFiles').textContent = files.length;
+      document.getElementById('renamedFiles').textContent = renamedCount;
+      document.getElementById('uploadedFiles').textContent = 0;
+      document.getElementById('errorFiles').textContent = 0;
+    });
+
+    async function uploadAll() {
+      const supabaseUrl = document.getElementById('supabaseUrl').value.trim();
+      const serviceKey = document.getElementById('serviceKey').value.trim();
+      
+      if (!supabaseUrl || !serviceKey) {
+        alert('Please enter your Supabase URL and Service Role Key');
+        return;
+      }
+      
+      if (files.length === 0) {
+        alert('Please select files first');
+        return;
+      }
+      
+      // Initialize Supabase client
+      const supabase = window.supabase.createClient(supabaseUrl, serviceKey);
+      
+      document.getElementById('uploadBtn').disabled = true;
+      document.getElementById('progressBar').style.display = 'block';
+      
+      let uploaded = 0;
+      let errors = 0;
+      
+      for (let i = 0; i < uploadResults.length; i++) {
+        const item = uploadResults[i];
+        const statusEl = document.getElementById(`status-${i}`);
+        
+        statusEl.className = 'status uploading';
+        statusEl.textContent = 'Uploading...';
+        
+        try {
+          const { data, error } = await supabase.storage
+            .from(selectedBucket)
+            .upload(item.newName, item.file, {
+              cacheControl: '3600',
+              upsert: true
+            });
+          
+          if (error) throw error;
+          
+          item.status = 'success';
+          item.uploadPath = data.path;
+          statusEl.className = 'status success';
+          statusEl.textContent = '✓ Uploaded';
+          uploaded++;
+        } catch (err) {
+          item.status = 'error';
+          item.error = err.message;
+          statusEl.className = 'status error';
+          statusEl.textContent = `✗ ${err.message}`;
+          errors++;
+        }
+        
+        document.getElementById('uploadedFiles').textContent = uploaded;
+        document.getElementById('errorFiles').textContent = errors;
+        
+        const progress = ((i + 1) / uploadResults.length) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+      }
+      
+      document.getElementById('uploadBtn').disabled = false;
+      
+      if (uploaded > 0) {
+        generateSql();
+      }
+      
+      alert(`Upload complete!\n✓ ${uploaded} uploaded\n✗ ${errors} errors`);
+    }
+
+    function generateSql() {
+      const supabaseUrl = document.getElementById('supabaseUrl').value.trim();
+      if (!supabaseUrl) {
+        alert('Please enter your new Supabase URL first');
+        return;
+      }
+      
+      // Extract project ID from URL
+      const match = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
+      const newProjectId = match ? match[1] : 'YOUR_NEW_PROJECT_ID';
+      const oldProjectId = 'kkvjdxxrhvcmfavbreso';
+      
+      let sql = `-- ============================================
+-- URL UPDATE SCRIPT FOR NEW SUPABASE PROJECT
+-- Generated by File Uploader Helper
+-- ============================================
+
+-- Update all URLs from old project to new project
+-- Old project: ${oldProjectId}
+-- New project: ${newProjectId}
+
+-- Update thumbnail_url
+UPDATE library_items
+SET thumbnail_url = REPLACE(thumbnail_url, '${oldProjectId}.supabase.co', '${newProjectId}.supabase.co')
+WHERE thumbnail_url LIKE '%${oldProjectId}.supabase.co%';
+
+-- Update pdf_url
+UPDATE library_items
+SET pdf_url = REPLACE(pdf_url, '${oldProjectId}.supabase.co', '${newProjectId}.supabase.co')
+WHERE pdf_url LIKE '%${oldProjectId}.supabase.co%';
+
+-- Update image_url
+UPDATE library_items
+SET image_url = REPLACE(image_url, '${oldProjectId}.supabase.co', '${newProjectId}.supabase.co')
+WHERE image_url LIKE '%${oldProjectId}.supabase.co%';
+
+-- Update watermark_url
+UPDATE library_items
+SET watermark_url = REPLACE(watermark_url, '${oldProjectId}.supabase.co', '${newProjectId}.supabase.co')
+WHERE watermark_url LIKE '%${oldProjectId}.supabase.co%';
+
+-- Update additional_images array
+UPDATE library_items
+SET additional_images = (
+  SELECT array_agg(
+    REPLACE(img, '${oldProjectId}.supabase.co', '${newProjectId}.supabase.co')
+  )
+  FROM unnest(additional_images) AS img
+)
+WHERE array_length(additional_images, 1) > 0;
+
+`;
+
+      // Add individual filename updates if files were renamed
+      const renamedFiles = uploadResults.filter(r => 
+        r.status === 'success' && r.originalName !== r.newName
+      );
+      
+      if (renamedFiles.length > 0) {
+        sql += `
+-- ============================================
+-- FILENAME UPDATES (for renamed files)
+-- ============================================
+
+`;
+        renamedFiles.forEach(item => {
+          const oldEncoded = encodeURIComponent(item.originalName);
+          const newName = item.newName;
+          
+          sql += `-- ${item.originalName} -> ${newName}
+UPDATE library_items SET thumbnail_url = REPLACE(thumbnail_url, '${oldEncoded}', '${newName}') WHERE thumbnail_url LIKE '%${oldEncoded}%';
+UPDATE library_items SET pdf_url = REPLACE(pdf_url, '${oldEncoded}', '${newName}') WHERE pdf_url LIKE '%${oldEncoded}%';
+UPDATE library_items SET image_url = REPLACE(image_url, '${oldEncoded}', '${newName}') WHERE image_url LIKE '%${oldEncoded}%';
+UPDATE library_items SET watermark_url = REPLACE(watermark_url, '${oldEncoded}', '${newName}') WHERE watermark_url LIKE '%${oldEncoded}%';
+
+`;
+        });
+      }
+      
+      sql += `
+-- Verify the update
+SELECT 
+  COUNT(*) FILTER (WHERE thumbnail_url LIKE '%${oldProjectId}%') AS old_thumbnail_urls,
+  COUNT(*) FILTER (WHERE pdf_url LIKE '%${oldProjectId}%') AS old_pdf_urls,
+  COUNT(*) FILTER (WHERE image_url LIKE '%${oldProjectId}%') AS old_image_urls,
+  COUNT(*) AS total_items
+FROM library_items;
+`;
+      
+      document.getElementById('sqlOutput').style.display = 'block';
+      document.getElementById('sqlContent').textContent = sql;
+    }
+
+    function copySql() {
+      const sql = document.getElementById('sqlContent').textContent;
+      navigator.clipboard.writeText(sql).then(() => {
+        alert('SQL copied to clipboard!');
+      });
+    }
+
+    function downloadMapping() {
+      const mapping = uploadResults.map(r => ({
+        original: r.originalName,
+        new: r.newName,
+        status: r.status
+      }));
+      
+      const blob = new Blob([JSON.stringify(mapping, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'filename-mapping.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
