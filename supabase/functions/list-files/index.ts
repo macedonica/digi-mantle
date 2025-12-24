@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(OLD_SUPABASE_URL, OLD_SUPABASE_KEY);
 
-    // Fetch all library items
     const { data: items, error } = await supabase
       .from("public_library_items")
       .select("id, title_mk, thumbnail_url, pdf_url, image_url, watermark_url, additional_images")
@@ -26,29 +25,31 @@ Deno.serve(async (req) => {
       throw new Error(`Failed to fetch items: ${error.message}`);
     }
 
-    // Collect all unique URLs
-    const imageUrls = new Set<string>();
-    const pdfUrls = new Set<string>();
+    const imageUrls: string[] = [];
+    const pdfUrls: string[] = [];
 
     for (const item of items || []) {
-      if (item.thumbnail_url) imageUrls.add(item.thumbnail_url);
-      if (item.image_url) imageUrls.add(item.image_url);
-      if (item.watermark_url) imageUrls.add(item.watermark_url);
-      if (item.pdf_url) pdfUrls.add(item.pdf_url);
+      if (item.thumbnail_url && !imageUrls.includes(item.thumbnail_url)) imageUrls.push(item.thumbnail_url);
+      if (item.image_url && !imageUrls.includes(item.image_url)) imageUrls.push(item.image_url);
+      if (item.watermark_url && !imageUrls.includes(item.watermark_url)) imageUrls.push(item.watermark_url);
+      if (item.pdf_url && !pdfUrls.includes(item.pdf_url)) pdfUrls.push(item.pdf_url);
       if (item.additional_images && Array.isArray(item.additional_images)) {
         for (const img of item.additional_images) {
-          if (img) imageUrls.add(img);
+          if (img && !imageUrls.includes(img)) imageUrls.push(img);
         }
       }
     }
 
-    // Generate HTML page
+    const imageUrlsJson = JSON.stringify(imageUrls);
+    const pdfUrlsJson = JSON.stringify(pdfUrls);
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>File Download Helper</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, -apple-system, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
@@ -57,18 +58,23 @@ Deno.serve(async (req) => {
     .summary h2 { margin-top: 0; }
     .section { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .section h2 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .file-list { list-style: none; padding: 0; margin: 0; }
+    .file-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; }
     .file-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; gap: 10px; }
     .file-item:last-child { border-bottom: none; }
     .file-name { flex: 1; word-break: break-all; font-family: monospace; font-size: 13px; }
     .download-btn { background: #2563eb; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; white-space: nowrap; }
     .download-btn:hover { background: #1d4ed8; }
+    .zip-btn { background: #059669; color: white; padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; font-size: 16px; font-weight: 600; margin-right: 10px; }
+    .zip-btn:hover { background: #047857; }
+    .zip-btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .instructions { background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f59e0b; }
     .instructions h3 { margin-top: 0; color: #92400e; }
     .instructions ol { margin-bottom: 0; }
-    .copy-btn { background: #6b7280; color: white; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; }
-    .copy-btn:hover { background: #4b5563; }
-    .url-list { background: #1f2937; color: #e5e7eb; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+    .progress-container { display: none; margin-top: 15px; }
+    .progress-bar { width: 100%; height: 24px; background: #e5e7eb; border-radius: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #059669); transition: width 0.3s; width: 0%; }
+    .progress-text { text-align: center; margin-top: 8px; font-size: 14px; color: #4b5563; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
   </style>
 </head>
 <body>
@@ -77,27 +83,38 @@ Deno.serve(async (req) => {
   <div class="instructions">
     <h3>📋 Instructions</h3>
     <ol>
-      <li>Download all files below (use a browser extension like "DownThemAll" for bulk download)</li>
+      <li>Click "Download All Images as ZIP" or "Download All PDFs as ZIP" below</li>
+      <li>Wait for the download to complete (may take a few minutes for large files)</li>
       <li>Create <code>library-images</code> (public) and <code>library-pdfs</code> (private) buckets in your new Supabase project</li>
-      <li>Upload the downloaded files keeping the same filenames</li>
+      <li>Extract and upload the downloaded files</li>
       <li>Run <code>docs/update_urls.sql</code> to update URLs</li>
     </ol>
   </div>
 
   <div class="summary">
     <h2>📊 Summary</h2>
-    <p><strong>Total Images:</strong> ${imageUrls.size}</p>
-    <p><strong>Total PDFs:</strong> ${pdfUrls.size}</p>
-    <p><strong>Total Files:</strong> ${imageUrls.size + pdfUrls.size}</p>
+    <p><strong>Total Images:</strong> ${imageUrls.length}</p>
+    <p><strong>Total PDFs:</strong> ${pdfUrls.length}</p>
+    <p><strong>Total Files:</strong> ${imageUrls.length + pdfUrls.length}</p>
+    
+    <div class="buttons">
+      <button class="zip-btn" onclick="downloadZip('images')">📦 Download All Images as ZIP</button>
+      <button class="zip-btn" onclick="downloadZip('pdfs')">📦 Download All PDFs as ZIP</button>
+    </div>
+    
+    <div id="progress-container" class="progress-container">
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <div id="progress-text" class="progress-text">Preparing download...</div>
+    </div>
   </div>
 
   <div class="section">
-    <h2>🖼️ Images (${imageUrls.size} files)</h2>
-    <p>Save these to your <code>library-images</code> bucket:</p>
-    <button class="copy-btn" onclick="copyUrls('image-urls')">Copy All Image URLs</button>
-    <div id="image-urls" class="url-list" style="margin-top: 10px; display: none;">${Array.from(imageUrls).join('\n')}</div>
+    <h2>🖼️ Images (${imageUrls.length} files)</h2>
+    <p>These go in your <code>library-images</code> bucket:</p>
     <ul class="file-list">
-      ${Array.from(imageUrls).map(url => {
+      ${imageUrls.map(url => {
         const filename = url.split('/').pop() || 'unknown';
         return `<li class="file-item">
           <span class="file-name">${filename}</span>
@@ -108,12 +125,10 @@ Deno.serve(async (req) => {
   </div>
 
   <div class="section">
-    <h2>📄 PDFs (${pdfUrls.size} files)</h2>
-    <p>Save these to your <code>library-pdfs</code> bucket:</p>
-    <button class="copy-btn" onclick="copyUrls('pdf-urls')">Copy All PDF URLs</button>
-    <div id="pdf-urls" class="url-list" style="margin-top: 10px; display: none;">${Array.from(pdfUrls).join('\n')}</div>
+    <h2>📄 PDFs (${pdfUrls.length} files)</h2>
+    <p>These go in your <code>library-pdfs</code> bucket:</p>
     <ul class="file-list">
-      ${Array.from(pdfUrls).map(url => {
+      ${pdfUrls.map(url => {
         const filename = url.split('/').pop() || 'unknown';
         return `<li class="file-item">
           <span class="file-name">${filename}</span>
@@ -124,11 +139,75 @@ Deno.serve(async (req) => {
   </div>
 
   <script>
-    function copyUrls(elementId) {
-      const el = document.getElementById(elementId);
-      el.style.display = el.style.display === 'none' ? 'block' : 'none';
-      navigator.clipboard.writeText(el.textContent);
-      alert('URLs copied to clipboard!');
+    const imageUrls = ${imageUrlsJson};
+    const pdfUrls = ${pdfUrlsJson};
+    
+    async function downloadZip(type) {
+      const urls = type === 'images' ? imageUrls : pdfUrls;
+      const filename = type === 'images' ? 'library-images.zip' : 'library-pdfs.zip';
+      
+      const progressContainer = document.getElementById('progress-container');
+      const progressFill = document.getElementById('progress-fill');
+      const progressText = document.getElementById('progress-text');
+      
+      progressContainer.style.display = 'block';
+      progressFill.style.width = '0%';
+      progressText.textContent = 'Starting download...';
+      
+      const zip = new JSZip();
+      let completed = 0;
+      const total = urls.length;
+      const failed = [];
+      
+      // Download files in parallel batches of 5
+      const batchSize = 5;
+      for (let i = 0; i < urls.length; i += batchSize) {
+        const batch = urls.slice(i, i + batchSize);
+        
+        await Promise.all(batch.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            const blob = await response.blob();
+            const name = url.split('/').pop() || 'file';
+            zip.file(name, blob);
+          } catch (err) {
+            console.error('Failed to download:', url, err);
+            failed.push(url);
+          }
+          completed++;
+          const percent = Math.round((completed / total) * 100);
+          progressFill.style.width = percent + '%';
+          progressText.textContent = 'Downloaded ' + completed + ' of ' + total + ' files...';
+        }));
+      }
+      
+      if (failed.length > 0) {
+        progressText.textContent = 'Creating ZIP... (' + failed.length + ' files failed)';
+        console.log('Failed files:', failed);
+      } else {
+        progressText.textContent = 'Creating ZIP file...';
+      }
+      
+      try {
+        const content = await zip.generateAsync({ type: 'blob' }, (metadata) => {
+          progressText.textContent = 'Compressing: ' + Math.round(metadata.percent) + '%';
+        });
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        progressText.textContent = 'Download complete! ' + (total - failed.length) + ' files in ZIP.';
+        if (failed.length > 0) {
+          progressText.textContent += ' (' + failed.length + ' failed - check console)';
+        }
+      } catch (err) {
+        progressText.textContent = 'Error creating ZIP: ' + err.message;
+        console.error('ZIP error:', err);
+      }
     }
   </script>
 </body>
@@ -136,7 +215,6 @@ Deno.serve(async (req) => {
 
     return new Response(html, {
       headers: {
-        ...corsHeaders,
         "Content-Type": "text/html; charset=utf-8",
       },
     });
@@ -144,10 +222,10 @@ Deno.serve(async (req) => {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error:", error);
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      `<!DOCTYPE html><html><body><h1>Error</h1><p>${errorMessage}</p></body></html>`,
       {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       }
     );
   }
