@@ -2,6 +2,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import DOMPurify from 'dompurify';
 
 const TermsOfUse = () => {
   const { language } = useLanguage();
@@ -247,23 +248,25 @@ We aim to respond within 7 working days.
             <div 
               className="whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ 
-                __html: language === 'mk' ? contentMK.split('\n').map(line => {
-                  if (line.startsWith('# ')) return `<h1 class="text-3xl font-bold mt-8 mb-4">${line.slice(2)}</h1>`;
-                  if (line.startsWith('## ')) return `<h2 class="text-2xl font-semibold mt-6 mb-3">${line.slice(3)}</h2>`;
-                  if (line.startsWith('**') && line.endsWith('**')) return `<p class="font-bold mt-4">${line.slice(2, -2)}</p>`;
-                  if (line.startsWith('- ')) return `<li class="ml-6">${line.slice(2)}</li>`;
-                  if (line === '---') return `<hr class="my-8" />`;
-                  if (line.trim() === '') return '<br />';
-                  return `<p class="mb-2">${line}</p>`;
-                }).join('') : contentEN.split('\n').map(line => {
-                  if (line.startsWith('# ')) return `<h1 class="text-3xl font-bold mt-8 mb-4">${line.slice(2)}</h1>`;
-                  if (line.startsWith('## ')) return `<h2 class="text-2xl font-semibold mt-6 mb-3">${line.slice(3)}</h2>`;
-                  if (line.startsWith('**') && line.endsWith('**')) return `<p class="font-bold mt-4">${line.slice(2, -2)}</p>`;
-                  if (line.startsWith('- ')) return `<li class="ml-6">${line.slice(2)}</li>`;
-                  if (line === '---') return `<hr class="my-8" />`;
-                  if (line.trim() === '') return '<br />';
-                  return `<p class="mb-2">${line}</p>`;
-                }).join('')
+                __html: DOMPurify.sanitize(
+                  language === 'mk' ? contentMK.split('\n').map(line => {
+                    if (line.startsWith('# ')) return `<h1 class="text-3xl font-bold mt-8 mb-4">${line.slice(2)}</h1>`;
+                    if (line.startsWith('## ')) return `<h2 class="text-2xl font-semibold mt-6 mb-3">${line.slice(3)}</h2>`;
+                    if (line.startsWith('**') && line.endsWith('**')) return `<p class="font-bold mt-4">${line.slice(2, -2)}</p>`;
+                    if (line.startsWith('- ')) return `<li class="ml-6">${line.slice(2)}</li>`;
+                    if (line === '---') return `<hr class="my-8" />`;
+                    if (line.trim() === '') return '<br />';
+                    return `<p class="mb-2">${line}</p>`;
+                  }).join('') : contentEN.split('\n').map(line => {
+                    if (line.startsWith('# ')) return `<h1 class="text-3xl font-bold mt-8 mb-4">${line.slice(2)}</h1>`;
+                    if (line.startsWith('## ')) return `<h2 class="text-2xl font-semibold mt-6 mb-3">${line.slice(3)}</h2>`;
+                    if (line.startsWith('**') && line.endsWith('**')) return `<p class="font-bold mt-4">${line.slice(2, -2)}</p>`;
+                    if (line.startsWith('- ')) return `<li class="ml-6">${line.slice(2)}</li>`;
+                    if (line === '---') return `<hr class="my-8" />`;
+                    if (line.trim() === '') return '<br />';
+                    return `<p class="mb-2">${line}</p>`;
+                  }).join('')
+                )
               }}
             />
           </div>
