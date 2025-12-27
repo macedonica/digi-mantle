@@ -5,6 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SearchBar } from '@/components/SearchBar';
 import { LibraryFilters } from '@/components/LibraryFilters';
 import { LibraryGrid } from '@/components/LibraryGrid';
+import { SEOHead, getCollectionPageSchema } from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import type { LibraryItem } from '@/data/mockLibraryItems';
@@ -14,7 +15,6 @@ import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 import koleBannerMk from '@/assets/kole-banner-mk.jpg';
 import koleBannerEn from '@/assets/kole-banner-en.jpg';
-
 const ITEMS_PER_PAGE = 12;
 
 interface FilterState {
@@ -299,8 +299,25 @@ const Library = () => {
     }
   }, [currentPage, activeType, searchQuery, filters, searchParams, setSearchParams]);
 
+  const typeLabel = activeType === 'book' 
+    ? (language === 'mk' ? 'Книги' : 'Books')
+    : activeType === 'periodical' 
+      ? (language === 'mk' ? 'Периодика' : 'Periodicals')
+      : (language === 'mk' ? 'Сведоштва' : 'Testimonials');
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={language === 'mk' 
+          ? `Библиотека - ${typeLabel} | Дигитален Архив` 
+          : `Library - ${typeLabel} | Digital Archive`}
+        description={language === 'mk'
+          ? `Пребарајте ја нашата колекција од ${items.length} дигитализирани македонски книги, периодика и историски слики. Илинден, ВМРО, ретки ракописи и многу повеќе.`
+          : `Browse our collection of ${items.length} digitized Macedonian books, periodicals and historical images. Ilinden, VMRO, rare manuscripts and more.`}
+        keywords="библиотека, library, македонски книги, macedonian books, периодика, periodicals, ретки книги, rare books, ракописи, manuscripts, историски документи, historical documents"
+        canonicalPath="/library"
+        structuredData={getCollectionPageSchema(items.length)}
+      />
       <Header />
 
       <main className="flex-1">

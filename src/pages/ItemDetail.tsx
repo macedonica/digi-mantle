@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { SEOHead, getArchiveItemSchema, getBreadcrumbSchema } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   ArrowLeft,
@@ -205,8 +206,42 @@ const ItemDetail = () => {
     }
   };
 
+  const itemTitle = item.title[language];
+  const itemDescription = item.description[language] || item.description.mk || item.description.en;
+  const itemAuthor = language === 'mk' ? item.author : (item.authorEn || item.author);
+  const itemYear = language === 'mk' ? (item.yearMk || item.year) : (item.yearEn || item.year);
+
+  const structuredData = getArchiveItemSchema({
+    title: item.title.en,
+    titleMk: item.title.mk,
+    author: item.author,
+    year: item.year?.toString() || undefined,
+    description: item.description.en || item.description.mk,
+    type: item.type,
+    url: `https://digitalen-arhiv.mk/item/${item.id}`,
+    image: item.thumbnail
+  });
+
+  const breadcrumbData = getBreadcrumbSchema([
+    { name: language === 'mk' ? 'Почетна' : 'Home', url: 'https://digitalen-arhiv.mk/' },
+    { name: language === 'mk' ? 'Библиотека' : 'Library', url: 'https://digitalen-arhiv.mk/library' },
+    { name: itemTitle, url: `https://digitalen-arhiv.mk/item/${item.id}` }
+  ]);
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={`${itemTitle} | ${language === 'mk' ? 'Дигитален Архив' : 'Digital Archive'}`}
+        description={itemDescription?.slice(0, 155) || `${itemTitle} - ${itemAuthor} (${itemYear})`}
+        keywords={item.keywords.join(', ')}
+        canonicalPath={`/item/${item.id}`}
+        type="article"
+        image={item.thumbnail}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@graph": [structuredData, breadcrumbData]
+        }}
+      />
       <Header />
 
       <main className="flex-1">

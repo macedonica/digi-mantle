@@ -3,12 +3,12 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FeaturedCarousel } from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
+import { SEOHead, getOrganizationSchema } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Search, BookOpen, FileText, Image as ImageIcon } from "lucide-react";
 import heroImage from "@/assets/hero-archive.jpg";
 import koleBannerMk from "@/assets/kole-banner-mk-large.jpg";
 import koleBannerEn from "@/assets/kole-banner-en-large.jpg";
-
 const Index = () => {
   const navigate = useNavigate();
   const { language, t } = useLanguage();
@@ -41,8 +41,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={language === 'mk' 
+          ? "Дигитален Архив - Македонско Културно Наследство" 
+          : "Digital Archive - Macedonian Cultural Heritage"}
+        description={language === 'mk'
+          ? "Истражувајте го македонското културно наследство преку дигитализирани книги, ракописи, слики и историски документи. Илинден, ВМРО, Гоце Делчев и многу повеќе."
+          : "Explore Macedonian cultural heritage through digitized books, manuscripts, images and historical documents. Ilinden, VMRO, Goce Delchev and much more."}
+        keywords="дигитален архив, digital archive, македонија, macedonia, илинден, ilinden, ВМРО, VMRO, гоце делчев, goce delchev, македонска историја, macedonian history, културно наследство, cultural heritage"
+        canonicalPath="/"
+        structuredData={getOrganizationSchema()}
+      />
       <Header />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-20 md:py-32 overflow-hidden">

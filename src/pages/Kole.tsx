@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 import koleMangov from "@/assets/kole-mangov.jpg";
 import koleMangov1 from "@/assets/kole-mangov-promotion.jpg";
 import koleMangov2 from "@/assets/kole-mangov-wife.jpg";
 import koleMangov3 from "@/assets/kole-mangov-assembly.jpg";
 import copyrightIcon from "@/assets/copyright-icon.jpg";
-
 const Kole = () => {
   const { t } = useLanguage();
 
@@ -174,8 +174,36 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
 
   const data = language === "mk" ? contentMK : contentEN;
 
+  const koleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Коле Мангов",
+    "alternateName": "Kole Mangov",
+    "birthDate": "1940-08-02",
+    "deathDate": "2013-01-01",
+    "birthPlace": {
+      "@type": "Place",
+      "name": "Banica (Vevi), Lerin region, Greece"
+    },
+    "nationality": "Macedonian",
+    "jobTitle": ["Judge", "Poet", "Human Rights Activist"],
+    "description": "Macedonian publicist, judge, poet, and fighter for the human rights of Macedonians discriminated against by the Republic of Greece."
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead
+        title={language === 'mk' 
+          ? "Коле Мангов - Борец за Човекови Права | Дигитален Архив" 
+          : "Kole Mangov - Human Rights Activist | Digital Archive"}
+        description={language === 'mk'
+          ? "Биографија на Коле Мангов (1940-2013) - македонски публицист, судија, поет и борец за човековите права на Македонците. Основач на здружението Достоинство."
+          : "Biography of Kole Mangov (1940-2013) - Macedonian publicist, judge, poet and human rights activist. Founder of the Dignity association."}
+        keywords="коле мангов, kole mangov, човекови права, human rights, достоинство, dignity, македонци во грција, macedonians in greece, егејска македонија, aegean macedonia, публицист, судија, поет"
+        canonicalPath="/kole"
+        type="article"
+        structuredData={koleStructuredData}
+      />
       <Header />
 
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
