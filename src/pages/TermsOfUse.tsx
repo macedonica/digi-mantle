@@ -2,6 +2,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { SEOHead } from '@/components/SEOHead';
 import DOMPurify from 'dompurify';
 
 const TermsOfUse = () => {
@@ -241,6 +242,16 @@ We aim to respond within 7 working days.
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead
+        title={language === 'mk' 
+          ? "Услови за Користење | Дигитален Архив" 
+          : "Terms of Use | Digital Archive"}
+        description={language === 'mk'
+          ? "Услови за користење на Дигиталниот Архив. Информации за авторски права, дозволена употреба и контакт информации."
+          : "Terms of Use for the Digital Archive. Information about copyright, permitted use and contact information."}
+        canonicalPath="/terms"
+        noindex={true}
+      />
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <ScrollArea className="h-[calc(100vh-200px)]">

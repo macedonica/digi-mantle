@@ -1,8 +1,8 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SEOHead } from "@/components/SEOHead";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { BookOpen, Globe, Users, Archive } from "lucide-react";
-
 const About = () => {
   const { t } = useLanguage();
 
@@ -41,10 +41,21 @@ const About = () => {
     },
   ];
 
+  const { language } = useLanguage();
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={language === 'mk' 
+          ? "За Нас - Дигитален Архив | Македонско Културно Наследство" 
+          : "About Us - Digital Archive | Macedonian Cultural Heritage"}
+        description={language === 'mk'
+          ? "Дознајте повеќе за нашата мисија за зачувување на македонското културно наследство. Основан во 2020, нашиот архив содржи над 5000 дигитализирани ставки."
+          : "Learn about our mission to preserve Macedonian cultural heritage. Founded in 2020, our archive contains over 5,000 digitized items."}
+        keywords="за нас, about us, дигитален архив, digital archive, мисија, mission, македонско наследство, macedonian heritage"
+        canonicalPath="/about"
+      />
       <Header />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="py-16 md:py-24 bg-muted/30">
