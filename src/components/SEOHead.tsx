@@ -13,7 +13,7 @@ interface SEOHeadProps {
   structuredData?: object;
 }
 
-const BASE_URL = "https://digitalen-arhiv.mk"; // Update this when you have the final domain
+const BASE_URL = "https://bibliothecamacedonica.com";
 
 export const SEOHead = ({
   title,
@@ -54,7 +54,7 @@ export const SEOHead = ({
       <meta property="og:image" content={fullImageUrl} />
       <meta property="og:locale" content="mk_MK" />
       <meta property="og:locale:alternate" content="en_US" />
-      <meta property="og:site_name" content="Дигитален Архив | Digital Archive" />
+      <meta property="og:site_name" content="Bibliotheca Macedonica" />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -80,10 +80,10 @@ export const SEOHead = ({
 export const getOrganizationSchema = () => ({
   "@context": "https://schema.org",
   "@type": "ArchiveOrganization",
-  "name": "Дигитален Архив | Digital Archive",
+  "name": "Bibliotheca Macedonica | Дигитален Архив",
   "alternateName": "Digital Archive - Macedonian Cultural Heritage",
-  "url": "https://digitalen-arhiv.mk",
-  "logo": "https://digitalen-arhiv.mk/favicon.png",
+  "url": "https://bibliothecamacedonica.com",
+  "logo": "https://bibliothecamacedonica.com/favicon.png",
   "description": "Digital archive dedicated to preserving and sharing Macedonian cultural heritage through digitized books, manuscripts, images and historical documents.",
   "foundingDate": "2020",
   "knowsAbout": [
@@ -102,12 +102,12 @@ export const getOrganizationSchema = () => ({
 export const getCollectionPageSchema = (itemCount: number) => ({
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Библиотека | Library - Macedonian Digital Archive",
+  "name": "Библиотека | Library - Bibliotheca Macedonica",
   "description": "Browse our collection of digitized Macedonian books, periodicals, manuscripts and historical images.",
   "numberOfItems": itemCount,
   "isPartOf": {
     "@type": "ArchiveOrganization",
-    "name": "Дигитален Архив"
+    "name": "Bibliotheca Macedonica"
   }
 });
 
@@ -130,7 +130,7 @@ export const getArchiveItemSchema = (item: {
   "description": item.description,
   "holdingArchive": {
     "@type": "ArchiveOrganization",
-    "name": "Дигитален Архив"
+    "name": "Bibliotheca Macedonica"
   },
   "url": item.url,
   "image": item.image,
