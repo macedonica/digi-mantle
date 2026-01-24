@@ -9,9 +9,7 @@ import koleMangov2 from "@/assets/kole-mangov-wife.jpg";
 import koleMangov3 from "@/assets/kole-mangov-assembly.jpg";
 import copyrightIcon from "@/assets/copyright-icon.jpg";
 const Kole = () => {
-  const { t } = useLanguage();
-
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -216,7 +214,7 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
         {/* Section 1: Photo Left, Text Right */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 items-start">
           <div className="flex flex-col justify-center">
-            <img src={koleMangov1} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
+            <img src={koleMangov1} alt="Коле Мангов" loading="lazy" className="w-full max-w-xl rounded-lg shadow-lg" />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
               {language === "mk"
                 ? "Коле Мангов - промоција на книгата За македонските човекови права"
@@ -234,7 +232,7 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
             <p className="text-foreground leading-relaxed whitespace-pre-line">{data.sections[1].text}</p>
           </div>
           <div className="flex flex-col justify-center md:order-2">
-            <img src={koleMangov2} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
+            <img src={koleMangov2} alt="Коле Мангов" loading="lazy" className="w-full max-w-xl rounded-lg shadow-lg" />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl mx-auto">
               {language === "mk"
                 ? "Коле Мангов со сопругата Лилјана Мангова"
@@ -259,7 +257,7 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
 
         {/* Third Image - Centered above quote */}
         <div className="flex flex-col items-center mb-12">
-          <img src={koleMangov3} alt="Коле Мангов" className="w-full max-w-xl rounded-lg shadow-lg" />
+          <img src={koleMangov3} alt="Коле Мангов" loading="lazy" className="w-full max-w-xl rounded-lg shadow-lg" />
           <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
             {language === "mk"
               ? "Коле Мангов на II-то изборно собрание на Достоинство"

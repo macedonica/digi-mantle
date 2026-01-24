@@ -105,8 +105,8 @@ const About = () => {
                 return (
                   <div key={index} className="card-elevated p-6 text-center space-y-4">
                     <Icon className="h-12 w-12 mx-auto text-primary" />
-                    <h3 className="text-xl font-bold">{value.title[t("mk", "en") as "mk" | "en"]}</h3>
-                    <p className="text-muted-foreground">{value.description[t("mk", "en") as "mk" | "en"]}</p>
+                    <h3 className="text-xl font-bold">{value.title[language]}</h3>
+                    <p className="text-muted-foreground">{value.description[language]}</p>
                   </div>
                 );
               })}

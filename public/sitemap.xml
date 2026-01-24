@@ -4,45 +4,45 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://digitalen-arhiv.mk/</loc>
-    <xhtml:link rel="alternate" hreflang="mk" href="https://digitalen-arhiv.mk/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://digitalen-arhiv.mk/"/>
+    <loc>https://bibliothecamacedonica.com/</loc>
+    <xhtml:link rel="alternate" hreflang="mk" href="https://bibliothecamacedonica.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bibliothecamacedonica.com/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- About Page -->
   <url>
-    <loc>https://digitalen-arhiv.mk/about</loc>
-    <xhtml:link rel="alternate" hreflang="mk" href="https://digitalen-arhiv.mk/about"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://digitalen-arhiv.mk/about"/>
+    <loc>https://bibliothecamacedonica.com/about</loc>
+    <xhtml:link rel="alternate" hreflang="mk" href="https://bibliothecamacedonica.com/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bibliothecamacedonica.com/about"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Library Page -->
   <url>
-    <loc>https://digitalen-arhiv.mk/library</loc>
-    <xhtml:link rel="alternate" hreflang="mk" href="https://digitalen-arhiv.mk/library"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://digitalen-arhiv.mk/library"/>
+    <loc>https://bibliothecamacedonica.com/library</loc>
+    <xhtml:link rel="alternate" hreflang="mk" href="https://bibliothecamacedonica.com/library"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bibliothecamacedonica.com/library"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Kole Mangov Archive -->
   <url>
-    <loc>https://digitalen-arhiv.mk/kole</loc>
-    <xhtml:link rel="alternate" hreflang="mk" href="https://digitalen-arhiv.mk/kole"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://digitalen-arhiv.mk/kole"/>
+    <loc>https://bibliothecamacedonica.com/kole</loc>
+    <xhtml:link rel="alternate" hreflang="mk" href="https://bibliothecamacedonica.com/kole"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bibliothecamacedonica.com/kole"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Terms of Use -->
   <url>
-    <loc>https://digitalen-arhiv.mk/terms</loc>
-    <xhtml:link rel="alternate" hreflang="mk" href="https://digitalen-arhiv.mk/terms"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://digitalen-arhiv.mk/terms"/>
+    <loc>https://bibliothecamacedonica.com/terms</loc>
+    <xhtml:link rel="alternate" hreflang="mk" href="https://bibliothecamacedonica.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bibliothecamacedonica.com/terms"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
