@@ -223,7 +223,6 @@ export const AdminLibraryManager = () => {
     
     // Reset images to remove when opening edit dialog
     setImagesToRemove([]);
-    }
   };
 
   const handleSaveEdit = async () => {
