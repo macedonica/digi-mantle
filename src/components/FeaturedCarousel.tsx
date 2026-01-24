@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import type { LibraryItem } from '@/data/mockLibraryItems';
+import type { LibraryItem } from '@/types/LibraryItem';
 
 export const FeaturedCarousel = () => {
   const [featuredItems, setFeaturedItems] = useState<LibraryItem[]>([]);
@@ -22,7 +22,6 @@ export const FeaturedCarousel = () => {
         .limit(10);
 
       if (error) {
-        console.error('Error fetching featured items:', error);
         return;
       }
 

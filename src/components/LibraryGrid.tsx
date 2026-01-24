@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LibraryItem } from '@/data/mockLibraryItems';
+import { LibraryItem } from '@/types/LibraryItem';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Book, Image as ImageIcon } from 'lucide-react';
 

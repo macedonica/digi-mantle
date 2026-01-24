@@ -20,7 +20,7 @@ import {
   Download,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import type { LibraryItem } from "@/data/mockLibraryItems";
+import type { LibraryItem } from "@/types/LibraryItem";
 import DOMPurify from "dompurify";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useLibraryLanguages } from "@/hooks/useLibraryOptions";
@@ -61,7 +61,6 @@ const ItemDetail = () => {
       const { data, error } = await supabase.from("public_library_items").select("*").eq("id", id).maybeSingle();
 
       if (error) {
-        console.error("Error fetching item:", error);
         setLoading(false);
         return;
       }

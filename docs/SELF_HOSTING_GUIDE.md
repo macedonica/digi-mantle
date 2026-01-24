@@ -1,6 +1,6 @@
 # Self-Hosting Guide
 
-This guide explains how to migrate from Lovable Cloud to your own Supabase project.
+This guide explains how to set up your own Supabase project for Bibliotheca Macedonica.
 
 ## Step 1: Create a New Supabase Project
 
@@ -66,7 +66,7 @@ USING (bucket_id = 'library-pdfs' AND public.has_role(auth.uid(), 'admin'));
 
 In Supabase dashboard, go to **Authentication → Settings**:
 
-1. **Site URL**: Set to your deployed website URL
+1. **Site URL**: Set to your deployed website URL (e.g., `https://bibliothecamacedonica.com`)
 2. **Redirect URLs**: Add your website URL
 3. **Email**: Disable "Confirm email" for easier testing (optional)
 
@@ -82,18 +82,22 @@ VITE_SUPABASE_PROJECT_ID=YOUR_PROJECT_ID
 
 ## Step 6: Build and Deploy
 
-### Option A: Vercel/Netlify
+### Option A: cPanel Hosting
+
+```bash
+npm install
+npm run build
+# Upload the 'dist' folder contents to public_html
+```
+
+Ensure the `.htaccess` file is present for SPA routing.
+
+### Option B: Vercel/Netlify
+
 1. Push code to GitHub
 2. Connect repo to Vercel/Netlify
 3. Add environment variables in dashboard
 4. Deploy
-
-### Option B: Custom Server
-```bash
-npm install
-npm run build
-# Serve the 'dist' folder with any static file server
-```
 
 ## Step 7: Create First Admin User
 

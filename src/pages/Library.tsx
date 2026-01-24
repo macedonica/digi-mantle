@@ -8,7 +8,7 @@ import { LibraryGrid } from '@/components/LibraryGrid';
 import { SEOHead, getCollectionPageSchema } from '@/components/SEOHead';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import type { LibraryItem } from '@/data/mockLibraryItems';
+import type { LibraryItem } from '@/types/LibraryItem';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -75,7 +75,6 @@ const Library = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching library items:', error);
         setLoading(false);
         return;
       }

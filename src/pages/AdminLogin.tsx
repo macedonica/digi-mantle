@@ -16,10 +16,15 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 60000; // 1 minute
+
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
   const { signIn, user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -32,8 +37,42 @@ const AdminLogin = () => {
     }
   }, [user, isAdmin, navigate]);
 
+  // Check lockout timer
+  useEffect(() => {
+    if (!lockoutUntil) return;
+    
+    const interval = setInterval(() => {
+      if (Date.now() >= lockoutUntil) {
+        setLockoutUntil(null);
+        setAttempts(0);
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [lockoutUntil]);
+
+  const getRemainingLockoutSeconds = () => {
+    if (!lockoutUntil) return 0;
+    return Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if locked out
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const secondsLeft = getRemainingLockoutSeconds();
+      toast({
+        title: t('Премногу обиди', 'Too many attempts'),
+        description: t(
+          `Обидете се повторно за ${secondsLeft} секунди.`,
+          `Try again in ${secondsLeft} seconds.`
+        ),
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     setLoading(true);
 
     // Validate input
@@ -52,21 +91,44 @@ const AdminLogin = () => {
     const { error } = await signIn(email, password);
 
     if (error) {
-      toast({
-        title: t('Неуспешна Најава', 'Login Failed'),
-        description: error.message || t('Погрешни податоци', 'Invalid credentials'),
-        variant: 'destructive'
-      });
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+      
+      // Check if we should lock out
+      if (newAttempts >= MAX_ATTEMPTS) {
+        setLockoutUntil(Date.now() + LOCKOUT_DURATION_MS);
+        toast({
+          title: t('Заклучено', 'Account Locked'),
+          description: t(
+            'Премногу неуспешни обиди. Обидете се повторно за 1 минута.',
+            'Too many failed attempts. Try again in 1 minute.'
+          ),
+          variant: 'destructive'
+        });
+      } else {
+        const remainingAttempts = MAX_ATTEMPTS - newAttempts;
+        toast({
+          title: t('Неуспешна Најава', 'Login Failed'),
+          description: t(
+            `Погрешни податоци. Преостанати обиди: ${remainingAttempts}`,
+            `Invalid credentials. Remaining attempts: ${remainingAttempts}`
+          ),
+          variant: 'destructive'
+        });
+      }
       setLoading(false);
       return;
     }
 
-    // Success - auth context will handle redirect
+    // Success - reset attempts and auth context will handle redirect
+    setAttempts(0);
     toast({
       title: t('Добредојдовте назад!', 'Welcome back!'),
       description: t('Пренасочување...', 'Redirecting to admin dashboard...')
     });
   };
+
+  const isLockedOut = lockoutUntil && Date.now() < lockoutUntil;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -90,6 +152,17 @@ const AdminLogin = () => {
               </p>
             </div>
 
+            {isLockedOut && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-center">
+                <p className="text-destructive font-medium">
+                  {t(
+                    `Заклучено. Обидете се повторно за ${getRemainingLockoutSeconds()} секунди.`,
+                    `Locked. Try again in ${getRemainingLockoutSeconds()} seconds.`
+                  )}
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">
@@ -102,7 +175,7 @@ const AdminLogin = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('admin@example.com', 'admin@example.com')}
                   required
-                  disabled={loading}
+                  disabled={loading || isLockedOut}
                 />
               </div>
 
@@ -117,7 +190,7 @@ const AdminLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  disabled={loading}
+                  disabled={loading || isLockedOut}
                 />
               </div>
 
@@ -126,7 +199,7 @@ const AdminLogin = () => {
                 className="w-full" 
                 variant="hero"
                 size="lg"
-                disabled={loading}
+                disabled={loading || isLockedOut}
               >
                 {loading ? t('Најавување...', 'Logging in...') : t('Најава', 'Sign In')}
               </Button>
