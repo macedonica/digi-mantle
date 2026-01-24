@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Pencil, Trash2, Loader2, Download } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Download, X } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import type { LibraryItem } from '@/data/mockLibraryItems';
 import ReactQuill from 'react-quill';
@@ -73,6 +73,7 @@ export const AdminLibraryManager = () => {
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [watermarkClickable, setWatermarkClickable] = useState(false);
   const [watermarkLink, setWatermarkLink] = useState('');
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
   const [selectedType, setSelectedType] = useState<string>('book');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -219,6 +220,10 @@ export const AdminLibraryManager = () => {
       setWatermarkClickable(false);
       setWatermarkLink('');
     }
+    
+    // Reset images to remove when opening edit dialog
+    setImagesToRemove([]);
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -262,8 +267,9 @@ export const AdminLibraryManager = () => {
         thumbnailUrl = `${publicUrl}?t=${Date.now()}`;
       }
 
-      // Upload new additional images if provided
-      let additionalImageUrls = editingItem.additionalImages || [];
+      // Filter out images marked for removal, then add new ones
+      let additionalImageUrls = (editingItem.additionalImages || [])
+        .filter(url => !imagesToRemove.includes(url));
       if (newAdditionalImages.length > 0) {
         for (const imageFile of newAdditionalImages) {
           validateFile(
@@ -396,6 +402,7 @@ export const AdminLibraryManager = () => {
       setRemoveWatermark(false);
       setWatermarkClickable(false);
       setWatermarkLink('');
+      setImagesToRemove([]);
       fetchItems();
     } catch (error: any) {
       toast({
@@ -1040,21 +1047,78 @@ export const AdminLibraryManager = () => {
               )}
 
               {editingItem?.type === 'image' && (
-                <div className="space-y-2">
-                  <Label htmlFor="edit_additional_images">{t('Дополнителни Слики (Опционално)', 'Additional Images (Optional)')}</Label>
-                  <Input
-                    id="edit_additional_images"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => setNewAdditionalImages(e.target.files ? Array.from(e.target.files) : [])}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    {editingItem?.additionalImages && editingItem.additionalImages.length > 0
-                      ? t(`Тековно има ${editingItem.additionalImages.length} дополнителни слики. Новите ќе бидат додадени.`, 
-                          `Currently has ${editingItem.additionalImages.length} additional images. New ones will be added.`)
-                      : t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
-                  </p>
+                <div className="space-y-4">
+                  <Label>{t('Дополнителни Слики', 'Additional Images')}</Label>
+                  
+                  {/* Display existing images with delete buttons */}
+                  {editingItem?.additionalImages && editingItem.additionalImages.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        {t('Тековни слики (кликнете X за бришење):', 'Current images (click X to delete):')}
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {editingItem.additionalImages.map((imageUrl, index) => {
+                          const isMarkedForRemoval = imagesToRemove.includes(imageUrl);
+                          return (
+                            <div 
+                              key={index} 
+                              className={`relative group rounded-md overflow-hidden border-2 ${
+                                isMarkedForRemoval 
+                                  ? 'border-destructive opacity-50' 
+                                  : 'border-border hover:border-primary'
+                              }`}
+                            >
+                              <img 
+                                src={imageUrl} 
+                                alt={`Additional ${index + 1}`}
+                                className="w-full h-20 object-cover"
+                              />
+                              {isMarkedForRemoval ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setImagesToRemove(prev => prev.filter(url => url !== imageUrl))}
+                                  className="absolute inset-0 flex items-center justify-center bg-destructive/20 text-destructive-foreground"
+                                >
+                                  <span className="text-xs font-medium bg-background px-2 py-1 rounded">
+                                    {t('Врати', 'Undo')}
+                                  </span>
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setImagesToRemove(prev => [...prev, imageUrl])}
+                                  className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {imagesToRemove.length > 0 && (
+                        <p className="text-sm text-destructive">
+                          {t(`${imagesToRemove.length} слика/и ќе биде/бидат избришана/и при зачувување`, 
+                             `${imagesToRemove.length} image(s) will be deleted on save`)}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Add new images input */}
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_additional_images">{t('Додади нови слики', 'Add new images')}</Label>
+                    <Input
+                      id="edit_additional_images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => setNewAdditionalImages(e.target.files ? Array.from(e.target.files) : [])}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {t('Можете да додадете повеќе слики за галерија', 'You can add multiple images for the gallery')}
+                    </p>
+                  </div>
                 </div>
               )}
 
