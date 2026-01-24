@@ -100,7 +100,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   }>({});
 
   const [watermarkClickable, setWatermarkClickable] = useState(false);
-  const [watermarkLink, setWatermarkLink] = useState('');
+  const [watermarkLink, setWatermarkLink] = useState('/kole');
 
   const availableCategories = uploadType === 'image' ? imageCategories : uploadType === 'periodical' ? periodicalCategories : bookCategories;
 
@@ -838,13 +838,13 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     <Label htmlFor="watermarkLink">{t('Линк за воден жиг', 'Watermark Link')}</Label>
                     <Input
                       id="watermarkLink"
-                      type="url"
-                      placeholder="https://example.com"
+                      type="text"
+                      placeholder="/kole"
                       value={watermarkLink}
                       onChange={(e) => setWatermarkLink(e.target.value)}
                     />
                     <p className="text-sm text-muted-foreground">
-                      {t('Внесете URL каде сакате да води водениот жиг', 'Enter the URL where the watermark should link to')}
+                      {t('Внесете URL или релативна патека (пр. /kole)', 'Enter URL or relative path (e.g. /kole)')}
                     </p>
                   </div>
                 )}
