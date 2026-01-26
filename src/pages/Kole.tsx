@@ -217,7 +217,7 @@ Kole Mangov died at the age of 73 on 1 January 2013 in Skopje, Macedonia. He was
             <img src={koleMangov1} alt="Коле Мангов" loading="lazy" className="w-full max-w-xl rounded-lg shadow-lg" />
             <p className="text-sm text-muted-foreground mt-3 text-center max-w-xl">
               {language === "mk"
-                ? "Коле Мангов - промоција на книгата За македонските човекови права"
+                ? "Коле Мангов - промоција на книгата \"За македонските човекови права\""
                 : "Kole Mangov - promoting the book On Macedonian Human Rights"}
             </p>
           </div>
