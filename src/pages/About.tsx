@@ -128,7 +128,7 @@ const About = () => {
                 </p>
                 <p>
                   {t(
-                    "Работиме во соработка со библиотеки, музеи и приватни колекционери за да обезбедиме пристап до редки и вредни материјали. Нашиот тим се грижи за квалитетот и точноста на секоја дигитализирана ставка.",
+                    "Работиме во соработка со библиотеки, музеи и приватни колекционери за да обезбедиме пристап до ретки и вредни материјали. Нашиот тим се грижи за квалитетот и точноста на секоја дигитализирана ставка.",
                     "We work in collaboration with libraries, museums and private collectors to provide access to rare and valuable materials. Our team ensures the quality and accuracy of each digitized item.",
                   )}
                 </p>
