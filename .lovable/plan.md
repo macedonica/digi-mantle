@@ -1,33 +1,114 @@
 
-## Fix: Weird Background Colors on Primary Image
+## Fix: Primary Image Not Updating When Editing Image Items
 
 ### Problem Identified
-When viewing a testimonial/image item on the detail page, the primary photo displays with an unexpected background color in the empty space around the image. This happens because:
 
-1. The image container uses `object-contain` which preserves the image's aspect ratio, leaving empty space when the image doesn't fill the container
-2. The container has no explicit background color set
-3. The empty space shows whatever background is inherited, which appears as an odd brownish/tan tint (possibly due to the `shadow-elegant` effect or transparency)
+When you edit an image/testimonial and try to change the primary picture, it doesn't work because:
 
-The secondary images don't have this issue because they may have different container styling or fill their containers differently.
+1. **During initial upload**: Both `thumbnail_url` (library grid) and `image_url` (detail page primary photo) are set to the same uploaded image
+2. **During editing**: Only `thumbnail_url` gets updated - `image_url` is never touched
+3. **On the detail page**: The primary photo comes from `image_url`, which still has the old image
+
+This is why changing "Тековна сликичка" only affects the library view but not the detail page.
 
 ### Solution
-Add an explicit neutral/white background color to the primary image container div to ensure consistent appearance.
 
-### File to Modify
+Redesign the image editing interface to clearly distinguish between:
+- **Primary Image**: The main photo shown on the item detail page
+- **Additional Images**: Gallery images for the testimonial
 
-**`src/pages/ItemDetail.tsx` (line 266)**
+### Changes to Make
 
-Current code:
-```tsx
-className={`rounded-lg overflow-hidden shadow-elegant ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type === "image" && allImages.length > 0 ? "cursor-pointer" : ""}`}
+**File: `src/components/AdminLibraryManager.tsx`**
+
+1. **Add new state for primary image replacement**:
+   ```typescript
+   const [newPrimaryImage, setNewPrimaryImage] = useState<File | null>(null);
+   ```
+
+2. **Update the edit form UI** (for image type items):
+   - Show the current primary image with a preview
+   - Add a clear "Change Primary Image" upload option
+   - Remove the confusing "Нова сликичка" field for image types (or repurpose it)
+
+3. **Update the `handleSaveEdit` function**:
+   - When a new primary image is uploaded, update BOTH `thumbnail_url` AND `image_url` for image-type items
+   - This ensures consistency between the library grid and detail page
+
+4. **Improve the UI/UX**:
+   - Show a thumbnail preview of the current primary image
+   - Add hover effect with "Change" button overlay
+   - Show visual feedback when a new image is selected
+
+### Technical Implementation
+
+#### New State Variable (around line 72)
+```typescript
+const [newPrimaryImage, setNewPrimaryImage] = useState<File | null>(null);
 ```
 
-Updated code - add `bg-white` (or `bg-background` for theme-aware white):
-```tsx
-className={`rounded-lg overflow-hidden shadow-elegant bg-background ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type === "image" && allImages.length > 0 ? "cursor-pointer" : ""}`}
+#### Updated Save Logic (handleSaveEdit function)
+For image-type items, when `newPrimaryImage` is set:
+- Upload the new image
+- Update both `thumbnail_url` and `image_url` to the new image URL
+
+```typescript
+// For image types, update both thumbnail and image_url
+if (editingItem.type === 'image') {
+  if (newPrimaryImage) {
+    // Upload and set both thumbnail_url and image_url
+    updateData.thumbnail_url = newImageUrl;
+    updateData.image_url = newImageUrl;
+  }
+}
 ```
 
-### Why This Works
-- `bg-background` uses the theme's background color (white in light mode, dark in dark mode)
-- This ensures that when `object-contain` creates empty space around the image, it shows a clean, consistent background color
-- The fix is theme-aware and will work correctly in both light and dark modes
+#### New UI Section (replacing current thumbnail section for images)
+```tsx
+{editingItem?.type === 'image' && (
+  <div className="space-y-4">
+    <Label>{t('Примарна Слика', 'Primary Image')}</Label>
+    <div className="flex items-start gap-4">
+      {/* Current image preview */}
+      <div className="relative group">
+        <img 
+          src={newPrimaryImage ? URL.createObjectURL(newPrimaryImage) : editingItem?.imageUrl || editingItem?.thumbnail}
+          alt="Primary"
+          className="w-32 h-32 object-cover rounded-lg border"
+        />
+        <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-lg">
+          <span className="text-white text-sm font-medium">
+            {t('Промени', 'Change')}
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => setNewPrimaryImage(e.target.files?.[0] || null)}
+          />
+        </label>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {t('Оваа слика се прикажува како главна на страницата за детали', 
+           'This image is displayed as the main image on the detail page')}
+      </p>
+    </div>
+  </div>
+)}
+```
+
+### Summary of Changes
+
+| Current Behavior | New Behavior |
+|------------------|--------------|
+| "Нова сликичка" only updates `thumbnail_url` | "Primary Image" updates both `thumbnail_url` AND `image_url` |
+| No preview of current primary image | Shows clickable preview with hover effect |
+| Confusing terminology | Clear distinction: "Primary Image" vs "Additional Images" |
+
+### Files to Modify
+
+1. **`src/components/AdminLibraryManager.tsx`**:
+   - Add `newPrimaryImage` state
+   - Update `handleSaveEdit` to update `image_url` for image types
+   - Replace the thumbnail upload section with a nicer image picker UI for image-type items
+   - Reset `newPrimaryImage` when closing the dialog
