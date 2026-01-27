@@ -263,7 +263,7 @@ const ItemDetail = () => {
               {/* Image Column */}
               <div className={`${item.type === "book" ? "max-w-[200px] mx-auto lg:max-w-none" : ""}`}>
                 <div
-                  className={`rounded-lg overflow-hidden shadow-elegant ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type === "image" && allImages.length > 0 ? "cursor-pointer" : ""}`}
+                  className={`rounded-lg overflow-hidden shadow-elegant bg-background ${item.type === "book" ? "aspect-[2/3] max-h-[400px]" : "aspect-[3/4]"} relative group ${item.type === "image" && allImages.length > 0 ? "cursor-pointer" : ""}`}
                   onClick={item.type === "image" && allImages.length > 0 ? handleImageClick : undefined}
                 >
                   <img
