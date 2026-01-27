@@ -34,7 +34,7 @@ const Index = () => {
     },
     {
       icon: ImageIcon,
-      title: { mk: "Слики", en: "Images" },
+      title: { mk: "Сведоштва", en: "Testimonials" },
       type: "image",
     },
   ];
