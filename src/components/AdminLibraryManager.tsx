@@ -67,6 +67,7 @@ export const AdminLibraryManager = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [newThumbnail, setNewThumbnail] = useState<File | null>(null);
+  const [newPrimaryImage, setNewPrimaryImage] = useState<File | null>(null);
   const [newAdditionalImages, setNewAdditionalImages] = useState<File[]>([]);
   const [newPdf, setNewPdf] = useState<File | null>(null);
   const [newWatermark, setNewWatermark] = useState<File | null>(null);
@@ -248,9 +249,42 @@ export const AdminLibraryManager = () => {
       }
 
       let thumbnailUrl = editingItem.thumbnail;
+      let imageUrl = editingItem.imageUrl;
 
-      // Upload new thumbnail if provided
-      if (newThumbnail) {
+      // For image types, handle primary image upload (updates both thumbnail and image_url)
+      if (editFormData.type === 'image' && newPrimaryImage) {
+        validateFile(
+          newPrimaryImage,
+          5 * 1024 * 1024, // 5MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Primary Image'
+        );
+
+        const primaryImagePath = `${crypto.randomUUID()}-${newPrimaryImage.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from('library-images')
+          .upload(primaryImagePath, newPrimaryImage);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('library-images')
+          .getPublicUrl(primaryImagePath);
+        
+        // Add timestamp to prevent caching of old image
+        const newImageUrl = `${publicUrl}?t=${Date.now()}`;
+        thumbnailUrl = newImageUrl;
+        imageUrl = newImageUrl;
+      }
+      // For non-image types, handle thumbnail separately
+      else if (newThumbnail) {
+        validateFile(
+          newThumbnail,
+          5 * 1024 * 1024, // 5MB
+          ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+          'Thumbnail'
+        );
+
         const thumbnailPath = `${crypto.randomUUID()}-${newThumbnail.name}`;
         const { error: uploadError } = await supabase.storage
           .from('library-images')
@@ -377,6 +411,7 @@ export const AdminLibraryManager = () => {
           publisher: editFormData.publisher || null,
           publisher_en: editFormData.publisher_en || null,
           thumbnail_url: thumbnailUrl,
+          image_url: imageUrl || null,
           additional_images: additionalImageUrls.length > 0 ? additionalImageUrls : null,
           pdf_url: pdfUrl || null,
           issue_number_mk: editFormData.issue_number_mk || null,
@@ -395,6 +430,7 @@ export const AdminLibraryManager = () => {
 
       setEditingItem(null);
       setNewThumbnail(null);
+      setNewPrimaryImage(null);
       setNewAdditionalImages([]);
       setNewPdf(null);
       setNewWatermark(null);
@@ -690,31 +726,70 @@ export const AdminLibraryManager = () => {
             <DialogTitle>{t('Уреди Ставка', 'Edit Item')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            {/* Current Thumbnail Preview */}
-            {editingItem && (
-              <div className="space-y-2">
-                <Label>{t('Тековна сликичка', 'Current Thumbnail')}</Label>
-                <img
-                  src={newThumbnail ? URL.createObjectURL(newThumbnail) : editingItem.thumbnail}
-                  alt="Thumbnail preview"
-                  className="w-32 h-32 object-cover rounded border"
-                />
+            {/* Primary Image Picker for image types */}
+            {editingItem && editFormData.type === 'image' && (
+              <div className="space-y-4">
+                <Label>{t('Примарна Слика', 'Primary Image')}</Label>
+                <div className="flex items-start gap-4">
+                  <div className="relative group">
+                    <img 
+                      src={newPrimaryImage ? URL.createObjectURL(newPrimaryImage) : editingItem?.imageUrl || editingItem?.thumbnail}
+                      alt="Primary"
+                      className="w-32 h-32 object-cover rounded-lg border border-border"
+                    />
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-lg">
+                      <span className="text-white text-sm font-medium">
+                        {t('Промени', 'Change')}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) => setNewPrimaryImage(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground">
+                      {t('Оваа слика се прикажува како главна на страницата за детали', 
+                         'This image is displayed as the main image on the detail page')}
+                    </p>
+                    {newPrimaryImage && (
+                      <p className="text-sm text-primary mt-2">
+                        ✓ {t('Нова слика избрана', 'New image selected')}: {newPrimaryImage.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
             
-            {/* New Thumbnail Upload */}
-            <div className="space-y-2">
-              <Label htmlFor="edit_thumbnail">{t('Промени сликичка', 'Change Thumbnail')}</Label>
-              <Input
-                id="edit_thumbnail"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setNewThumbnail(e.target.files?.[0] || null)}
-              />
-              <p className="text-sm text-muted-foreground">
-                {t('Остави празно за да ја задржиш тековната', 'Leave empty to keep current')}
-              </p>
-            </div>
+            {/* Thumbnail upload for non-image types */}
+            {editingItem && editFormData.type !== 'image' && (
+              <>
+                <div className="space-y-2">
+                  <Label>{t('Тековна сликичка', 'Current Thumbnail')}</Label>
+                  <img
+                    src={newThumbnail ? URL.createObjectURL(newThumbnail) : editingItem.thumbnail}
+                    alt="Thumbnail preview"
+                    className="w-32 h-32 object-cover rounded border"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit_thumbnail">{t('Промени сликичка', 'Change Thumbnail')}</Label>
+                  <Input
+                    id="edit_thumbnail"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setNewThumbnail(e.target.files?.[0] || null)}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    {t('Остави празно за да ја задржиш тековната', 'Leave empty to keep current')}
+                  </p>
+                </div>
+              </>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
