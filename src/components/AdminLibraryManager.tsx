@@ -1088,20 +1088,23 @@ export const AdminLibraryManager = () => {
 
             {/* File uploads section */}
             <div className="space-y-4 border-t pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit_thumbnail">{t('Нова сликичка (опционално)', 'New Thumbnail (optional)')}</Label>
-                <Input
-                  id="edit_thumbnail"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setNewThumbnail(e.target.files?.[0] || null)}
-                />
-                {editingItem?.thumbnail && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('Тековна сликичка е поставена', 'Current thumbnail is set')}
-                  </p>
-                )}
-              </div>
+              {/* Only show thumbnail field for non-image types (books, periodicals) */}
+              {editingItem?.type !== 'image' && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit_thumbnail">{t('Нова сликичка (опционално)', 'New Thumbnail (optional)')}</Label>
+                  <Input
+                    id="edit_thumbnail"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setNewThumbnail(e.target.files?.[0] || null)}
+                  />
+                  {editingItem?.thumbnail && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('Тековна сликичка е поставена', 'Current thumbnail is set')}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {(editingItem?.type === 'book' || editingItem?.type === 'periodical') && (
                 <div className="space-y-2">
