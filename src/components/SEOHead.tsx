@@ -23,7 +23,7 @@ export const SEOHead = ({
   keywords,
   canonicalPath = "",
   type = "website",
-  image = "/favicon.png",
+  image = "/og-image.png",
   noindex = false,
   structuredData,
 }: SEOHeadProps) => {
