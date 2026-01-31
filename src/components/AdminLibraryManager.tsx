@@ -72,6 +72,7 @@ export const AdminLibraryManager = () => {
   const [newPdf, setNewPdf] = useState<File | null>(null);
   const [newWatermark, setNewWatermark] = useState<File | null>(null);
   const [removeWatermark, setRemoveWatermark] = useState(false);
+  const [removePdf, setRemovePdf] = useState(false);
   const [watermarkClickable, setWatermarkClickable] = useState(false);
   const [watermarkLink, setWatermarkLink] = useState('');
   const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
@@ -327,9 +328,11 @@ export const AdminLibraryManager = () => {
         }
       }
 
-      // Upload new PDF if provided
+      // Handle PDF removal or upload
       let pdfUrl = editingItem.pdfUrl;
-      if (newPdf) {
+      if (removePdf) {
+        pdfUrl = null;
+      } else if (newPdf) {
         // No size limit for PDFs, only type validation
         if (!['application/pdf'].includes(newPdf.type)) {
           throw new Error('PDF must be a valid PDF file');
@@ -433,6 +436,7 @@ export const AdminLibraryManager = () => {
       setNewPrimaryImage(null);
       setNewAdditionalImages([]);
       setNewPdf(null);
+      setRemovePdf(false);
       setNewWatermark(null);
       setRemoveWatermark(false);
       setWatermarkClickable(false);
@@ -1107,18 +1111,48 @@ export const AdminLibraryManager = () => {
               )}
 
               {(editingItem?.type === 'book' || editingItem?.type === 'periodical') && (
-                <div className="space-y-2">
-                  <Label htmlFor="edit_pdf">{t('Нов PDF (Опционално)', 'New PDF (Optional)')}</Label>
-                  <Input
-                    id="edit_pdf"
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => setNewPdf(e.target.files?.[0] || null)}
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_pdf">{t('Нов PDF (Опционално)', 'New PDF (Optional)')}</Label>
+                    <Input
+                      id="edit_pdf"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        setNewPdf(e.target.files?.[0] || null);
+                        if (e.target.files?.[0]) {
+                          setRemovePdf(false);
+                        }
+                      }}
+                      disabled={removePdf}
+                    />
+                    {editingItem?.pdfUrl && !removePdf && (
+                      <p className="text-sm text-muted-foreground">
+                        {t('Тековниот PDF е поставен', 'Current PDF is set')}
+                      </p>
+                    )}
+                  </div>
+                  
                   {editingItem?.pdfUrl && (
-                    <p className="text-sm text-muted-foreground">
-                      {t('Тековниот PDF е поставен', 'Current PDF is set')}
-                    </p>
+                    <div className="flex items-center space-x-2 p-3 border border-destructive/30 rounded-md bg-destructive/5">
+                      <Checkbox
+                        id="remove_pdf"
+                        checked={removePdf}
+                        onCheckedChange={(checked) => {
+                          setRemovePdf(checked === true);
+                          if (checked) {
+                            setNewPdf(null);
+                          }
+                        }}
+                      />
+                      <Label 
+                        htmlFor="remove_pdf" 
+                        className="text-destructive cursor-pointer flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        {t('Избриши го тековниот PDF', 'Remove current PDF')}
+                      </Label>
+                    </div>
                   )}
                 </div>
               )}
