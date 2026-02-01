@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Library, LogOut, Settings } from 'lucide-react';
+import { Upload, Library, LogOut, Settings, HardDrive } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UploadForm } from '@/components/UploadForm';
 import { AdminLibraryManager } from '@/components/AdminLibraryManager';
 import { AdminOptionsManager } from '@/components/AdminOptionsManager';
+import { SmartFileUploader } from '@/components/SmartFileUploader';
 
 const AdminDashboard = () => {
   const { user, signOut } = useAuth();
@@ -44,10 +45,14 @@ const AdminDashboard = () => {
           </div>
 
           <Tabs defaultValue="upload" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="upload">
                 <Upload className="mr-2 h-4 w-4" />
                 {t('Качување', 'Upload')}
+              </TabsTrigger>
+              <TabsTrigger value="large-files">
+                <HardDrive className="mr-2 h-4 w-4" />
+                {t('Големи', 'Large Files')}
               </TabsTrigger>
               <TabsTrigger value="manage">
                 <Library className="mr-2 h-4 w-4" />
@@ -87,6 +92,28 @@ const AdminDashboard = () => {
                     <UploadForm onSuccess={handleUploadSuccess} />
                   </DialogContent>
                 </Dialog>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="large-files" className="mt-6">
+              <Card className="p-6 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <HardDrive className="h-8 w-8 text-primary" />
+                  <h2 className="text-2xl font-bold">
+                    {t('Големи Датотеки', 'Large Files')}
+                  </h2>
+                </div>
+                <p className="text-muted-foreground">
+                  {t(
+                    'Качувај големи датотеки (над 50MB). Автоматски се архивираат во ладно складиште.',
+                    'Upload large files (over 50MB). Automatically archived to cold storage.'
+                  )}
+                </p>
+                <SmartFileUploader 
+                  onUploadComplete={(url, fileName, fileSize) => {
+                    console.log('File uploaded:', { url, fileName, fileSize });
+                  }}
+                />
               </Card>
             </TabsContent>
 
