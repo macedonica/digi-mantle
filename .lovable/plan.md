@@ -66,7 +66,7 @@ Save to library_items table with pdf_url
    ```
 
 4. **Modify `handleSubmit` Function**
-   - Replace the direct Supabase upload logic (lines 190-203) with the smart routing function
+   - Replace the direct Supabase upload logic with the smart routing function
    - The returned URL (from either Supabase or PHP) gets saved to `pdf_url` in `library_items`
 
 5. **UI Enhancements**
