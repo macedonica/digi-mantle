@@ -1,118 +1,48 @@
 
+## Clean Up: Hide Redundant "Нова сликичка" for Image Types
 
-## Integrate Smart File Routing into Book/Periodical Upload
+### Current Issue
+For image/testimonial items, there are two ways to change the thumbnail:
+1. **"Примарна Слика" section** (at top) - Updates both thumbnail and primary image 
+2. **"Нова сликичка (опционално)"** (at bottom) - Only updates thumbnail
 
-### Current Problem
+This is confusing and redundant for image types.
 
-The SmartFileUploader was created as a **separate standalone component** in its own tab. It can upload files and get URLs, but it doesn't connect to the book/periodical creation workflow.
+### Solution
+Hide the "Нова сликичка (опционално)" field when editing **image type** items, since the "Примарна Слика" section handles this functionality better.
 
-What you actually need is for the **existing UploadForm** to automatically route PDFs based on size when creating a book or periodical.
+### File to Modify
 
----
+**`src/components/AdminLibraryManager.tsx`** (around line 1090-1104)
 
-### Proposed Solution
+Change the thumbnail upload section to only show for book/periodical types:
 
-Modify the `UploadForm.tsx` to include the smart routing logic directly in the PDF upload section:
-
-```text
-User uploads a book/periodical
-         │
-         ▼
-Fill in metadata (title, author, year, etc.)
-         │
-         ▼
-Attach PDF file
-         │
-         ├─── < 50MB ───► Upload to Supabase Storage (library-pdfs bucket)
-         │
-         └─── >= 50MB ──► Upload to PHP Archive Server
-                          (https://bibliothecamacedonica.com/upload_handler.php)
-         │
-         ▼
-Get public URL (from either source)
-         │
-         ▼
-Save to library_items table with pdf_url
+**Current code:**
+```tsx
+<div className="space-y-4 border-t pt-4">
+  <div className="space-y-2">
+    <Label htmlFor="edit_thumbnail">{t('Нова сликичка (опционално)', 'New Thumbnail (optional)')}</Label>
+    ...
+  </div>
 ```
 
----
+**Updated code:**
+```tsx
+<div className="space-y-4 border-t pt-4">
+  {/* Only show thumbnail field for non-image types (books, periodicals) */}
+  {editingItem?.type !== 'image' && (
+    <div className="space-y-2">
+      <Label htmlFor="edit_thumbnail">{t('Нова сликичка (опционално)', 'New Thumbnail (optional)')}</Label>
+      ...
+    </div>
+  )}
+```
 
-### Technical Changes
+### Result
+| Item Type | "Примарна Слика" | "Нова сликичка" |
+|-----------|------------------|-----------------|
+| Image/Testimonial | Visible | Hidden |
+| Book | Hidden | Visible |
+| Periodical | Hidden | Visible |
 
-**File:** `src/components/UploadForm.tsx`
-
-1. **Add Size Threshold Constant**
-   ```typescript
-   const SIZE_THRESHOLD = 50 * 1024 * 1024; // 50MB
-   const ARCHIVE_ENDPOINT = 'https://bibliothecamacedonica.com/upload_handler.php';
-   const ARCHIVE_API_KEY = 'yba33y5NYiI72ZLV';
-   ```
-
-2. **Add Upload Progress State**
-   - Track upload progress for large files
-   - Show dynamic badge indicating upload destination
-
-3. **Create `uploadPdfFile` Helper Function**
-   ```typescript
-   const uploadPdfFile = async (file: File): Promise<string> => {
-     if (file.size >= SIZE_THRESHOLD) {
-       // Large file → PHP archive server with XHR for progress
-       return uploadToArchive(file);
-     } else {
-       // Small file → Supabase storage
-       return uploadToSupabase(file);
-     }
-   };
-   ```
-
-4. **Modify `handleSubmit` Function**
-   - Replace the direct Supabase upload logic with the smart routing function
-   - The returned URL (from either Supabase or PHP) gets saved to `pdf_url` in `library_items`
-
-5. **UI Enhancements**
-   - Show upload progress bar when uploading large PDFs
-   - Display badge: "Uploading to Cloud..." or "Archiving to Cold Storage..."
-   - Show file size indicator with warning for large files
-
----
-
-### What Happens to SmartFileUploader?
-
-Two options:
-
-**Option A - Keep It (Recommended)**  
-Keep the "Large Files" tab for uploading files that aren't attached to any library item (just raw file storage). It remains useful as a standalone file uploader.
-
-**Option B - Remove It**  
-Remove the "Large Files" tab entirely since all file uploads will now go through the integrated UploadForm.
-
----
-
-### Files to Modify
-
-| File | Changes |
-|------|---------|
-| `src/components/UploadForm.tsx` | Add smart routing logic, progress bar, status badges |
-| `src/pages/AdminDashboard.tsx` | Optionally remove "Large Files" tab if no longer needed |
-
----
-
-### Visual Changes to Upload Form
-
-When uploading a book/periodical with a PDF:
-
-| Scenario | What User Sees |
-|----------|----------------|
-| PDF < 50MB | Normal upload, no special indicator |
-| PDF >= 50MB | Warning badge + progress bar + "Archiving to Cold Storage..." message |
-| Upload success | Green toast with destination info |
-
----
-
-### Reminder: PHP Server Setup Required
-
-Your cPanel server still needs the `upload_handler.php` file that:
-1. Validates the `X-API-KEY` header
-2. Saves uploaded files
-3. Returns JSON: `{"url": "https://bibliothecamacedonica.com/uploads/filename.pdf"}`
-
+This removes confusion and keeps only the relevant upload option for each item type.

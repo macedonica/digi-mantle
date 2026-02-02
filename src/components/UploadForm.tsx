@@ -8,18 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, HardDrive, Cloud, AlertTriangle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
 import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-
-// Smart routing constants
-const SIZE_THRESHOLD = 50 * 1024 * 1024; // 50MB
-const ARCHIVE_ENDPOINT = 'https://bibliothecamacedonica.com/upload_handler.php';
-const ARCHIVE_API_KEY = 'yba33y5NYiI72ZLV';
 
 // Validation schema for form inputs
 const uploadSchema = z.object({
@@ -63,8 +56,6 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [pdfUploadProgress, setPdfUploadProgress] = useState(0);
-  const [pdfUploadStatus, setPdfUploadStatus] = useState<'idle' | 'uploading-cloud' | 'uploading-archive' | 'done'>('idle');
 
   const { data: languages = [], isLoading: languagesLoading } = useLibraryLanguages();
   const { data: bookCategories = [], isLoading: bookCategoriesLoading } = useLibraryCategories('book');
@@ -116,94 +107,6 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   if (languagesLoading || bookCategoriesLoading || periodicalCategoriesLoading || imageCategoriesLoading || newspapersLoading) {
     return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
   }
-
-  // Helper function to format file size
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  // Upload to Supabase Storage (for files < 50MB)
-  const uploadToSupabase = async (file: File): Promise<string> => {
-    setPdfUploadStatus('uploading-cloud');
-    setPdfUploadProgress(0);
-    
-    const pdfPath = `${crypto.randomUUID()}-${file.name}`;
-    const { error: pdfError } = await supabase.storage
-      .from('library-pdfs')
-      .upload(pdfPath, file);
-
-    if (pdfError) throw pdfError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('library-pdfs')
-      .getPublicUrl(pdfPath);
-    
-    setPdfUploadProgress(100);
-    setPdfUploadStatus('done');
-    return publicUrl;
-  };
-
-  // Upload to PHP Archive Server (for files >= 50MB)
-  const uploadToArchive = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      setPdfUploadStatus('uploading-archive');
-      setPdfUploadProgress(0);
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const xhr = new XMLHttpRequest();
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          setPdfUploadProgress(percent);
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const response = JSON.parse(xhr.responseText);
-            if (response.url) {
-              setPdfUploadProgress(100);
-              setPdfUploadStatus('done');
-              resolve(response.url);
-            } else if (response.error) {
-              reject(new Error(response.error));
-            } else {
-              reject(new Error('Invalid response from archive server'));
-            }
-          } catch (e) {
-            reject(new Error('Failed to parse archive server response'));
-          }
-        } else {
-          reject(new Error(`Archive upload failed: ${xhr.statusText}`));
-        }
-      };
-
-      xhr.onerror = () => {
-        reject(new Error('Network error during archive upload'));
-      };
-
-      xhr.open('POST', ARCHIVE_ENDPOINT);
-      xhr.setRequestHeader('X-API-KEY', ARCHIVE_API_KEY);
-      xhr.send(formData);
-    });
-  };
-
-  // Smart PDF upload function - routes based on file size
-  const uploadPdfFile = async (file: File): Promise<string> => {
-    if (file.size >= SIZE_THRESHOLD) {
-      // Large file → PHP archive server
-      return uploadToArchive(file);
-    } else {
-      // Small file → Supabase storage
-      return uploadToSupabase(file);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -283,9 +186,20 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           throw new Error(t('Сликичката е задолжителна', 'Thumbnail is required'));
         }
 
-        // Upload PDF if provided - uses smart routing based on file size
+        // Upload PDF if provided
         if (files.pdf) {
-          pdfUrl = await uploadPdfFile(files.pdf);
+          const pdfPath = `${crypto.randomUUID()}-${files.pdf.name}`;
+          const { error: pdfError } = await supabase.storage
+            .from('library-pdfs')
+            .upload(pdfPath, files.pdf);
+
+          if (pdfError) throw pdfError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('library-pdfs')
+            .getPublicUrl(pdfPath);
+          
+          pdfUrl = publicUrl;
         }
       }
 
@@ -839,69 +753,14 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 </div>
 
                 {bookContentType === 'pdf' ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <Label htmlFor="pdf">{t('PDF Документ', 'PDF Document')}</Label>
                     <Input
                       id="pdf"
                       type="file"
                       accept=".pdf"
-                      onChange={(e) => {
-                        setFiles({ ...files, pdf: e.target.files?.[0] });
-                        setPdfUploadStatus('idle');
-                        setPdfUploadProgress(0);
-                      }}
+                      onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
                     />
-                    
-                    {/* File size indicator and routing info */}
-                    {files.pdf && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm text-muted-foreground">
-                            {t('Големина:', 'Size:')} {formatFileSize(files.pdf.size)}
-                          </span>
-                          
-                          {files.pdf.size >= SIZE_THRESHOLD ? (
-                            <Badge variant="secondary" className="flex items-center gap-1">
-                              <HardDrive className="h-3 w-3" />
-                              {t('Ладно складиште', 'Cold Storage')}
-                            </Badge>
-                          ) : (
-                            <Badge variant="default" className="flex items-center gap-1">
-                              <Cloud className="h-3 w-3" />
-                              {t('Облак', 'Cloud')}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {files.pdf.size >= SIZE_THRESHOLD && (
-                          <div className="flex items-start gap-2 p-2 bg-muted rounded-md">
-                            <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-muted-foreground">
-                              {t(
-                                'Голема датотека - ќе се архивира на ладно складиште за оптимална перформанса.',
-                                'Large file - will be archived to cold storage for optimal performance.'
-                              )}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {/* Upload progress */}
-                    {pdfUploadStatus !== 'idle' && pdfUploadStatus !== 'done' && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          {pdfUploadStatus === 'uploading-cloud' ? (
-                            <span className="text-sm">{t('Качување во облак...', 'Uploading to cloud...')}</span>
-                          ) : (
-                            <span className="text-sm">{t('Архивирање во ладно складиште...', 'Archiving to cold storage...')}</span>
-                          )}
-                        </div>
-                        <Progress value={pdfUploadProgress} className="h-2" />
-                        <span className="text-xs text-muted-foreground">{pdfUploadProgress}%</span>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="space-y-2">
