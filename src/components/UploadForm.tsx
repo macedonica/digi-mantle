@@ -64,7 +64,8 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const { data: newspapers = [], isLoading: newspapersLoading } = useLibraryNewspapers();
 
   const [uploadType, setUploadType] = useState<'document' | 'image' | 'periodical' | null>(null);
-  const [bookContentType, setBookContentType] = useState<'pdf' | 'link'>('pdf');
+  const [bookContentType, setBookContentType] = useState<'pdf' | 'link' | 'local'>('pdf');
+  const [localFilename, setLocalFilename] = useState('');
   
   const [formData, setFormData] = useState({
     title_mk: '',
@@ -186,8 +187,12 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
           throw new Error(t('Сликичката е задолжителна', 'Thumbnail is required'));
         }
 
-        // Upload PDF if provided
-        if (files.pdf) {
+        // Handle PDF based on content type
+        if (bookContentType === 'local' && localFilename.trim()) {
+          // Construct URL for local storage file
+          const baseUrl = 'https://digitalen-arhiv.mk/library_storage';
+          pdfUrl = `${baseUrl}/${localFilename.trim()}`;
+        } else if (bookContentType === 'pdf' && files.pdf) {
           const pdfPath = `${crypto.randomUUID()}-${files.pdf.name}`;
           const { error: pdfError } = await supabase.storage
             .from('library-pdfs')
@@ -727,7 +732,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
               <div className="space-y-4 border rounded-lg p-4">
                 <Label>{t('Содржина на книгата', 'Book Content')}</Label>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"
@@ -750,9 +755,20 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     />
                     <span>{t('Внеси линк', 'Provide Link')}</span>
                   </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="bookContentType"
+                      value="local"
+                      checked={bookContentType === 'local'}
+                      onChange={() => setBookContentType('local')}
+                      className="h-4 w-4"
+                    />
+                    <span>{t('Локална датотека', 'Local Storage File')}</span>
+                  </label>
                 </div>
 
-                {bookContentType === 'pdf' ? (
+                {bookContentType === 'pdf' && (
                   <div className="space-y-2">
                     <Label htmlFor="pdf">{t('PDF Документ', 'PDF Document')}</Label>
                     <Input
@@ -762,7 +778,9 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                       onChange={(e) => setFiles({ ...files, pdf: e.target.files?.[0] })}
                     />
                   </div>
-                ) : (
+                )}
+                
+                {bookContentType === 'link' && (
                   <div className="space-y-2">
                     <Label htmlFor="source_link">{t('Извор/Линк', 'Source/Link')}</Label>
                     <Input
@@ -772,6 +790,23 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
                       value={formData.source_mk}
                       onChange={(e) => setFormData({ ...formData, source_mk: e.target.value, source_en: e.target.value })}
                     />
+                  </div>
+                )}
+
+                {bookContentType === 'local' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="local_filename">{t('Име на датотека', 'Filename')}</Label>
+                    <Input
+                      id="local_filename"
+                      type="text"
+                      placeholder="example.pdf"
+                      value={localFilename}
+                      onChange={(e) => setLocalFilename(e.target.value)}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {t('Внесете го името на PDF-от што е качен во library_storage папката', 
+                         'Enter the filename of PDF uploaded to library_storage folder')}
+                    </p>
                   </div>
                 )}
               </div>

@@ -73,6 +73,9 @@ export const AdminLibraryManager = () => {
   const [newWatermark, setNewWatermark] = useState<File | null>(null);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [removePdf, setRemovePdf] = useState(false);
+  const [pdfSourceType, setPdfSourceType] = useState<'existing' | 'upload' | 'link' | 'local'>('existing');
+  const [localFilename, setLocalFilename] = useState('');
+  const [pdfLink, setPdfLink] = useState('');
   const [watermarkClickable, setWatermarkClickable] = useState(false);
   const [watermarkLink, setWatermarkLink] = useState('');
   const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
@@ -222,6 +225,11 @@ export const AdminLibraryManager = () => {
       setWatermarkClickable(false);
       setWatermarkLink('');
     }
+
+    // Reset PDF source type state when opening edit dialog
+    setPdfSourceType('existing');
+    setLocalFilename('');
+    setPdfLink('');
     
     // Reset images to remove when opening edit dialog
     setImagesToRemove([]);
@@ -328,11 +336,14 @@ export const AdminLibraryManager = () => {
         }
       }
 
-      // Handle PDF removal or upload
-      let pdfUrl = editingItem.pdfUrl;
-      if (removePdf) {
-        pdfUrl = null;
-      } else if (newPdf) {
+      // Handle PDF based on source type selection
+      let pdfUrl: string | null | undefined = editingItem.pdfUrl;
+      if (pdfSourceType === 'existing') {
+        // Keep existing PDF, but check if removePdf flag is set
+        if (removePdf) {
+          pdfUrl = null;
+        }
+      } else if (pdfSourceType === 'upload' && newPdf) {
         // No size limit for PDFs, only type validation
         if (!['application/pdf'].includes(newPdf.type)) {
           throw new Error('PDF must be a valid PDF file');
@@ -350,6 +361,11 @@ export const AdminLibraryManager = () => {
           .getPublicUrl(pdfPath);
         
         pdfUrl = publicUrl;
+      } else if (pdfSourceType === 'link' && pdfLink.trim()) {
+        pdfUrl = pdfLink.trim();
+      } else if (pdfSourceType === 'local' && localFilename.trim()) {
+        const baseUrl = 'https://digitalen-arhiv.mk/library_storage';
+        pdfUrl = `${baseUrl}/${localFilename.trim()}`;
       }
 
       // For periodicals, convert newspaper value to localized names
@@ -437,6 +453,9 @@ export const AdminLibraryManager = () => {
       setNewAdditionalImages([]);
       setNewPdf(null);
       setRemovePdf(false);
+      setPdfSourceType('existing');
+      setLocalFilename('');
+      setPdfLink('');
       setNewWatermark(null);
       setRemoveWatermark(false);
       setWatermarkClickable(false);
@@ -1111,47 +1130,117 @@ export const AdminLibraryManager = () => {
               )}
 
               {(editingItem?.type === 'book' || editingItem?.type === 'periodical') && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit_pdf">{t('Нов PDF (Опционално)', 'New PDF (Optional)')}</Label>
-                    <Input
-                      id="edit_pdf"
-                      type="file"
-                      accept="application/pdf"
-                      onChange={(e) => {
-                        setNewPdf(e.target.files?.[0] || null);
-                        if (e.target.files?.[0]) {
-                          setRemovePdf(false);
-                        }
-                      }}
-                      disabled={removePdf}
-                    />
-                    {editingItem?.pdfUrl && !removePdf && (
+                <div className="space-y-4 border rounded-lg p-4">
+                  <Label>{t('PDF Содржина', 'PDF Content')}</Label>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="pdfSourceType"
+                        value="existing"
+                        checked={pdfSourceType === 'existing'}
+                        onChange={() => setPdfSourceType('existing')}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{t('Задржи постоечки', 'Keep existing')}</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="pdfSourceType"
+                        value="upload"
+                        checked={pdfSourceType === 'upload'}
+                        onChange={() => setPdfSourceType('upload')}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{t('Качи нов PDF', 'Upload new PDF')}</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="pdfSourceType"
+                        value="link"
+                        checked={pdfSourceType === 'link'}
+                        onChange={() => setPdfSourceType('link')}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{t('Внеси линк', 'Provide link')}</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="pdfSourceType"
+                        value="local"
+                        checked={pdfSourceType === 'local'}
+                        onChange={() => setPdfSourceType('local')}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-sm">{t('Локална датотека', 'Local Storage File')}</span>
+                    </label>
+                  </div>
+
+                  {pdfSourceType === 'existing' && editingItem?.pdfUrl && (
+                    <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
                         {t('Тековниот PDF е поставен', 'Current PDF is set')}
                       </p>
-                    )}
-                  </div>
-                  
-                  {editingItem?.pdfUrl && (
-                    <div className="flex items-center space-x-2 p-3 border border-destructive/30 rounded-md bg-destructive/5">
-                      <Checkbox
-                        id="remove_pdf"
-                        checked={removePdf}
-                        onCheckedChange={(checked) => {
-                          setRemovePdf(checked === true);
-                          if (checked) {
-                            setNewPdf(null);
-                          }
-                        }}
+                      <div className="flex items-center space-x-2 p-3 border border-destructive/30 rounded-md bg-destructive/5">
+                        <Checkbox
+                          id="remove_pdf"
+                          checked={removePdf}
+                          onCheckedChange={(checked) => setRemovePdf(checked === true)}
+                        />
+                        <Label 
+                          htmlFor="remove_pdf" 
+                          className="text-destructive cursor-pointer flex items-center gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {t('Избриши го тековниот PDF', 'Remove current PDF')}
+                        </Label>
+                      </div>
+                    </div>
+                  )}
+
+                  {pdfSourceType === 'upload' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit_pdf">{t('PDF Документ', 'PDF Document')}</Label>
+                      <Input
+                        id="edit_pdf"
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => setNewPdf(e.target.files?.[0] || null)}
                       />
-                      <Label 
-                        htmlFor="remove_pdf" 
-                        className="text-destructive cursor-pointer flex items-center gap-2"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        {t('Избриши го тековниот PDF', 'Remove current PDF')}
-                      </Label>
+                    </div>
+                  )}
+
+                  {pdfSourceType === 'link' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="pdf_link">{t('PDF Линк', 'PDF Link')}</Label>
+                      <Input
+                        id="pdf_link"
+                        type="url"
+                        placeholder="https://..."
+                        value={pdfLink}
+                        onChange={(e) => setPdfLink(e.target.value)}
+                      />
+                    </div>
+                  )}
+
+                  {pdfSourceType === 'local' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="local_filename">{t('Име на датотека', 'Filename')}</Label>
+                      <Input
+                        id="local_filename"
+                        type="text"
+                        placeholder="example.pdf"
+                        value={localFilename}
+                        onChange={(e) => setLocalFilename(e.target.value)}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        {t('Внесете го името на PDF-от што е качен во library_storage папката', 
+                           'Enter the filename of PDF uploaded to library_storage folder')}
+                      </p>
                     </div>
                   )}
                 </div>
