@@ -190,7 +190,7 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
         // Handle PDF based on content type
         if (bookContentType === 'local' && localFilename.trim()) {
           // Construct URL for local storage file
-          const baseUrl = 'https://digitalen-arhiv.mk/library_storage';
+          const baseUrl = 'https://bibliothecamacedonica.com/library_storage';
           pdfUrl = `${baseUrl}/${localFilename.trim()}`;
         } else if (bookContentType === 'pdf' && files.pdf) {
           const pdfPath = `${crypto.randomUUID()}-${files.pdf.name}`;

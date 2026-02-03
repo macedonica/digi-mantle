@@ -364,7 +364,7 @@ export const AdminLibraryManager = () => {
       } else if (pdfSourceType === 'link' && pdfLink.trim()) {
         pdfUrl = pdfLink.trim();
       } else if (pdfSourceType === 'local' && localFilename.trim()) {
-        const baseUrl = 'https://digitalen-arhiv.mk/library_storage';
+        const baseUrl = 'https://bibliothecamacedonica.com/library_storage';
         pdfUrl = `${baseUrl}/${localFilename.trim()}`;
       }
 
