@@ -111,11 +111,18 @@ const ItemDetail = () => {
         setAllImages(images);
 
         // Generate signed URLs for private storage access
+        // Only attempt signed URL for Supabase storage URLs
         if (data.pdf_url) {
-          const pdfPath = data.pdf_url.split("/").slice(-1)[0];
-          const { data: signedData } = await supabase.storage.from("library-pdfs").createSignedUrl(pdfPath, 3600); // 1 hour expiry
-          if (signedData) {
-            setSignedPdfUrl(signedData.signedUrl);
+          const isSupabaseUrl = data.pdf_url.includes('supabase.co') || data.pdf_url.includes('supabase.in');
+          if (isSupabaseUrl) {
+            const pdfPath = data.pdf_url.split("/").slice(-1)[0];
+            const { data: signedData } = await supabase.storage.from("library-pdfs").createSignedUrl(pdfPath, 3600);
+            if (signedData) {
+              setSignedPdfUrl(signedData.signedUrl);
+            }
+          } else {
+            // External URL (including local storage) - use directly
+            setSignedPdfUrl(data.pdf_url);
           }
         }
 
