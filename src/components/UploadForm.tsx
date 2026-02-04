@@ -13,6 +13,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { z } from 'zod';
 import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
+import { warmCacheFireAndForget } from '@/lib/cacheWarmer';
 
 // Validation schema for form inputs
 const uploadSchema = z.object({
@@ -309,10 +310,19 @@ export const UploadForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
       if (dbError) throw dbError;
 
-      toast({
-        title: t('Успешно качено', 'Successfully uploaded'),
-        description: t('Ставката е додадена во библиотеката', 'Item has been added to the library'),
-      });
+      // Trigger cache warming for local storage files
+      if (bookContentType === 'local' && localFilename.trim()) {
+        warmCacheFireAndForget(localFilename.trim());
+        toast({
+          title: t('Успешно качено', 'Successfully uploaded'),
+          description: t('Ставката е додадена. Кешот се загрева...', 'Item has been added. Cache warming started...'),
+        });
+      } else {
+        toast({
+          title: t('Успешно качено', 'Successfully uploaded'),
+          description: t('Ставката е додадена во библиотеката', 'Item has been added to the library'),
+        });
+      }
 
       onSuccess();
     } catch (error: any) {

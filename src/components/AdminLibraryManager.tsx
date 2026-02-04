@@ -19,6 +19,7 @@ import { z } from 'zod';
 import { useLibraryLanguages, useLibraryCategories, useLibraryNewspapers } from '@/hooks/useLibraryOptions';
 import { SearchBar } from '@/components/SearchBar';
 import * as XLSX from 'xlsx';
+import { warmCacheFireAndForget } from '@/lib/cacheWarmer';
 
 // Validation schema for edit form
 const editSchema = z.object({
@@ -442,10 +443,19 @@ export const AdminLibraryManager = () => {
 
       if (error) throw error;
 
-      toast({
-        title: t('Успешно', 'Success'),
-        description: t('Ставката е ажурирана', 'Item has been updated'),
-      });
+      // Trigger cache warming for local storage files
+      if (pdfSourceType === 'local' && localFilename.trim()) {
+        warmCacheFireAndForget(localFilename.trim());
+        toast({
+          title: t('Успешно', 'Success'),
+          description: t('Ставката е ажурирана. Кешот се загрева...', 'Item has been updated. Cache warming started...'),
+        });
+      } else {
+        toast({
+          title: t('Успешно', 'Success'),
+          description: t('Ставката е ажурирана', 'Item has been updated'),
+        });
+      }
 
       setEditingItem(null);
       setNewThumbnail(null);
