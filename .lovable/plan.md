@@ -1,178 +1,155 @@
 
-## Add "Local Storage File" Option for PDF Content
+
+## Cache Warmer System Implementation
 
 ### Overview
-Add a third option when uploading/editing books and periodicals that allows you to reference PDF files that have been manually uploaded to your cPanel server at `public_html/library_storage/`. This bypasses Supabase storage limits entirely.
+This plan implements a cache warming system that automatically triggers a background request to locally-stored PDF files when you save a book/periodical, forcing Cloudflare to cache the file before real users access it.
 
 ### How It Works
 
 ```text
-+---------------------------+
-|  Book Content Options     |
-+---------------------------+
-| ( ) Upload PDF            |  <-- Uses Supabase storage
-| ( ) Provide Link          |  <-- External URL
-| ( ) Local Storage File    |  <-- NEW! Your cPanel server
-+---------------------------+
+┌─────────────────────────────────────────────────────────────────┐
+│  Admin saves book with "Local Storage File" option              │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  1. Save to database (Supabase)                                 │
+│  2. Show success toast                                          │
+│  3. Fire-and-forget request to warm_cache.php                   │
+└─────────────────────┬───────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  warm_cache.php (on your cPanel server)                         │
+│  - Receives filename parameter                                  │
+│  - Uses cURL to request the PDF from public URL                 │
+│  - 5-second timeout (just triggers download start)              │
+│  - Cloudflare caches the response                               │
+└─────────────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  First real user gets instant cached response!                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
-
-When you select "Local Storage File":
-- Enter just the filename (e.g., `mybook.pdf`)
-- The system constructs the full URL: `https://your-domain.com/library_storage/mybook.pdf`
-- This URL is stored in `pdf_url` column
-- When users click "Open PDF", it opens directly from your server
 
 ---
 
-### Files to Modify
+### Part 1: PHP Script (warm_cache.php)
 
-#### 1. UploadForm.tsx - New Upload Dialog
+**File Location:** Upload to `public_html/warm_cache.php`
 
-**Changes:**
-- Add new state: `bookContentType` expanded from `'pdf' | 'link'` to `'pdf' | 'link' | 'local'`
-- Add third radio option for "Local Storage File" (Локална датотека)
-- Add text input for filename when "local" is selected
-- Add state for local filename and base URL configuration
-- On submit: construct full URL as `{baseStorageUrl}/library_storage/{filename}`
+**Functionality:**
+- Accepts `file` parameter (e.g., `?file=book_name.pdf`)
+- Constructs full URL: `https://bibliothecamacedonica.com/library_storage/{filename}`
+- Uses cURL to fetch the file through the public URL (via Cloudflare)
+- Sets 5-second timeout so it doesn't hang
+- Returns JSON response indicating success/failure
+- Includes basic security: CORS headers for your domain, input sanitization
 
-**New UI Section (around line 730-776):**
-```tsx
-<label className="flex items-center gap-2 cursor-pointer">
-  <input
-    type="radio"
-    name="bookContentType"
-    value="local"
-    checked={bookContentType === 'local'}
-    onChange={() => setBookContentType('local')}
-  />
-  <span>{t('Локална датотека', 'Local Storage File')}</span>
-</label>
-
-{bookContentType === 'local' && (
-  <div className="space-y-2">
-    <Label>{t('Име на датотека', 'Filename')}</Label>
-    <Input
-      placeholder="example.pdf"
-      value={localFilename}
-      onChange={(e) => setLocalFilename(e.target.value)}
-    />
-    <p className="text-sm text-muted-foreground">
-      {t('Внесете го името на PDF-от што е качен во library_storage папката', 
-         'Enter the filename of PDF uploaded to library_storage folder')}
-    </p>
-  </div>
-)}
-```
-
-**Submit Logic Update:**
-- If `bookContentType === 'local'` and `localFilename` is provided:
-  - Construct: `pdfUrl = https://yourdomain.com/library_storage/${localFilename}`
-  - Store this URL in database
+**PHP Code Features:**
+- Input sanitization (removes path traversal attempts like `../`)
+- Only allows `.pdf` extension for safety
+- CORS headers allowing requests from your domain
+- JSON response for easy debugging
+- Error handling for cURL failures
 
 ---
 
-#### 2. AdminLibraryManager.tsx - Edit Dialog
+### Part 2: React Frontend Changes
 
-**Changes:**
-- Add state for PDF source type: `'existing' | 'upload' | 'link' | 'local'`
-- Detect current PDF type when opening edit dialog (is it Supabase URL, external link, or local storage?)
-- Add radio options similar to UploadForm
-- Add local filename input field
+#### 2.1 Helper Function for Cache Warming
 
-**New State Variables:**
-```tsx
-const [pdfSourceType, setPdfSourceType] = useState<'existing' | 'upload' | 'link' | 'local'>('existing');
-const [localFilename, setLocalFilename] = useState('');
-const [pdfLink, setPdfLink] = useState('');
+Create a utility function that:
+- Accepts a filename
+- Makes a fire-and-forget fetch request to the PHP endpoint
+- Logs success/failure to console (doesn't block the user)
+- Uses `mode: 'no-cors'` as fallback if CORS issues occur
+
+#### 2.2 UploadForm.tsx Changes
+
+**Location:** After successful database insert (line ~310-317)
+
+**Logic:**
+```
+IF bookContentType === 'local' AND localFilename has value:
+  - Fire cache warming request
+  - Show enhanced toast: "Book Saved & Cache Warming Started"
+ELSE:
+  - Show normal success toast
 ```
 
-**Edit Dialog UI (around lines 1113-1158):**
-Add radio group to select PDF source:
-- Keep existing PDF
-- Upload new PDF  
-- Enter external link
-- Local storage file
+#### 2.3 AdminLibraryManager.tsx Changes  
+
+**Location:** After successful database update (line ~445-448)
+
+**Logic:**
+```
+IF pdfSourceType === 'local' AND localFilename has value:
+  - Fire cache warming request
+  - Show enhanced toast: "Item Updated & Cache Warming Started"
+ELSE:
+  - Show normal success toast
+```
 
 ---
 
-#### 3. ItemDetail.tsx - PDF Display Logic
+### Files to Create/Modify
 
-**Current behavior already supports this!**
-
-The current code at lines 114-119 generates signed URLs only for Supabase storage. For external URLs (including your local storage URLs), the system will:
-1. Store the URL in `pdf_url`
-2. The signed URL generation will fail gracefully (no Supabase path)
-3. The button logic already handles this - it checks for `signedPdfUrl` first, then falls back to source URL
-
-**Minor adjustment needed:**
-Update the PDF button logic to also check if `item.pdfUrl` is an external URL (not Supabase) and open it directly.
-
----
-
-### Configuration
-
-You'll need to set your base storage URL. Options:
-
-**Option A: Hardcoded (Simplest)**
-```tsx
-const LOCAL_STORAGE_BASE = 'https://your-domain.com/library_storage';
-```
-
-**Option B: Environment Variable**
-Add to `.env`:
-```
-VITE_LOCAL_STORAGE_URL=https://your-domain.com/library_storage
-```
+| File | Action | Description |
+|------|--------|-------------|
+| `docs/warm_cache.php` | Create | PHP script for cache warming (you upload to cPanel) |
+| `src/lib/cacheWarmer.ts` | Create | Utility function for triggering cache warm |
+| `src/components/UploadForm.tsx` | Modify | Add cache warming after new book save |
+| `src/components/AdminLibraryManager.tsx` | Modify | Add cache warming after book edit |
 
 ---
 
 ### Technical Details
 
-#### State Changes in UploadForm.tsx
-| State Variable | Type | Purpose |
-|----------------|------|---------|
-| `bookContentType` | `'pdf' \| 'link' \| 'local'` | Select content source |
-| `localFilename` | `string` | Filename for local storage |
+#### PHP Script Configuration
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `$base_url` | `https://bibliothecamacedonica.com/library_storage` | Your library storage folder |
+| `$timeout` | 5 | Seconds before cURL gives up (just need to trigger download) |
+| `$allowed_extensions` | `['pdf']` | Only allow PDF files for security |
 
-#### State Changes in AdminLibraryManager.tsx  
-| State Variable | Type | Purpose |
-|----------------|------|---------|
-| `pdfSourceType` | `'existing' \| 'upload' \| 'link' \| 'local'` | Select how to handle PDF |
-| `localFilename` | `string` | Filename for local storage |
-| `pdfLink` | `string` | URL for external link option |
-
-#### Database
-No schema changes needed - `pdf_url` column already stores URLs as strings.
+#### Frontend Configuration
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `CACHE_WARMER_URL` | `https://bibliothecamacedonica.com/warm_cache.php` | PHP endpoint |
 
 ---
 
-### User Workflow
+### Deployment Steps
 
-**Uploading a new book with local file:**
-1. Upload PDF via cPanel/FTP to `public_html/library_storage/mybook.pdf`
-2. In admin, create new book
-3. Select "Local Storage File" option
-4. Enter filename: `mybook.pdf`
-5. Save - system stores: `https://your-domain.com/library_storage/mybook.pdf`
+1. **After I implement the changes:**
+   - Copy the contents of `docs/warm_cache.php`
+   - Upload to `public_html/warm_cache.php` on your cPanel
+   - Make sure the file has read/execute permissions (644 or 755)
 
-**Editing existing book to use local file:**
-1. Open book in admin edit dialog
-2. Select "Local Storage File" radio
-3. Enter the filename
-4. Save
+2. **Test the PHP script directly:**
+   - Visit: `https://bibliothecamacedonica.com/warm_cache.php?file=test.pdf`
+   - Should return JSON response (even if file doesn't exist, it should show error)
+
+3. **Test the full flow:**
+   - Create or edit a book with "Local Storage File" option
+   - Enter a valid filename
+   - Save and verify the toast shows "Cache Warming Started"
+   - Check browser console for confirmation
 
 ---
 
 ### Summary of Changes
 
-| File | Changes |
-|------|---------|
-| `src/components/UploadForm.tsx` | Add 'local' option, filename input, URL construction |
-| `src/components/AdminLibraryManager.tsx` | Add PDF source type selection, local filename input |
-| `src/pages/ItemDetail.tsx` | Update PDF button to handle non-Supabase URLs |
+**New Files:**
+- `docs/warm_cache.php` - PHP script (copy to cPanel)
+- `src/lib/cacheWarmer.ts` - Utility function
 
-This approach:
-- Requires no database changes
-- Works with your existing cPanel hosting
-- No file size limits
-- Simple filename-based referencing
+**Modified Files:**
+- `src/components/UploadForm.tsx` - Add cache warming after save
+- `src/components/AdminLibraryManager.tsx` - Add cache warming after edit
+
+**No database changes required.**
+
